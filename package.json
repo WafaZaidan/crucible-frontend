@@ -33,6 +33,7 @@
   },
   "scripts": {
     "start": "REACT_APP_NETWORK_ID=1 react-scripts start",
+    "start:mainnet": "REACT_APP_NETWORK_ID=1 react-scripts start",
     "start:rinkeby": "REACT_APP_NETWORK_ID=4 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

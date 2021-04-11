@@ -8,19 +8,23 @@ import {
   SliderTrack,
   SliderFilledTrack,
 } from '@chakra-ui/slider';
-import { useToast } from '@chakra-ui/toast';
 import { Signer } from '@ethersproject/abstract-signer';
 import { providers } from 'ethers';
 import { useState } from 'react';
 import { config } from '../config/variables';
 import { useNotify, useWeb3 } from '../context/web3';
 import { mintAndLock } from '../contracts/alchemist';
+import TxProgressModal from './modals/txProgressModal';
+import TxRejectedModal from './modals/txRejectedModal';
+import TxSentModal from './modals/txSentModal';
 
 const MintingFormControl = () => {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [txSent, setTxSent] = useState('');
+  const [txRejected, setTxRejected] = useState(false);
+  const [value, setValue] = useState('0');
   const { checkIsReady, provider } = useWeb3();
   const { monitorTx } = useNotify();
-  const toast = useToast();
-  const [value, setValue] = useState('0');
 
   const handleChange = (value: number) => setValue(value.toString());
 
@@ -29,7 +33,6 @@ const MintingFormControl = () => {
     setValue(valueAsString);
   };
 
-  // TODO add a message to the signature request
   const handleMintCrucible = async () => {
     const isReady = await checkIsReady();
 
@@ -37,21 +40,21 @@ const MintingFormControl = () => {
       try {
         const lpBalance = value.toString();
         const signer = provider?.getSigner() as Signer;
+        const handleStepChange = (step: number) => {
+          setCurrentStep(step);
+        };
         const hash: string = await mintAndLock(
           signer,
           provider as providers.Web3Provider,
-          lpBalance
+          lpBalance,
+          handleStepChange
         );
         monitorTx(hash);
+        setTxSent(hash);
+        setCurrentStep(0);
       } catch (e) {
-        toast({
-          title: 'Error',
-          position: 'top',
-          description: e.message,
-          status: 'error',
-          duration: 9000,
-          isClosable: true,
-        });
+        setTxRejected(true);
+        setCurrentStep(0);
       }
     }
   };
@@ -63,6 +66,7 @@ const MintingFormControl = () => {
     return (
       !value ||
       value === '0' ||
+      currentStep > 0 ||
       Number(value) > Number(tokens[lpTokenAddress].balance)
     );
   };
@@ -116,10 +120,6 @@ const MintingFormControl = () => {
             </Box>
           </Box>
         </Box>
-        {/* TODO */}
-        <Box mb={4}>
-          Signed <strong>0</strong> of <strong>3</strong> transactions
-        </Box>
       </LightMode>
       <Button
         size='lg'
@@ -129,6 +129,9 @@ const MintingFormControl = () => {
       >
         Mint a crucible
       </Button>
+      {txSent && <TxSentModal onClose={() => setTxSent('')} hash={txSent} />}
+      {txRejected && <TxRejectedModal onClose={() => setTxRejected(false)} />}
+      {currentStep > 0 && <TxProgressModal step={currentStep} />}
     </Box>
   );
 };
