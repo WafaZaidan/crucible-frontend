@@ -6,7 +6,7 @@ import CrucibleCard from './crucibleCard';
 import MissingCrucibles from './missingCrucibles';
 
 const CruciblesListView = () => {
-  const { crucibles, reloadCrucibles } = useCrucibles();
+  const { crucibles, reloadCrucibles, isRewardsLoading } = useCrucibles();
   const { tokens } = useWeb3();
 
   useEffect(() => {
@@ -26,6 +26,7 @@ const CruciblesListView = () => {
             <CrucibleCard
               key={crucible.id}
               crucible={crucible}
+              isRewardsLoading={isRewardsLoading}
               isExpanded={crucibles.length === 1}
             />
           );

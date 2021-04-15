@@ -26,8 +26,8 @@ const App: React.FC = () => {
         <Box flexGrow={1}>
           <Switch>
             {/* <Route exact path={process.env.PUBLIC_URL + '/'}>
-              <Landing />
-            </Route> */}
+                <Landing />
+              </Route> */}
             <Route exact path={process.env.PUBLIC_URL + '/'}>
               <CrucibleMinting />
             </Route>

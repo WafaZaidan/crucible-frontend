@@ -1,9 +1,9 @@
-import { Box, Flex, Heading } from '@chakra-ui/layout';
-import { Spinner } from '@chakra-ui/spinner';
-import { useCrucibles } from '../context/crucibles';
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/tabs';
-import MintingForm from './mintingForm';
+import { Box, Flex, Heading } from '@chakra-ui/layout';
+import { useCrucibles } from '../context/crucibles';
+import { Spinner } from '@chakra-ui/spinner';
 import CruciblesListView from './cruciblesListView';
+import MintingForm from './mintingForm';
 
 const MintingTabs = () => {
   const { crucibles, isLoading } = useCrucibles();

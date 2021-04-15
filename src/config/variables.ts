@@ -17,6 +17,8 @@ export const config =
         rpcUrl: 'https://mainnet.infura.io/v3/00a5b13ef0cf467698571093487743e6',
         infuraApiKey: '00a5b13ef0cf467698571093487743e6',
         dappId: 'ad454b00-3218-4403-95e9-22c3c7d3adc0',
+        uniswapSubGraphUrl:
+          'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2',
         uniswapPoolUrl:
           'https://app.uniswap.org/#/add/0x88acdd2a6425c3faae4bc9650fd7e27e0bebb7ab/ETH',
         getMistUrl:
@@ -37,6 +39,8 @@ export const config =
         rpcUrl: 'https://rinkeby.infura.io/v3/ca7f73c788d24c6c853d6b0c1c5347ff',
         infuraApiKey: '00a5b13ef0cf467698571093487743e6',
         dappId: 'ad454b00-3218-4403-95e9-22c3c7d3adc0',
+        uniswapSubgraphUrl:
+          'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2',
         uniswapPoolUrl:
           'https://app.uniswap.org/#/add/ETH/0xF6c1210Aca158bBD453A12604A03AeD2659ac0ef',
         getMistUrl:
