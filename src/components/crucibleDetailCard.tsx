@@ -1,18 +1,38 @@
 import dayjs from 'dayjs';
-import { Button } from '@chakra-ui/button';
+import { Button, IconButton } from '@chakra-ui/button';
 import { truncate } from '../utils/address';
 import { useHistory } from 'react-router-dom';
 import { Crucible } from '../context/crucibles/crucibles';
-import { FiArrowLeft, FiArrowUpRight } from 'react-icons/fi';
+import { FiArrowLeft, FiArrowUpRight, FiCopy, FiSend } from 'react-icons/fi';
 import { Flex, Box, HStack, Text, Heading } from '@chakra-ui/layout';
 import CrucibleTabs from '../components/crucibleTabs';
+import { useClipboard } from '@chakra-ui/hooks';
+import { useEffect } from 'react';
+import { useToast } from '@chakra-ui/toast';
 
 type Props = {
   crucible: Crucible;
 };
 
 const CrucibleDetailCard: React.FC<Props> = ({ crucible }) => {
+  const id = 'copy-toast';
+
+  const toast = useToast();
   const history = useHistory();
+  const { hasCopied, onCopy } = useClipboard(crucible.id);
+
+  useEffect(() => {
+    if (hasCopied && !toast.isActive(id)) {
+      toast({
+        title: 'Copied to clipboard',
+        status: 'info',
+        duration: 2000,
+        isClosable: true,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasCopied]);
+
   return (
     <Box position='relative'>
       <Heading top='-100px' position='absolute' width='100%'>
@@ -26,7 +46,7 @@ const CrucibleDetailCard: React.FC<Props> = ({ crucible }) => {
           leftIcon={<FiArrowLeft />}
           onClick={() => history.push('/')}
         >
-          All Crucilbes
+          All Crucibles
         </Button>
         <Button
           pl={3}
@@ -38,22 +58,44 @@ const CrucibleDetailCard: React.FC<Props> = ({ crucible }) => {
           Transfer Crucible
         </Button>
       </Flex>
-      <Flex>
-        <Box flexGrow={1} mt={4} p={4} bg='gray.700' borderRadius='xl'>
-          <HStack spacing={3}>
-            <Box
-              boxSize='48px'
-              bgGradient='linear(to-tr, cyan.200, yellow.500)'
-              borderRadius='md'
-            />
-            <Box textAlign='left'>
-              <Text fontSize='xl'>ID: {truncate(crucible.id)}</Text>
-              <Text fontSize='lg' color='gray.300'>
-                {dayjs(crucible.mintTimestamp * 1000).format('MMM-DD YYYY')}
-              </Text>
-            </Box>
-          </HStack>
-        </Box>
+      <Flex
+        mt={4}
+        p={4}
+        bg='gray.700'
+        borderRadius='xl'
+        justifyContent='space-between'
+      >
+        <HStack spacing={3} flexGrow={1}>
+          <Box
+            boxSize='48px'
+            bgGradient='linear(to-tr, cyan.200, yellow.500)'
+            borderRadius='md'
+          />
+          <Box textAlign='left'>
+            <Text fontSize='xl'>ID: {truncate(crucible.id)}</Text>
+            <Text fontSize='lg' color='gray.300'>
+              {dayjs(crucible.mintTimestamp * 1000).format('MMM-DD YYYY')}
+            </Text>
+          </Box>
+        </HStack>
+        <HStack>
+          <IconButton
+            aria-label='copy'
+            fontSize='2xl'
+            color='blue.400'
+            variant='ghost'
+            icon={<FiCopy />}
+            onClick={onCopy}
+          />
+          <IconButton
+            aria-label='transfer'
+            fontSize='2xl'
+            color='blue.400'
+            variant='ghost'
+            icon={<FiSend />}
+            onClick={undefined}
+          />
+        </HStack>
       </Flex>
       <Box paddingTop='20px'>
         <CrucibleTabs />
