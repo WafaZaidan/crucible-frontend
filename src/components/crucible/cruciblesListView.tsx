@@ -1,7 +1,7 @@
 import { VStack } from '@chakra-ui/layout';
 import { useEffect } from 'react';
-import { useCrucibles } from '../context/crucibles';
-import { useWeb3 } from '../context/web3';
+import { useCrucibles } from '../../context/crucibles';
+import { useWeb3 } from '../../context/web3';
 import CrucibleCard from './crucibleCard';
 import MissingCrucibles from './missingCrucibles';
 

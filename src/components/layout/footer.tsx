@@ -1,5 +1,5 @@
 import { IconButton } from '@chakra-ui/button';
-import { externalLinks } from '../config/links';
+import { externalLinks } from '../../config/links';
 import { Center, HStack, VStack, Link as ChakraLink } from '@chakra-ui/layout';
 
 const Footer = () => {

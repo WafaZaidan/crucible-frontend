@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { truncate } from '../utils/address';
+import { truncate } from '../../utils/address';
 import { useHistory } from 'react-router-dom';
 import { Button, IconButton } from '@chakra-ui/button';
 import { Collapse } from '@chakra-ui/transition';
-import { Crucible } from '../context/crucibles/crucibles';
+import { Crucible } from '../../context/crucibles/crucibles';
 import { Box, Flex, HStack, Stack, Text } from '@chakra-ui/layout';
 import {
   Stat,
@@ -44,7 +44,6 @@ const CrucibleCard: React.FC<Props> = ({
             />
             <Box textAlign='left'>
               <Text>ID: {truncate(crucible.id)}</Text>
-              {/* TODO, make sure all the data is in context */}
               <Text fontSize='sm' color='gray.400'>
                 Minted{' '}
                 {dayjs(crucible.mintTimestamp * 1000).format('MMM-DD YYYY')}

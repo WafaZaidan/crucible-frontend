@@ -1,8 +1,8 @@
 import { Center, Flex } from '@chakra-ui/layout';
 import { Spinner } from '@chakra-ui/spinner';
 import { useWeb3 } from '../context/web3';
-import MintingTabs from '../components/mintingTabs';
-import MintingGuide from '../components/mintingGuide';
+import MintingTabs from '../components/minting/mintingTabs';
+import MintingGuide from '../components/minting/mintingGuide';
 
 const CrucibleMinting = () => {
   const { address, isLoading } = useWeb3();

@@ -1,6 +1,6 @@
 import { Box } from '@chakra-ui/layout';
-import { useWeb3 } from '../context/web3';
-import { truncate } from '../utils/address';
+import { useWeb3 } from '../../context/web3';
+import { truncate } from '../../utils/address';
 import { FaPowerOff } from 'react-icons/fa';
 import { ImPowerCord } from 'react-icons/im';
 import { Button, Spinner } from '@chakra-ui/react';

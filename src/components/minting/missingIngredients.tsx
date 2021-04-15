@@ -1,7 +1,7 @@
 import { Image } from '@chakra-ui/image';
 import { Box, Heading, Link, Text } from '@chakra-ui/layout';
-import { config } from '../config/variables';
-import pot from '../img/pot.png';
+import { config } from '../../config/variables';
+import pot from '../../img/pot.png';
 
 const MissingIngredients = () => {
   const { uniswapPoolUrl, getMistUrl } = config;

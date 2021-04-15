@@ -1,6 +1,6 @@
 import { Box, Heading, HStack, Link, Text } from '@chakra-ui/layout';
 import { Image } from '@chakra-ui/image';
-import pot from '../img/pot.png';
+import pot from '../../img/pot.png';
 import { Button } from '@chakra-ui/button';
 import {
   Accordion,
@@ -10,9 +10,9 @@ import {
   AccordionPanel,
 } from '@chakra-ui/accordion';
 import { Alert } from '@chakra-ui/alert';
-import { useWeb3 } from '../context/web3';
-import { config } from '../config/variables';
-import WelcomeToast from './welcomeToast';
+import { useWeb3 } from '../../context/web3';
+import { config } from '../../config/variables';
+import WelcomeToast from '../shared/welcomeToast';
 
 const MintingGuide = () => {
   const { onboard } = useWeb3();

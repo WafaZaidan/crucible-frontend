@@ -1,7 +1,7 @@
 import { Image } from '@chakra-ui/image';
 import { Link } from 'react-router-dom';
 import { LinkOverlay, LinkBox } from '@chakra-ui/layout';
-import logo from '../img/logo.png';
+import logo from '../../img/logo.png';
 import React from 'react';
 
 type Props = {

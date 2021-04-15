@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { Flex, Box } from '@chakra-ui/layout';
-import Footer from './components/footer';
-import Header from './components/header';
+import Footer from './components/layout/footer';
+import Header from './components/layout/header';
 import bg from './img/bg.jpg';
 // import Faqs from './pages/faqs';
 // import Landing from './pages/landing';

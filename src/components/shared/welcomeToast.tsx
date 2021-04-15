@@ -4,7 +4,7 @@ import { Box, Link, Text } from '@chakra-ui/layout';
 import { Image } from '@chakra-ui/image';
 import { IconButton } from '@chakra-ui/button';
 import { IoCloseCircle } from 'react-icons/io5';
-import pot from '../img/pot.png';
+import pot from '../../img/pot.png';
 
 const WelcomeToast = () => {
   const toast = useToast();

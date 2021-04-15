@@ -1,7 +1,7 @@
 import { SimpleGrid, Box, Flex } from '@chakra-ui/layout';
-import UserBalance from './userBalance';
-import UserWallet from './userWallet';
-import Logo from './logo';
+import UserBalance from '../user/userBalance';
+import UserWallet from '../user/userWallet';
+import Logo from '../shared/logo';
 
 const Header = () => {
   return (

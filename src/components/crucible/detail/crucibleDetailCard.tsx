@@ -1,11 +1,11 @@
 import dayjs from 'dayjs';
+import CrucibleTabs from './crucibleTabs';
 import { Button, IconButton } from '@chakra-ui/button';
-import { truncate } from '../utils/address';
+import { truncate } from '../../../utils/address';
 import { useHistory } from 'react-router-dom';
-import { Crucible } from '../context/crucibles/crucibles';
+import { Crucible } from '../../../context/crucibles/crucibles';
 import { FiArrowLeft, FiArrowUpRight, FiCopy, FiSend } from 'react-icons/fi';
 import { Flex, Box, HStack, Text, Heading } from '@chakra-ui/layout';
-import CrucibleTabs from '../components/crucibleTabs';
 import { useClipboard } from '@chakra-ui/hooks';
 import { useEffect } from 'react';
 import { useToast } from '@chakra-ui/toast';

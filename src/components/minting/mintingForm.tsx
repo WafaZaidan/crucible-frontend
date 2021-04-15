@@ -1,6 +1,6 @@
 import { Box } from '@chakra-ui/layout';
-import { config } from '../config/variables';
-import { useWeb3 } from '../context/web3';
+import { config } from '../../config/variables';
+import { useWeb3 } from '../../context/web3';
 import MintingFormControl from './mintingFormControl';
 import MissingIngredients from './missingIngredients';
 import MintingHelper from './mintingHelper';

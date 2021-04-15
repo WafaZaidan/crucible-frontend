@@ -11,12 +11,12 @@ import {
 import { Signer } from '@ethersproject/abstract-signer';
 import { providers } from 'ethers';
 import { useState } from 'react';
-import { config } from '../config/variables';
-import { useNotify, useWeb3 } from '../context/web3';
-import { mintAndLock } from '../contracts/alchemist';
-import TxProgressModal from './modals/txProgressModal';
-import TxRejectedModal from './modals/txRejectedModal';
-import TxSentModal from './modals/txSentModal';
+import { config } from '../../config/variables';
+import { useNotify, useWeb3 } from '../../context/web3';
+import { mintAndLock } from '../../contracts/alchemist';
+import TxProgressModal from '../modals/txProgressModal';
+import TxRejectedModal from '../modals/txRejectedModal';
+import TxSentModal from '../modals/txSentModal';
 
 const MintingFormControl = () => {
   const [currentStep, setCurrentStep] = useState(0);

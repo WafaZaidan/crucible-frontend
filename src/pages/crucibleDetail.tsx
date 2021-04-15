@@ -1,7 +1,7 @@
 import { Center, Flex } from '@chakra-ui/layout';
 import { useLocation } from 'react-router';
 import { Crucible } from '../context/crucibles/crucibles';
-import CrucibleDetailCard from '../components/crucibleDetailCard';
+import CrucibleDetailCard from '../components/crucible/detail/crucibleDetailCard';
 
 type LocationState = {
   crucible: Crucible;

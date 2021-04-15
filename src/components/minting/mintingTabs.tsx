@@ -1,8 +1,8 @@
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/tabs';
 import { Box, Flex, Heading } from '@chakra-ui/layout';
-import { useCrucibles } from '../context/crucibles';
+import { useCrucibles } from '../../context/crucibles';
 import { Spinner } from '@chakra-ui/spinner';
-import CruciblesListView from './cruciblesListView';
+import CruciblesListView from '../crucible/cruciblesListView';
 import MintingForm from './mintingForm';
 
 const MintingTabs = () => {

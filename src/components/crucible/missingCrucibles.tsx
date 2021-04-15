@@ -1,6 +1,6 @@
 import { Image } from '@chakra-ui/image';
 import { Box, Heading, Text } from '@chakra-ui/layout';
-import pot from '../img/pot.png';
+import pot from '../../img/pot.png';
 
 const MissingCrucibles = () => {
   return (
