@@ -17,6 +17,12 @@ import WelcomeToast from '../shared/welcomeToast';
 const MintingGuide = () => {
   const { onboard } = useWeb3();
   const { uniswapPoolUrl, getMistUrl } = config;
+
+  const handleConnect = async () => {
+    await onboard?.walletSelect();
+    await onboard?.walletCheck();
+  };
+
   return (
     <Box>
       <Image src={pot} height='220px' htmlHeight='220px' mx='auto' mt={-32} />
@@ -108,7 +114,7 @@ const MintingGuide = () => {
         </AccordionItem>
       </Accordion>
 
-      <Button size='lg' isFullWidth onClick={() => onboard?.walletSelect()}>
+      <Button size='lg' isFullWidth onClick={handleConnect}>
         Connect wallet
       </Button>
       <WelcomeToast />

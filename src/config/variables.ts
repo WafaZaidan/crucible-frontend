@@ -36,7 +36,7 @@ export const config =
         transmuterAddress: '0x0ADc14De42436aD95747a1C9A8002D4E60888ACa',
         daiAddress: '0x5592ec0cfb4dbc12d3ab100b257153436a1f0fea',
         rewardPool: '0x60dd59e72B2468C64fD9F369488aedf9b5F65Ffe',
-        rpcUrl: 'https://rinkeby.infura.io/v3/ca7f73c788d24c6c853d6b0c1c5347ff',
+        rpcUrl: 'https://rinkeby.infura.io/v3/00a5b13ef0cf467698571093487743e6',
         infuraApiKey: '00a5b13ef0cf467698571093487743e6',
         dappId: 'ad454b00-3218-4403-95e9-22c3c7d3adc0',
         uniswapSubgraphUrl:
