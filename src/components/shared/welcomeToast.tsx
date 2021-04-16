@@ -37,7 +37,12 @@ const WelcomeToast = () => {
             <Box ml={24}>
               <Text>
                 First time minting a crucible? Read our{' '}
-                <Link href='/faqs' color='blue.500' fontWeight='bold'>
+                <Link
+                  isExternal
+                  href='https://hackmd.io/@thegostep/%E2%9A%97%EF%B8%8F'
+                  color='blue.500'
+                  fontWeight='bold'
+                >
                   FAQs.
                 </Link>
               </Text>
