@@ -16,7 +16,7 @@ const MissingIngredients = () => {
           Uniswap pool.
         </Link>{' '}
         If you don't have any MIST tokens, you can purchase them{' '}
-        <Link color='blue.400' href={getMistUrl}>
+        <Link color='blue.400' href={getMistUrl} isExternal>
           here
         </Link>
         .
