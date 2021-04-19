@@ -1,4 +1,4 @@
-import { Button, Flex, Link, Text } from '@chakra-ui/react';
+import { Button, Flex, Text, Link } from '@chakra-ui/react';
 import { IoArrowUpCircleOutline } from 'react-icons/io5';
 import {
   Modal,
@@ -9,15 +9,16 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/modal';
-import { useWeb3 } from '../../context/web3';
-import { networkName } from '../../utils/network';
+import { useWeb3 } from '../../../context/web3';
+import { networkName } from '../../../utils/network';
 
 type Props = {
   onClose: () => void;
+  message?: string;
   hash: string;
 };
 
-const TxSentModal: React.FC<Props> = ({ onClose, hash }) => {
+const TxConfirmedModal: React.FC<Props> = ({ onClose, hash }) => {
   const { network } = useWeb3();
 
   const etherscanLink = `https://${networkName(
@@ -55,4 +56,4 @@ const TxSentModal: React.FC<Props> = ({ onClose, hash }) => {
   );
 };
 
-export default TxSentModal;
+export default TxConfirmedModal;

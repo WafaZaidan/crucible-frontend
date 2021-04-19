@@ -1,30 +1,29 @@
+import { useState } from 'react';
+import { providers } from 'ethers';
 import { Button } from '@chakra-ui/button';
 import { LightMode } from '@chakra-ui/color-mode';
 import { Box, Flex, Text } from '@chakra-ui/layout';
+import { Signer } from '@ethersproject/abstract-signer';
 import { NumberInput, NumberInputField } from '@chakra-ui/number-input';
+import { useContract } from '../../hooks/useContract';
+import { mintAndLock } from '../../contracts/alchemist';
+import { config } from '../../config/variables';
+import { useWeb3 } from '../../context/web3';
 import {
   Slider,
   SliderThumb,
   SliderTrack,
   SliderFilledTrack,
 } from '@chakra-ui/slider';
-import { Signer } from '@ethersproject/abstract-signer';
-import { providers } from 'ethers';
-import { useState } from 'react';
-import { config } from '../../config/variables';
-import { useNotify, useWeb3 } from '../../context/web3';
-import { mintAndLock } from '../../contracts/alchemist';
-import TxProgressModal from '../modals/txProgressModal';
-import TxRejectedModal from '../modals/txRejectedModal';
-import TxSentModal from '../modals/txSentModal';
+
+type MintAndLockParams = Parameters<
+  (signer: Signer, provider: providers.Web3Provider, lpBalance: string) => void
+>;
 
 const MintingFormControl = () => {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [txSent, setTxSent] = useState('');
-  const [txRejected, setTxRejected] = useState(false);
   const [value, setValue] = useState('0');
-  const { checkIsReady, provider } = useWeb3();
-  const { monitorTx } = useNotify();
+  const { provider } = useWeb3();
+  const { invokeContract, ui } = useContract(mintAndLock);
 
   const handleChange = (value: number) => setValue(value.toString());
 
@@ -33,30 +32,14 @@ const MintingFormControl = () => {
     setValue(valueAsString);
   };
 
-  const handleMintCrucible = async () => {
-    const isReady = await checkIsReady();
-
-    if (isReady) {
-      try {
-        const lpBalance = value.toString();
-        const signer = provider?.getSigner() as Signer;
-        const handleStepChange = (step: number) => {
-          setCurrentStep(step);
-        };
-        const hash: string = await mintAndLock(
-          signer,
-          provider as providers.Web3Provider,
-          lpBalance,
-          handleStepChange
-        );
-        monitorTx(hash);
-        setTxSent(hash);
-        setCurrentStep(0);
-      } catch (e) {
-        setTxRejected(true);
-        setCurrentStep(0);
-      }
-    }
+  const handleMintCrucible = () => {
+    const lpBalance = value.toString();
+    const signer = provider?.getSigner() as Signer;
+    invokeContract<MintAndLockParams>(
+      signer,
+      provider as providers.Web3Provider,
+      lpBalance
+    );
   };
 
   const { tokens } = useWeb3();
@@ -66,7 +49,6 @@ const MintingFormControl = () => {
     return (
       !value ||
       value === '0' ||
-      currentStep > 0 ||
       Number(value) > Number(tokens[lpTokenAddress].balance)
     );
   };
@@ -129,9 +111,7 @@ const MintingFormControl = () => {
       >
         Mint a crucible
       </Button>
-      {txSent && <TxSentModal onClose={() => setTxSent('')} hash={txSent} />}
-      {txRejected && <TxRejectedModal onClose={() => setTxRejected(false)} />}
-      {currentStep > 0 && <TxProgressModal step={currentStep} />}
+      {ui}
     </Box>
   );
 };

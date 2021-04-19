@@ -7,6 +7,7 @@ import { crucibleFactoryAbi } from '../abi/crucibleFactoryAbi';
 import { crucibleAbi } from '../abi/crucibleAbi';
 import { config } from '../config/variables';
 import IUniswapV2ERC20 from '@uniswap/v2-core/build/IUniswapV2ERC20.json';
+import { CallbackArgs, EVENT } from '../hooks/useContract';
 
 const { aludelAddress, crucibleFactoryAddress, transmuterAddress } = config;
 
@@ -14,8 +15,9 @@ export async function mintAndLock(
   signer: Signer,
   provider: providers.Web3Provider,
   rawAmount: string,
-  handleStepChange: (step: number) => void
-): Promise<string> {
+  callback: (args: CallbackArgs) => void,
+  monitorTx: (hash: string) => Promise<void>
+) {
   const args = {
     aludel: aludelAddress,
     crucibleFactory: crucibleFactoryAddress,
@@ -47,51 +49,64 @@ export async function mintAndLock(
   const salt = randomBytes(32);
   const deadline = (await provider.getBlock('latest')).timestamp + 60 * 60 * 24;
 
-  // validate balances
-  if ((await stakingToken.balanceOf(walletAddress)) < amount) {
-    throw new Error('Not enough balance');
-  }
-
-  // craft permission
-  const crucible = new ethers.Contract(
-    await transmuter.predictDeterministicAddress(
-      await crucibleFactory.getTemplate(),
-      salt,
-      crucibleFactory.address
-    ),
-    crucibleAbi,
-    signer
-  );
-
-  handleStepChange(1);
-  console.log('Sign Permit');
-
-  const permit = await signPermitEIP2612(
-    signer,
-    walletAddress,
-    stakingToken,
-    transmuter.address,
-    amount,
-    deadline
-  );
-
-  handleStepChange(2);
-  console.log('Sign Lock');
-
-  const permission = await signPermission(
-    'Lock',
-    crucible,
-    signer,
-    aludel.address,
-    stakingToken.address,
-    amount,
-    0
-  );
-
-  handleStepChange(3);
-  console.log('Mint, Deposit, Stake');
-
   try {
+    // validate balances
+    if ((await stakingToken.balanceOf(walletAddress)) < amount) {
+      throw new Error('Not enough balance');
+    }
+
+    // craft permission
+    const crucible = new ethers.Contract(
+      await transmuter.predictDeterministicAddress(
+        await crucibleFactory.getTemplate(),
+        salt,
+        crucibleFactory.address
+      ),
+      crucibleAbi,
+      signer
+    );
+
+    callback({
+      type: EVENT.PENDING_SIGNATURE,
+      step: 1,
+      totalSteps: 2,
+    });
+
+    console.log('Sign Permit');
+
+    const permit = await signPermitEIP2612(
+      signer,
+      walletAddress,
+      stakingToken,
+      transmuter.address,
+      amount,
+      deadline
+    );
+
+    callback({
+      type: EVENT.PENDING_SIGNATURE,
+      step: 2,
+      totalSteps: 2,
+    });
+
+    console.log('Sign Lock');
+
+    const permission = await signPermission(
+      'Lock',
+      crucible,
+      signer,
+      aludel.address,
+      stakingToken.address,
+      amount,
+      0
+    );
+
+    callback({
+      type: EVENT.PENDING_APPROVAL,
+    });
+
+    console.log('Mint, Deposit, Stake');
+
     const tx = await transmuter.mintCruciblePermitAndStake(
       aludel.address,
       crucibleFactory.address,
@@ -101,10 +116,20 @@ export async function mintAndLock(
       permission
     );
 
-    console.log('  in', tx.hash);
+    callback({
+      type: EVENT.TX_CONFIRMED,
+      message: 'success',
+      txHash: tx.hash,
+    });
 
-    return tx.hash;
+    monitorTx(tx.hash);
+    console.log('  in', tx.hash);
   } catch (e) {
-    throw e;
+    callback({
+      type: EVENT.TX_ERROR,
+      message: e.message,
+      code: e.code,
+    });
+    console.log(e);
   }
 }

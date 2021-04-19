@@ -8,31 +8,24 @@ import {
 } from '@chakra-ui/modal';
 
 type Props = {
-  step: number;
+  message?: string;
 };
 
-const TxProgressModal: React.FC<Props> = ({ step }) => {
+const TxPendingApprovalModal: React.FC<Props> = ({ message }) => {
   return (
     <>
       <Modal isOpen={true} onClose={() => null}>
         <ModalOverlay />
         <ModalContent borderRadius='xl'>
-          <ModalHeader textAlign='center'>
-            {step === 3 ? 'Waiting for confirmation' : 'Waiting for signature'}
-          </ModalHeader>
+          <ModalHeader textAlign='center'>Waiting for approval</ModalHeader>
           <ModalBody>
             <Center my={8}>
               <Spinner width={24} height={24} />
             </Center>
             <Box textAlign='center' color='gray.200' my={4}>
-              {step === 3 ? (
-                <Text>Confirm this transaction in your wallet</Text>
-              ) : (
-                <Text>
-                  Please sign signature <strong>{step}</strong> of{' '}
-                  <strong>2</strong>
-                </Text>
-              )}
+              <Text>
+                {message ? message : 'Confirm this transaction in your wallet'}
+              </Text>
             </Box>
           </ModalBody>
         </ModalContent>
@@ -41,4 +34,4 @@ const TxProgressModal: React.FC<Props> = ({ step }) => {
   );
 };
 
-export default TxProgressModal;
+export default TxPendingApprovalModal;

@@ -44,6 +44,7 @@ const NotifyProvider = ({ children }: NotifyContextProps) => {
       });
 
       emitter.on('txSent', console.log);
+      // TODO: Can reload crucibles in txConfirmed callback
       emitter.on('txConfirmed', console.log);
       emitter.on('txSpeedUp', console.log);
       emitter.on('txCancel', console.log);

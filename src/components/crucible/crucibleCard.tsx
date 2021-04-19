@@ -77,7 +77,6 @@ const CrucibleCard: React.FC<Props> = ({
         </Box>
       </Flex>
       <Collapse in={showDetails}>
-        {/* TODO */}
         {isRewardsLoading ? (
           <Stack my={4}>
             <Skeleton startColor='gray.50' endColor='gray.100' height='20px' />

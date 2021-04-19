@@ -7,8 +7,9 @@ import { Crucible } from '../../../context/crucibles/crucibles';
 import { FiArrowLeft, FiArrowUpRight, FiCopy, FiSend } from 'react-icons/fi';
 import { Flex, Box, HStack, Text, Heading } from '@chakra-ui/layout';
 import { useClipboard } from '@chakra-ui/hooks';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useToast } from '@chakra-ui/toast';
+import TransferModal from '../../modals/transferModal';
 
 type Props = {
   crucible: Crucible;
@@ -20,6 +21,8 @@ const CrucibleDetailCard: React.FC<Props> = ({ crucible }) => {
   const toast = useToast();
   const history = useHistory();
   const { hasCopied, onCopy } = useClipboard(crucible.id);
+
+  const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
 
   useEffect(() => {
     if (hasCopied && !toast.isActive(id)) {
@@ -53,7 +56,7 @@ const CrucibleDetailCard: React.FC<Props> = ({ crucible }) => {
           pr={3}
           variant='ghost'
           rightIcon={<FiArrowUpRight />}
-          onClick={() => undefined}
+          onClick={() => setIsTransferModalOpen(true)}
         >
           Transfer Crucible
         </Button>
@@ -100,6 +103,12 @@ const CrucibleDetailCard: React.FC<Props> = ({ crucible }) => {
       <Box paddingTop='20px'>
         <CrucibleTabs />
       </Box>
+      {isTransferModalOpen && (
+        <TransferModal
+          id={crucible.id}
+          onClose={() => setIsTransferModalOpen(false)}
+        />
+      )}
     </Box>
   );
 };

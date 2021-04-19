@@ -12,9 +12,11 @@ import {
 
 type Props = {
   onClose: () => void;
+  message?: string;
+  code?: number;
 };
 
-const TxRejectedModal: React.FC<Props> = ({ onClose }) => {
+const TxErrorModal: React.FC<Props> = ({ onClose, message, code }) => {
   return (
     <Modal isOpen={true} onClose={onClose}>
       <ModalOverlay />
@@ -25,7 +27,9 @@ const TxRejectedModal: React.FC<Props> = ({ onClose }) => {
           <Flex justifyContent='center' color='red.400' pb={2}>
             <IoWarningOutline fontSize='56px' />
           </Flex>
-          <Text color='gray.200'>Transaction rejected</Text>
+          <Text color='gray.200'>
+            {code === 4001 ? 'Transaction rejected' : message}
+          </Text>
         </ModalBody>
         <ModalFooter>
           <Button
@@ -43,4 +47,4 @@ const TxRejectedModal: React.FC<Props> = ({ onClose }) => {
   );
 };
 
-export default TxRejectedModal;
+export default TxErrorModal;
