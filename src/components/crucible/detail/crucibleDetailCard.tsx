@@ -5,7 +5,9 @@ import { truncate } from '../../../utils/address';
 import { useHistory } from 'react-router-dom';
 import { Crucible } from '../../../context/crucibles/crucibles';
 import { FiArrowLeft, FiArrowUpRight, FiCopy, FiSend } from 'react-icons/fi';
-import { Flex, Box, HStack, Text, Heading } from '@chakra-ui/layout';
+import { FaLock } from 'react-icons/fa';
+import { Flex, Box, HStack, Text, Heading, Badge } from '@chakra-ui/layout';
+import { Tooltip } from '@chakra-ui/tooltip';
 import { useClipboard } from '@chakra-ui/hooks';
 import { useEffect, useState } from 'react';
 import { useToast } from '@chakra-ui/toast';
@@ -20,7 +22,7 @@ const CrucibleDetailCard: React.FC<Props> = ({ crucible }) => {
 
   const toast = useToast();
   const history = useHistory();
-  const { hasCopied, onCopy } = useClipboard(crucible.id);
+  let { hasCopied, onCopy } = useClipboard(crucible.id);
 
   const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
 
@@ -75,13 +77,34 @@ const CrucibleDetailCard: React.FC<Props> = ({ crucible }) => {
             borderRadius='md'
           />
           <Box textAlign='left'>
-            <Text fontSize='xl'>ID: {truncate(crucible.id)}</Text>
+            <Text fontSize='xl'>ID: {truncate(crucible!.id)}</Text>
             <Text fontSize='lg' color='gray.300'>
-              {dayjs(crucible.mintTimestamp * 1000).format('MMM-DD YYYY')}
+              Minted {dayjs(crucible!.mintTimestamp).format('MMM-DD YYYY')}
             </Text>
           </Box>
         </HStack>
         <HStack>
+          <Badge py={1} px={2} borderRadius='xl' fontSize='.7em'>
+            <HStack>
+              <Box>
+                <Text color='gray.200' fontSize='lg'>
+                  {Number(crucible?.cleanLockedBalance).toFixed(3)}...
+                </Text>
+              </Box>
+              <Tooltip
+                hasArrow
+                label='Staked amount'
+                bg='gray.800'
+                color='white'
+                placement='bottom-end'
+                offset={[0, 16]}
+              >
+                <div>
+                  <FaLock color='blue.400' />
+                </div>
+              </Tooltip>
+            </HStack>
+          </Badge>
           <IconButton
             aria-label='copy'
             fontSize='2xl'
@@ -101,7 +124,7 @@ const CrucibleDetailCard: React.FC<Props> = ({ crucible }) => {
         </HStack>
       </Flex>
       <Box paddingTop='20px'>
-        <CrucibleTabs />
+        <CrucibleTabs crucible={crucible} />
       </Box>
       {isTransferModalOpen && (
         <TransferModal

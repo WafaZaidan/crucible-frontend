@@ -1,8 +1,14 @@
 import Rewards from './rewards';
+import LpPerformance from './lpPerf';
+import NetworkStats from './networkStats';
 import { Box } from '@chakra-ui/layout';
+import { Crucible } from '../../../context/crucibles/crucibles';
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/tabs';
 
-const CrucibleTabs = () => {
+type Props = {
+  crucible: Crucible;
+};
+const CrucibleTabs: React.FC<Props> = ({ crucible }) => {
   const tabProps = {
     borderRadius: 'lg',
     fontWeight: 'bold',
@@ -21,10 +27,14 @@ const CrucibleTabs = () => {
 
         <TabPanels>
           <TabPanel px={0}>
-            <Rewards />
+            <Rewards crucible={crucible} />
           </TabPanel>
-          <TabPanel px={0}>LP Perf</TabPanel>
-          <TabPanel px={0}>Network</TabPanel>
+          <TabPanel px={0}>
+            <LpPerformance crucible={crucible} />
+          </TabPanel>
+          <TabPanel px={0}>
+            <NetworkStats crucible={crucible} />
+          </TabPanel>
         </TabPanels>
       </Tabs>
     </Box>

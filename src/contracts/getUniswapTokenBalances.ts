@@ -38,8 +38,8 @@ export const getUniswapBalances = (
     )
     .toSignificant();
   return {
-    mistValue,
-    wethValue,
+    mistValue: Number(mistValue),
+    wethValue: Number(wethValue),
     ...(wethPrice && {
       wethValueUsd: (Number(wethValue) * wethPrice).toFixed(2),
     }),

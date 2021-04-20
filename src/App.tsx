@@ -31,7 +31,7 @@ const App: React.FC = () => {
             <Route exact path={process.env.PUBLIC_URL + '/'}>
               <CrucibleMinting />
             </Route>
-            <Route exact path={process.env.PUBLIC_URL + '/crucible'}>
+            <Route path={process.env.PUBLIC_URL + '/crucible'}>
               <CrucibleDetail />
             </Route>
             {/* <Route exact path={process.env.PUBLIC_URL + '/faqs'}>

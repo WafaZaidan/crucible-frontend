@@ -1,5 +1,5 @@
 import { ethers, Signer } from 'ethers';
-import { formatUnits } from 'ethers/lib/utils';
+import { formatUnits, formatEther } from 'ethers/lib/utils';
 import { config } from '../config/variables';
 import { aludelAbi } from '../abi/aludelAbi';
 import { _abi } from '../interfaces/Erc20DetailedFactory';
@@ -14,7 +14,7 @@ export interface EtherRewards {
 }
 
 export interface Rewards {
-  etherRewards: number;
+  ethRewards: number;
   tokenRewards: number;
 }
 
@@ -38,12 +38,14 @@ export async function getNetworkStats(signer: Signer) {
     rewardSchedules,
   ] = await aludel.getAludelData();
 
-  const [duration, start, shares] = rewardScaling;
-  const [floor, ceiling, time] = rewardSchedules[0];
+  const [floor, ceiling, time] = rewardScaling;
+  const [duration, start, shares] = rewardSchedules[0];
+
   return {
     duration: duration.toNumber(),
     start: start.toNumber(),
-    shares: formatUnits(shares),
+    shares: formatEther(shares),
+    weeklyEthRewardsRate: 0,
     floor: formatUnits(floor),
     ceiling: formatUnits(ceiling),
     time: formatUnits(time),
@@ -123,5 +125,6 @@ export async function calculateMistRewards(
   ]);
 
   const mistRewards = (totalMistRewards * weiRewards) / totalWeiRewards;
-  return { tokenRewards: mistRewards, etherRewards: weiRewards };
+  console.log('typeof ', typeof weiRewards);
+  return { tokenRewards: mistRewards, ethRewards: weiRewards };
 }

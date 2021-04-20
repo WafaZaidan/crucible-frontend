@@ -177,7 +177,7 @@ const Web3Provider = ({
     let poller: NodeJS.Timeout;
     if (network === 1 && gasPricePollingInterval > 0) {
       refreshGasPrice();
-      poller = setInterval(refreshGasPrice, gasPricePollingInterval * 1000);
+      poller = setInterval(refreshGasPrice, gasPricePollingInterval);
     } else {
       setGasPrice(10);
     }

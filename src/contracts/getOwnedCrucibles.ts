@@ -3,6 +3,7 @@ import { crucibleAbi } from '../abi/crucibleAbi';
 import { crucibleFactoryAbi } from '../abi/crucibleFactoryAbi';
 import { _abi } from '../interfaces/Erc20DetailedFactory';
 import { config } from '../config/variables';
+import { formatUnits } from '@ethersproject/units';
 
 export async function getOwnedCrucibles(signer: any, provider: any) {
   const { crucibleFactoryAddress, lpTokenAddress } = config;
@@ -33,7 +34,10 @@ export async function getOwnedCrucibles(signer: any, provider: any) {
       balance: await balance,
       lockedBalance: await lockedBalance,
       owner: await owner,
-      mintTimestamp: (await provider.getBlock(data.blockNumber))?.timestamp,
+      mintTimestamp:
+        (await provider.getBlock(data.blockNumber))?.timestamp * 1000,
+      cleanBalance: formatUnits(await balance),
+      cleanLockedBalance: formatUnits(await lockedBalance),
     };
   });
 

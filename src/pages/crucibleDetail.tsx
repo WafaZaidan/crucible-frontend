@@ -11,6 +11,7 @@ const CrucibleDetail = () => {
   const {
     state: { crucible },
   } = useLocation<LocationState>();
+
   return (
     <Center>
       <Flex

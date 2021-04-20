@@ -30,7 +30,7 @@ const MintingTabs = () => {
       <Tabs isFitted defaultIndex={crucibles && crucibles.length > 0 ? 1 : 0}>
         <TabList bg='gray.700' borderRadius='xl' border='none' p={2}>
           <Tab {...tabProps}>Mint</Tab>
-          <Tab {...tabProps}>Crucibles</Tab>
+          <Tab {...tabProps}>Your Crucibles</Tab>
         </TabList>
 
         <TabPanels>

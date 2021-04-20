@@ -4,7 +4,8 @@ import { useHistory } from 'react-router-dom';
 import { Button, IconButton } from '@chakra-ui/button';
 import { Collapse } from '@chakra-ui/transition';
 import { Crucible } from '../../context/crucibles/crucibles';
-import { Box, Flex, HStack, Stack, Text } from '@chakra-ui/layout';
+import { Box, Flex, HStack, Stack, Text, Badge } from '@chakra-ui/layout';
+import { FaLock } from 'react-icons/fa';
 import {
   Stat,
   StatLabel,
@@ -45,12 +46,32 @@ const CrucibleCard: React.FC<Props> = ({
             <Box textAlign='left'>
               <Text>ID: {truncate(crucible.id)}</Text>
               <Text fontSize='sm' color='gray.400'>
-                Minted{' '}
-                {dayjs(crucible.mintTimestamp * 1000).format('MMM-DD YYYY')}
+                Minted {dayjs(crucible.mintTimestamp).format('MMM-DD YYYY')}
               </Text>
             </Box>
           </HStack>
         </Box>
+        <Badge py={1} px={2} borderRadius='xl' fontSize='.7em'>
+          <HStack>
+            <Box>
+              <Text color='gray.400'>
+                {Number(crucible?.cleanLockedBalance).toFixed(3)}...
+              </Text>
+            </Box>
+            <Tooltip
+              hasArrow
+              label='Staked amount'
+              bg='gray.800'
+              color='white'
+              placement='bottom-end'
+              offset={[0, 16]}
+            >
+              <div>
+                <FaLock />
+              </div>
+            </Tooltip>
+          </HStack>
+        </Badge>
         <Box>
           <IconButton
             aria-label='Manage crucible'
@@ -76,6 +97,7 @@ const CrucibleCard: React.FC<Props> = ({
           />
         </Box>
       </Flex>
+
       <Collapse in={showDetails}>
         {isRewardsLoading ? (
           <Stack my={4}>
@@ -93,13 +115,13 @@ const CrucibleCard: React.FC<Props> = ({
               <Stat>
                 <StatLabel>Earned MIST Rewards</StatLabel>
                 <StatNumber>
-                  {!isNaN(crucible.tokenRewards)
-                    ? Number(crucible.tokenRewards).toFixed(4)
+                  {crucible.tokenRewards
+                    ? crucible.tokenRewards.toFixed(4)
                     : '0'}
                 </StatNumber>
                 <StatHelpText>
                   <StatArrow type='increase' />$
-                  {!isNaN(crucible.tokenRewards) && crucible.mistPrice
+                  {crucible.tokenRewards && crucible.mistPrice
                     ? (crucible.tokenRewards * crucible.mistPrice).toFixed(0)
                     : '0'}
                 </StatHelpText>
@@ -114,14 +136,12 @@ const CrucibleCard: React.FC<Props> = ({
               <Stat>
                 <StatLabel>Earned ETH Rewards</StatLabel>
                 <StatNumber>
-                  {!isNaN(crucible.etherRewards)
-                    ? Number(crucible.etherRewards).toFixed(4)
-                    : '0'}
+                  {crucible.ethRewards?.toFixed(4) || '0'}
                 </StatNumber>
                 <StatHelpText>
                   <StatArrow type='increase' />$
-                  {!isNaN(crucible.etherRewards) && crucible.wethPrice
-                    ? (crucible.etherRewards * crucible.wethPrice).toFixed(0)
+                  {crucible.ethRewards && crucible.wethPrice
+                    ? (crucible.ethRewards * crucible.wethPrice).toFixed(0)
                     : '0'}
                 </StatHelpText>
               </Stat>

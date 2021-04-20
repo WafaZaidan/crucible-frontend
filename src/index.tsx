@@ -10,6 +10,7 @@ import { config } from './config/variables';
 import { NotifyProvider } from './context/web3/notify';
 import { NetworkStatsProvider } from './context/network';
 import { CruciblesProvider } from './context/crucibles';
+import { LpStatsProvider } from './context/lp';
 import { ChakraProvider } from '@chakra-ui/react';
 import { ApolloProvider } from '@apollo/client';
 import { GlobalStyles } from './styles/global-styles';
@@ -45,10 +46,12 @@ ReactDOM.render(
         <NotifyProvider>
           <NetworkStatsProvider>
             <CruciblesProvider>
-              <ChakraProvider theme={theme}>
-                <Global styles={GlobalStyles} />
-                <App />
-              </ChakraProvider>
+              <LpStatsProvider>
+                <ChakraProvider theme={theme}>
+                  <Global styles={GlobalStyles} />
+                  <App />
+                </ChakraProvider>
+              </LpStatsProvider>
             </CruciblesProvider>
           </NetworkStatsProvider>
         </NotifyProvider>
