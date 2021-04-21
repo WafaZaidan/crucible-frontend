@@ -169,7 +169,7 @@ const Web3Provider = ({
   useEffect(() => {
     setTimeout(() => {
       setIsLoading(false);
-    }, 400);
+    }, 600);
   }, []);
 
   // Gas Price poller

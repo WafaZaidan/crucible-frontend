@@ -54,7 +54,7 @@ type CruciblesProps = {
 type CruciblesContextType = {
   isLoading: boolean;
   isRewardsLoading: boolean;
-  crucibles: Crucible[];
+  crucibles: Crucible[] | undefined;
   tokenBalances: TokenBalances | undefined;
   reloadCrucibles(): void;
 };
@@ -68,7 +68,7 @@ const CruciblesProvider = ({ children }: CruciblesProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isRewardsLoading, setIsRewardsLoading] = useState<boolean>(true);
   const [refreshCrucibles, setRefreshCrucibles] = useState<boolean>(false);
-  const [crucibles, setCrucibles] = useState<Crucible[]>([]);
+  const [crucibles, setCrucibles] = useState<Crucible[]>();
   const [tokenBalances, setTokenBalances] = useState<TokenBalances | undefined>(
     undefined
   );
@@ -78,7 +78,7 @@ const CruciblesProvider = ({ children }: CruciblesProps) => {
     GET_PAIR_HISTORY(
       pairAddress,
       // [1615464001, 1615264001]
-      crucibles.length
+      crucibles && crucibles.length
         ? crucibles.map((crucible) => crucible.mintTimestamp / 1000)
         : [1615464000]
     )
