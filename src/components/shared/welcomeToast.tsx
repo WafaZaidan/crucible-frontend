@@ -39,7 +39,7 @@ const WelcomeToast = () => {
                 First time minting a crucible? Read our{' '}
                 <Link
                   isExternal
-                  href='https://hackmd.io/@thegostep/%E2%9A%97%EF%B8%8F'
+                  href='https://hackmd.io/@alchemistcoin/HyJXT7tL_/%2FrJSJU5PIu'
                   color='blue.500'
                   fontWeight='bold'
                 >
