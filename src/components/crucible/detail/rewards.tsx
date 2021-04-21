@@ -13,12 +13,14 @@ import { Button } from '@chakra-ui/button';
 import dayjs from 'dayjs';
 import { commify } from 'ethers/lib/utils';
 import { useState } from 'react';
+import UnstakeAndClaimModal from '../../modals/unstakeAndClaimModal';
 import IncreaseStakeModal from '../../modals/increaseStakeModal';
 
 type Props = {
   crucible: Crucible;
 };
 const Rewards: React.FC<Props> = ({ crucible }) => {
+  const [claimRewardsModalOpen, setClaimRewardsModalOpen] = useState(false);
   const [increaseStakeModalOpen, setIncreaseStakeModalOpen] = useState(false);
 
   const daysAgo: number = dayjs().diff(crucible.mintTimestamp, 'day');
@@ -143,7 +145,7 @@ const Rewards: React.FC<Props> = ({ crucible }) => {
                 <Button onClick={() => setIncreaseStakeModalOpen(true)}>
                   <Text fontSize='md'>Increase stake</Text>
                 </Button>
-                <Button>
+                <Button onClick={() => setClaimRewardsModalOpen(true)}>
                   <Text fontSize='md'>Claim Rewards</Text>
                 </Button>
                 <Button>
@@ -154,6 +156,12 @@ const Rewards: React.FC<Props> = ({ crucible }) => {
           </Box>
         </HStack>
       </Flex>
+      {claimRewardsModalOpen && (
+        <UnstakeAndClaimModal
+          crucible={crucible}
+          onClose={() => setClaimRewardsModalOpen(false)}
+        />
+      )}
       {increaseStakeModalOpen && (
         <IncreaseStakeModal
           crucible={crucible}
