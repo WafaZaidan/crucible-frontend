@@ -43,7 +43,7 @@ const TransferModal: React.FC<Props> = ({ onClose, id }) => {
 
   const { invokeContract, ui } = useContract(transferCrucible, successCallback);
 
-  const handleTransferCrucible = async () => {
+  const handleTransferCrucible = () => {
     setError('');
     if (ethers.utils.isAddress(sendAddress)) {
       const signer = provider?.getSigner();

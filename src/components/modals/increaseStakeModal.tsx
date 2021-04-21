@@ -38,7 +38,7 @@ const IncreaseStakeModal: React.FC<Props> = ({ onClose, crucible }) => {
   const { invokeContract, ui } = useContract(increaseStake, () => onClose());
   const { tokenBalances } = useCrucibles();
 
-  const handleIncreaseSubscription = async () => {
+  const handleIncreaseSubscription = () => {
     const signer = provider?.getSigner();
     invokeContract<IncreaseStakeParams>(signer, crucible.id, amount);
   };

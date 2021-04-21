@@ -38,12 +38,12 @@ export async function unstakeAndClaim(
   const nonce = await crucible.getNonce();
   const recipient = args.recipient;
 
-  // validate balances
-  if ((await stakingToken.balanceOf(crucible.address)) < amount) {
-    throw new Error('stop being poor');
-  }
-
   try {
+    // validate balances
+    if ((await stakingToken.balanceOf(crucible.address)).lt(amount)) {
+      throw new Error('You do not have enough LP tokens');
+    }
+
     callback({
       type: EVENT.PENDING_SIGNATURE,
       step: 1,

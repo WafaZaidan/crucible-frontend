@@ -36,7 +36,7 @@ const UnstakeAndClaimModal: React.FC<Props> = ({ onClose, crucible }) => {
 
   const { invokeContract, ui } = useContract(unstakeAndClaim, () => onClose());
 
-  const handleUnstakeAndClaim = async () => {
+  const handleUnstakeAndClaim = () => {
     const signer = provider?.getSigner();
     invokeContract<unstakeAndClaimParams>(signer, crucible.id, amount);
   };

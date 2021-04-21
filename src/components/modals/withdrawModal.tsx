@@ -35,7 +35,7 @@ const WithdrawStakeModal: React.FC<Props> = ({ onClose, crucible }) => {
 
   const { invokeContract, ui } = useContract(withdraw, () => onClose());
 
-  const handleWithdraw = async () => {
+  const handleWithdraw = () => {
     const signer = provider?.getSigner();
     invokeContract<withdrawParams>(signer, crucible.id, amount);
   };
