@@ -12,11 +12,15 @@ import { Crucible } from '../../../context/crucibles/crucibles';
 import { Button } from '@chakra-ui/button';
 import dayjs from 'dayjs';
 import { commify } from 'ethers/lib/utils';
+import { useState } from 'react';
+import IncreaseStakeModal from '../../modals/increaseStakeModal';
 
 type Props = {
   crucible: Crucible;
 };
 const Rewards: React.FC<Props> = ({ crucible }) => {
+  const [increaseStakeModalOpen, setIncreaseStakeModalOpen] = useState(false);
+
   const daysAgo: number = dayjs().diff(crucible.mintTimestamp, 'day');
   let aggregateRewardsUSD: number = 0;
   let lpValueUSD: number = 0;
@@ -136,6 +140,9 @@ const Rewards: React.FC<Props> = ({ crucible }) => {
                 alignItems='center'
                 width='100%'
               >
+                <Button onClick={() => setIncreaseStakeModalOpen(true)}>
+                  <Text fontSize='md'>Increase stake</Text>
+                </Button>
                 <Button>
                   <Text fontSize='md'>Claim Rewards</Text>
                 </Button>
@@ -147,6 +154,12 @@ const Rewards: React.FC<Props> = ({ crucible }) => {
           </Box>
         </HStack>
       </Flex>
+      {increaseStakeModalOpen && (
+        <IncreaseStakeModal
+          crucible={crucible}
+          onClose={() => setIncreaseStakeModalOpen(false)}
+        />
+      )}
     </Box>
   );
 };

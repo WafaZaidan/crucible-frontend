@@ -22,9 +22,9 @@ export const config =
         uniswapSubgraphUrl:
           'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2',
         uniswapPoolUrl:
-          'https://app.uniswap.org/#/add/ETH/0xF6c1210Aca158bBD453A12604A03AeD2659ac0ef',
+          'https://app.uniswap.org/#/add/ETH/0x88ACDd2a6425c3FaAE4Bc9650Fd7E27e0Bebb7aB',
         getMistUrl:
-          'https://app.uniswap.org/#/add/ETH/0xF6c1210Aca158bBD453A12604A03AeD2659ac0ef',
+          'https://app.uniswap.org/#/add/ETH/0x88ACDd2a6425c3FaAE4Bc9650Fd7E27e0Bebb7aB',
       }
     : {
         networkId: Network.RINKEBY,
