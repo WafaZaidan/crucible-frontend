@@ -98,7 +98,7 @@ const LpPerformance: React.FC<Props> = ({ crucible }) => {
             margin='.25rem'
             padding='.25rem'
           >
-            <StatLabel>% of Pool</StatLabel>
+            <StatLabel>Percent of Pool</StatLabel>
             <StatNumber>
               {`${(
                 (Number(crucible.cleanBalance) /

@@ -1,10 +1,9 @@
 import {
   Button,
-  Link,
   NumberInput,
+  InputRightElement,
   NumberInputField,
   Text,
-  InputRightElement,
 } from '@chakra-ui/react';
 import {
   Modal,
@@ -18,11 +17,10 @@ import {
 import { useState } from 'react';
 import { useWeb3 } from '../../context/web3';
 import { useContract } from '../../hooks/useContract';
-import { Crucible, useCrucibles } from '../../context/crucibles/crucibles';
-import { increaseStake } from '../../contracts/increaseStake';
-import { config } from '../../config/variables';
+import { Crucible } from '../../context/crucibles/crucibles';
+import { withdraw } from '../../contracts/withdraw';
 
-type IncreaseStakeParams = Parameters<
+type withdrawParams = Parameters<
   (signer: any, crucibleAddress: string, rawAmount: string) => void
 >;
 
@@ -31,16 +29,15 @@ type Props = {
   onClose: () => void;
 };
 
-const IncreaseStakeModal: React.FC<Props> = ({ onClose, crucible }) => {
+const WithdrawStakeModal: React.FC<Props> = ({ onClose, crucible }) => {
   const { provider } = useWeb3();
   const [amount, setAmount] = useState('0');
 
-  const { invokeContract, ui } = useContract(increaseStake, () => onClose());
-  const { tokenBalances } = useCrucibles();
+  const { invokeContract, ui } = useContract(withdraw, () => onClose());
 
-  const handleIncreaseSubscription = async () => {
+  const handleWithdraw = async () => {
     const signer = provider?.getSigner();
-    invokeContract<IncreaseStakeParams>(signer, crucible.id, amount);
+    invokeContract<withdrawParams>(signer, crucible.id, amount);
   };
 
   return (
@@ -48,21 +45,17 @@ const IncreaseStakeModal: React.FC<Props> = ({ onClose, crucible }) => {
       <Modal isOpen={true} onClose={onClose}>
         <ModalOverlay />
         <ModalContent borderRadius='xl'>
-          <ModalHeader textAlign='center'>Increase LP subscription</ModalHeader>
+          <ModalHeader textAlign='center'>Withdraw LP tokens</ModalHeader>
           <ModalCloseButton />
           <ModalBody textAlign='center'>
             <Text mb={4}>
-              Increase your subscription in the Aludel Rewards program by
-              depositing Uniswap Liquidity Pool tokens. You can get LP tokens by
-              depositing ETH and MIST to the trading pair{' '}
-              <Link color='blue.400' isExternal href={config.uniswapPoolUrl}>
-                here.
-              </Link>
+              After you've unstaked your LP and claimed your rewards, you can
+              withdraw your LP balance from your crucible.
             </Text>
             <NumberInput
               value={amount}
               onChange={(val) => setAmount(val)}
-              max={Number(tokenBalances?.cleanLp)}
+              max={Number(crucible.cleanUnlockedBalance)}
               clampValueOnBlur={false}
               size='lg'
             >
@@ -72,7 +65,9 @@ const IncreaseStakeModal: React.FC<Props> = ({ onClose, crucible }) => {
                   mr={2}
                   h='2rem'
                   variant='ghost'
-                  onClick={() => setAmount(tokenBalances?.cleanLp || '0')}
+                  onClick={() =>
+                    setAmount(crucible.cleanUnlockedBalance || '0')
+                  }
                 >
                   Max
                 </Button>
@@ -82,14 +77,14 @@ const IncreaseStakeModal: React.FC<Props> = ({ onClose, crucible }) => {
           <ModalFooter>
             <Button
               isFullWidth
-              onClick={handleIncreaseSubscription}
+              onClick={handleWithdraw}
               disabled={
                 !amount ||
                 amount === '0' ||
-                Number(amount) > Number(tokenBalances?.cleanLp)
+                Number(amount) > Number(crucible.cleanUnlockedBalance)
               }
             >
-              Increase subscription
+              Withdraw
             </Button>
           </ModalFooter>
         </ModalContent>
@@ -99,4 +94,4 @@ const IncreaseStakeModal: React.FC<Props> = ({ onClose, crucible }) => {
   );
 };
 
-export default IncreaseStakeModal;
+export default WithdrawStakeModal;

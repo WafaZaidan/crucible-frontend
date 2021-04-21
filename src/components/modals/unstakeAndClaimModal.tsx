@@ -1,4 +1,11 @@
-import { Button, NumberInput, NumberInputField, Text } from '@chakra-ui/react';
+import {
+  Button,
+  NumberInput,
+  NumberInputField,
+  Text,
+  InputRightElement,
+  Link,
+} from '@chakra-ui/react';
 import {
   Modal,
   ModalBody,
@@ -40,15 +47,29 @@ const UnstakeAndClaimModal: React.FC<Props> = ({ onClose, crucible }) => {
         <ModalOverlay />
         <ModalContent borderRadius='xl'>
           <ModalHeader textAlign='center'>
-            Claim Aludel Rewards and Unsubscribe LP
+            Claim Aludel rewards and unsubscribe
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody textAlign='center'>
             <Text mb={4}>
               You are claiming {crucible.tokenRewards} MIST and{' '}
-              {crucible.ethRewards} Ether rewards. Claiming rewards results in
+              {crucible.ethRewards} Ether rewards. By claiming rewards, you are
               unsubscribing your MIST-ETH LP tokens from the Aludel Rewards
               program and resetting your rewards multiplier.
+              <br />
+              <br />
+              <b>
+                Before unsubscribing, you'll need to add a new network provider
+                (Tai Chi) to your wallet following{' '}
+                <Link
+                  color='blue.400'
+                  href='https://github.com/Taichi-Network/docs/blob/master/sendPriveteTx_tutorial.md'
+                  isExternal
+                >
+                  this guide.
+                </Link>
+              </b>
+              <br />
             </Text>
             <NumberInput
               value={amount}
@@ -58,6 +79,16 @@ const UnstakeAndClaimModal: React.FC<Props> = ({ onClose, crucible }) => {
               size='lg'
             >
               <NumberInputField />
+              <InputRightElement width='4.5rem' zIndex={0}>
+                <Button
+                  mr={2}
+                  h='2rem'
+                  variant='ghost'
+                  onClick={() => setAmount(crucible.cleanLockedBalance || '0')}
+                >
+                  Max
+                </Button>
+              </InputRightElement>
             </NumberInput>
           </ModalBody>
           <ModalFooter>

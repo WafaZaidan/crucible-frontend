@@ -90,8 +90,6 @@ export async function increaseStake(
       type: EVENT.PENDING_APPROVAL,
     });
 
-    console.log('Increase stake');
-
     const tx = await transmuter.permitAndStake(
       aludel.address,
       crucibleAddress,

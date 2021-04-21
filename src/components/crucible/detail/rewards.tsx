@@ -15,6 +15,7 @@ import { commify } from 'ethers/lib/utils';
 import { useState } from 'react';
 import UnstakeAndClaimModal from '../../modals/unstakeAndClaimModal';
 import IncreaseStakeModal from '../../modals/increaseStakeModal';
+import WithdrawModal from '../../modals/withdrawModal';
 
 type Props = {
   crucible: Crucible;
@@ -22,6 +23,7 @@ type Props = {
 const Rewards: React.FC<Props> = ({ crucible }) => {
   const [claimRewardsModalOpen, setClaimRewardsModalOpen] = useState(false);
   const [increaseStakeModalOpen, setIncreaseStakeModalOpen] = useState(false);
+  const [withdrawModalOpen, setWithdrawModalOpen] = useState(false);
 
   const daysAgo: number = dayjs().diff(crucible.mintTimestamp, 'day');
   let aggregateRewardsUSD: number = 0;
@@ -50,18 +52,24 @@ const Rewards: React.FC<Props> = ({ crucible }) => {
         <HStack width='100%'>
           <Box flexGrow={1} textAlign='left'>
             <HStack justifyContent='start' direction='row'>
-              <Text>Total Value</Text>
-              <Text fontWeight='bold' fontSize='lg'>
-                {`$${commify((lpValueUSD + aggregateRewardsUSD).toFixed(2))}`}
-              </Text>
-              <Text>Liquidity Value</Text>
-              <Text fontWeight='bold' fontSize='lg'>
-                {`$${commify(lpValueUSD?.toFixed(0))}`}
-              </Text>
-              <Text>Rewards</Text>
-              <Text fontWeight='bold' fontSize='lg'>
-                {`$${commify(aggregateRewardsUSD?.toFixed(0))}`}
-              </Text>
+              <HStack justifyContent='center' pt={4}>
+                <Text>Total Value</Text>
+                <Text fontWeight='bold' mr={4} fontSize='lg'>
+                  {`$${commify((lpValueUSD + aggregateRewardsUSD).toFixed(2))}`}
+                </Text>
+              </HStack>
+              <HStack justifyContent='center' pt={4}>
+                <Text>LP Value</Text>
+                <Text fontWeight='bold' mr={4} fontSize='lg'>
+                  {`$${commify(lpValueUSD?.toFixed(0))}`}
+                </Text>
+              </HStack>
+              <HStack justifyContent='center' pt={4}>
+                <Text>Rewards</Text>
+                <Text fontWeight='bold' mr={4} fontSize='lg'>
+                  {`$${commify(aggregateRewardsUSD?.toFixed(0))}`}
+                </Text>
+              </HStack>
             </HStack>
             <HStack>
               <StatGroup mt={5} alignItems='baseline' width='100%'>
@@ -85,7 +93,7 @@ const Rewards: React.FC<Props> = ({ crucible }) => {
                           ? (
                               crucible.tokenRewards * crucible.mistPrice
                             ).toFixed(0)
-                          : '$0'}
+                          : '0'}
                       </StatHelpText>
                     </>
                   </HStack>
@@ -112,7 +120,7 @@ const Rewards: React.FC<Props> = ({ crucible }) => {
                                 crucible.ethRewards * crucible.wethPrice
                               ).toFixed(0)
                             )
-                          : '$0'}
+                          : '0'}
                       </StatHelpText>
                     </>
                   </HStack>
@@ -142,17 +150,35 @@ const Rewards: React.FC<Props> = ({ crucible }) => {
                 alignItems='center'
                 width='100%'
               >
-                <Button onClick={() => setIncreaseStakeModalOpen(true)}>
-                  <Text fontSize='md'>Increase stake</Text>
+                <Button
+                  width='100%'
+                  marginRight='4px'
+                  onClick={() => setIncreaseStakeModalOpen(true)}
+                >
+                  <Text fontSize='md'>Increase subscription</Text>
                 </Button>
-                <Button onClick={() => setClaimRewardsModalOpen(true)}>
-                  <Text fontSize='md'>Claim Rewards</Text>
-                </Button>
-                <Button>
-                  <Text fontSize='md'>Withdraw LP Stake</Text>
+                <Button
+                  width='100%'
+                  onClick={() => setClaimRewardsModalOpen(true)}
+                >
+                  <Text fontSize='md'>Claim rewards and unsubscribe</Text>
                 </Button>
               </Flex>
             </HStack>
+            <VStack justifyContent='center' pt={4}>
+              <Button
+                width='100%'
+                disabled={!(crucible.cleanUnlockedBalance > 0)}
+                onClick={() => setWithdrawModalOpen(true)}
+              >
+                <Text fontSize='md'>Withdraw LP balance</Text>
+              </Button>
+              {!(crucible.cleanUnlockedBalance > 0) && (
+                <Text fontSize='sm' color='gray.400'>
+                  To withdraw, first unsubscribe your LP
+                </Text>
+              )}
+            </VStack>
           </Box>
         </HStack>
       </Flex>
@@ -166,6 +192,12 @@ const Rewards: React.FC<Props> = ({ crucible }) => {
         <IncreaseStakeModal
           crucible={crucible}
           onClose={() => setIncreaseStakeModalOpen(false)}
+        />
+      )}
+      {withdrawModalOpen && (
+        <WithdrawModal
+          crucible={crucible}
+          onClose={() => setWithdrawModalOpen(false)}
         />
       )}
     </Box>

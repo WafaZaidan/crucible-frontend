@@ -24,8 +24,8 @@ const MintingHelper = () => {
           <Alert borderRadius='xl' fontSize='sm'>
             Mint a Crucible with your LP tokens to enroll in the MIST rewards
             program. A Crucible is an NFT representation of your LP token
-            deposit. Your rewards rate increases with duration of your stake and
-            you can increase your stake at any time.
+            deposit. Your rewards rate increases with duration of your
+            subscription and you can increase your subscription at any time.
           </Alert>
         </AccordionPanel>
       </AccordionItem>

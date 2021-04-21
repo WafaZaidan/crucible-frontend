@@ -84,7 +84,7 @@ const LpPerformance: React.FC<Props> = ({ crucible }) => {
               textAlign='center'
               backgroundColor='whitesmoke'
               borderRadius='xl'
-              margin='.1rem'
+              margin='.2rem'
               height='5rem'
             >
               <StatLabel paddingBottom='.2rem' fontWeight='bold'>
@@ -93,7 +93,7 @@ const LpPerformance: React.FC<Props> = ({ crucible }) => {
               <HStack justifyContent='center'>
                 <>
                   <StatHelpText>
-                    <StatNumber fontSize='md' pl={2}>
+                    <StatNumber fontSize='md'>
                       {tokenBalances?.mistPrice
                         ? `$${commify(
                             (tokenBalances?.mistPrice * totalSupply).toFixed(2)
@@ -108,7 +108,7 @@ const LpPerformance: React.FC<Props> = ({ crucible }) => {
               textAlign='center'
               backgroundColor='whitesmoke'
               borderRadius='xl'
-              margin='.1rem'
+              margin='.2rem'
               height='5rem'
             >
               <StatLabel paddingBottom='.2rem' fontWeight='bold'>
@@ -117,7 +117,7 @@ const LpPerformance: React.FC<Props> = ({ crucible }) => {
               <HStack justifyContent='center'>
                 <>
                   <StatHelpText>
-                    <StatNumber fontSize='md' pl={2}>
+                    <StatNumber fontSize='md'>
                       $
                       {lpStats?.totalVolume
                         ? commify(lpStats.totalVolume.toFixed(2))
@@ -131,7 +131,7 @@ const LpPerformance: React.FC<Props> = ({ crucible }) => {
               textAlign='center'
               backgroundColor='whitesmoke'
               borderRadius='xl'
-              margin='.1rem'
+              margin='.2rem'
               height='5rem'
             >
               <StatLabel paddingBottom='.2rem' fontWeight='bold'>
@@ -140,9 +140,7 @@ const LpPerformance: React.FC<Props> = ({ crucible }) => {
               <HStack justifyContent='center'>
                 <>
                   <StatHelpText>
-                    <StatNumber fontSize='md' pl={2}>
-                      1%
-                    </StatNumber>
+                    <StatNumber fontSize='md'>1%</StatNumber>
                     Every 14 days
                   </StatHelpText>
                 </>
@@ -151,12 +149,12 @@ const LpPerformance: React.FC<Props> = ({ crucible }) => {
           </StatGroup>
         </HStack>
         <HStack width='100%' direction='row'>
-          <StatGroup mt={4} alignItems='baseline' width='100%'>
+          <StatGroup mt={2} alignItems='baseline' width='100%'>
             <Stat
               textAlign='center'
               backgroundColor='whitesmoke'
               borderRadius='xl'
-              margin='.1rem'
+              margin='.2rem'
               height='5rem'
             >
               <StatLabel paddingBottom='.2rem' fontWeight='bold'>
@@ -165,9 +163,7 @@ const LpPerformance: React.FC<Props> = ({ crucible }) => {
               <HStack justifyContent='center'>
                 <>
                   <StatHelpText>
-                    <StatNumber fontSize='md' pl={2}>
-                      2
-                    </StatNumber>
+                    <StatNumber fontSize='md'>2</StatNumber>
                     MIST, ETH
                   </StatHelpText>
                 </>
@@ -177,7 +173,7 @@ const LpPerformance: React.FC<Props> = ({ crucible }) => {
               textAlign='center'
               backgroundColor='whitesmoke'
               borderRadius='xl'
-              margin='.1rem'
+              margin='.2rem'
               height='5rem'
             >
               <StatLabel paddingBottom='.2rem' fontWeight='bold'>
@@ -185,7 +181,7 @@ const LpPerformance: React.FC<Props> = ({ crucible }) => {
               </StatLabel>
               <HStack justifyContent='center'>
                 <StatHelpText>
-                  <StatNumber fontSize='md' pl={2}>
+                  <StatNumber fontSize='md'>
                     {`${commify(weeklyRewardsRate.toFixed(0))} MIST / week`}
                   </StatNumber>
                   <StatArrow type='increase' />
@@ -197,7 +193,7 @@ const LpPerformance: React.FC<Props> = ({ crucible }) => {
               textAlign='center'
               backgroundColor='whitesmoke'
               borderRadius='xl'
-              margin='.1rem'
+              margin='.2rem'
               height='5rem'
             >
               <StatLabel paddingBottom='.2rem' fontWeight='bold'>
@@ -206,9 +202,7 @@ const LpPerformance: React.FC<Props> = ({ crucible }) => {
               <HStack justifyContent='center'>
                 <>
                   <StatHelpText>
-                    <StatNumber fontSize='md' pl={2}>
-                      60 days
-                    </StatNumber>
+                    <StatNumber fontSize='md'>60 days</StatNumber>
                   </StatHelpText>
                 </>
               </HStack>

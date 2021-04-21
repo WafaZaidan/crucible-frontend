@@ -55,7 +55,7 @@ const CrucibleCard: React.FC<Props> = ({
           <HStack>
             <Box>
               <Text color='gray.400'>
-                {Number(crucible?.cleanLockedBalance).toFixed(3)}...
+                {Number(crucible?.cleanLockedBalance).toFixed(3)}... LP
               </Text>
             </Box>
             <Tooltip

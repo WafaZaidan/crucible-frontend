@@ -106,9 +106,9 @@ const MintingGuide = () => {
           </h2>
           <AccordionPanel pb={4} textAlign='left' px={0}>
             <Alert borderRadius='xl' fontSize='sm'>
-              View how much rewards you have earned, increase your LP stake to
-              earn more rewards, withdraw your earned rewards and your LP
-              tokens, or transfer your crucible to another wallet.
+              View how much rewards you have earned, increase your LP
+              subscription to earn more rewards, withdraw your earned rewards
+              and your LP tokens, or transfer your crucible to another wallet.
             </Alert>
           </AccordionPanel>
         </AccordionItem>
