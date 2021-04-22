@@ -60,7 +60,7 @@ const UnstakeAndClaimModal: React.FC<Props> = ({ onClose, crucible }) => {
               <br />
               <b>
                 Before unsubscribing, you'll need to add a new network provider
-                (Tai Chi) to your wallet following{' '}
+                (Taichi) to your wallet following{' '}
                 <Link
                   color='blue.400'
                   href='https://github.com/Taichi-Network/docs/blob/master/sendPriveteTx_tutorial.md'
