@@ -4,7 +4,7 @@ import { Center, HStack, VStack, Link as ChakraLink } from '@chakra-ui/layout';
 
 const Footer = () => {
   return (
-    <Center py={12}>
+    <Center pb={8}>
       <VStack>
         <HStack spacing={4}>
           {externalLinks.map(({ href, label, icon }) => (

@@ -5,6 +5,7 @@ import {
   NumberInputField,
   Text,
   InputRightElement,
+  Flex,
 } from '@chakra-ui/react';
 import {
   Modal,
@@ -48,9 +49,9 @@ const IncreaseStakeModal: React.FC<Props> = ({ onClose, crucible }) => {
       <Modal isOpen={true} onClose={onClose}>
         <ModalOverlay />
         <ModalContent borderRadius='xl'>
-          <ModalHeader textAlign='center'>Increase LP subscription</ModalHeader>
+          <ModalHeader>Increase LP subscription</ModalHeader>
           <ModalCloseButton />
-          <ModalBody textAlign='center'>
+          <ModalBody>
             <Text mb={4}>
               Increase your subscription in the Aludel Rewards program by
               depositing Uniswap Liquidity Pool tokens. You can get LP tokens by
@@ -59,6 +60,18 @@ const IncreaseStakeModal: React.FC<Props> = ({ onClose, crucible }) => {
                 here.
               </Link>
             </Text>
+            <Flex
+              mb={2}
+              justifyContent='space-between'
+              alignItems='center'
+              color='gray.100'
+            >
+              <Text>Select amount</Text>
+              <Text>
+                Balance:{' '}
+                <strong>{Number(tokenBalances?.cleanLp).toFixed(3)} LP</strong>
+              </Text>
+            </Flex>
             <NumberInput
               value={amount}
               onChange={(val) => setAmount(val)}
@@ -66,11 +79,9 @@ const IncreaseStakeModal: React.FC<Props> = ({ onClose, crucible }) => {
               clampValueOnBlur={false}
               size='lg'
             >
-              <NumberInputField />
-              <InputRightElement width='4.5rem' zIndex={0}>
+              <NumberInputField pr='4.5rem' borderRadius='xl' />
+              <InputRightElement width='4.5rem'>
                 <Button
-                  mr={2}
-                  h='2rem'
                   variant='ghost'
                   onClick={() => setAmount(tokenBalances?.cleanLp || '0')}
                 >
@@ -85,7 +96,7 @@ const IncreaseStakeModal: React.FC<Props> = ({ onClose, crucible }) => {
               onClick={handleIncreaseSubscription}
               disabled={
                 !amount ||
-                amount === '0' ||
+                Number(amount) === 0 ||
                 Number(amount) > Number(tokenBalances?.cleanLp)
               }
             >

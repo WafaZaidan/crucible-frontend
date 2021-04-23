@@ -29,7 +29,7 @@ const CrucibleDetailCard: React.FC<Props> = ({ crucible }) => {
   useEffect(() => {
     if (hasCopied && !toast.isActive(id)) {
       toast({
-        title: 'Copied to clipboard',
+        title: 'Copied crucible address',
         status: 'info',
         duration: 2000,
         isClosable: true,

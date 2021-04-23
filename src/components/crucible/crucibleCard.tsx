@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { truncate } from '../../utils/address';
 import { useHistory } from 'react-router-dom';
 import { Button, IconButton } from '@chakra-ui/button';
@@ -6,6 +6,7 @@ import { Collapse } from '@chakra-ui/transition';
 import { Crucible } from '../../context/crucibles/crucibles';
 import { Box, Flex, HStack, Stack, Text, Badge } from '@chakra-ui/layout';
 import { FaLock } from 'react-icons/fa';
+import { useClipboard } from '@chakra-ui/hooks';
 import {
   Stat,
   StatLabel,
@@ -13,11 +14,13 @@ import {
   StatHelpText,
   StatArrow,
   StatGroup,
+  useToast,
 } from '@chakra-ui/react';
 import { Tooltip } from '@chakra-ui/tooltip';
 import { IoChevronDownCircle } from 'react-icons/io5';
 import { IoMdSettings } from 'react-icons/io';
 import { Skeleton } from '@chakra-ui/skeleton';
+import { FiCopy } from 'react-icons/fi';
 import dayjs from 'dayjs';
 
 type Props = {
@@ -33,6 +36,21 @@ const CrucibleCard: React.FC<Props> = ({
 }) => {
   const [showDetails, setShowDetails] = useState(isExpanded);
   const history = useHistory();
+  const toast = useToast();
+
+  let { hasCopied, onCopy } = useClipboard(crucible.id);
+
+  useEffect(() => {
+    if (hasCopied) {
+      toast({
+        title: 'Copied crucible address',
+        status: 'info',
+        duration: 2000,
+        isClosable: true,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasCopied]);
 
   return (
     <Box p={4} bg='white' color='gray.800' borderRadius='xl'>
@@ -45,7 +63,10 @@ const CrucibleCard: React.FC<Props> = ({
               borderRadius='md'
             />
             <Box textAlign='left'>
-              <Text>ID: {truncate(crucible.id)}</Text>
+              <HStack cursor='pointer' onClick={onCopy}>
+                <Text onClick={onCopy}>ID: {truncate(crucible.id)}</Text>
+                <FiCopy />
+              </HStack>
               <Text fontSize='sm' color='gray.400'>
                 Minted {dayjs(crucible.mintTimestamp).format('MMM-DD YYYY')}
               </Text>
@@ -56,7 +77,7 @@ const CrucibleCard: React.FC<Props> = ({
           <HStack>
             <Box>
               <Text color='gray.400'>
-                {Number(crucible?.cleanLockedBalance).toFixed(3)}... LP
+                {Number(crucible?.cleanLockedBalance).toFixed(3)} LP
               </Text>
             </Box>
             <Tooltip

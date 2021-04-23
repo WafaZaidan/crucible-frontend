@@ -4,6 +4,7 @@ import {
   InputRightElement,
   NumberInputField,
   Text,
+  Flex,
 } from '@chakra-ui/react';
 import {
   Modal,
@@ -45,13 +46,27 @@ const WithdrawStakeModal: React.FC<Props> = ({ onClose, crucible }) => {
       <Modal isOpen={true} onClose={onClose}>
         <ModalOverlay />
         <ModalContent borderRadius='xl'>
-          <ModalHeader textAlign='center'>Withdraw LP tokens</ModalHeader>
+          <ModalHeader>Withdraw Unsubscribed LP</ModalHeader>
           <ModalCloseButton />
-          <ModalBody textAlign='center'>
+          <ModalBody>
             <Text mb={4}>
-              After you've unstaked your LP and claimed your rewards, you can
-              withdraw your LP balance from your crucible.
+              After you've claimed your rewards and unsubscribed your LP, you
+              can withdraw your unsubscribed LP from your Crucible.
             </Text>
+            <Flex
+              mb={2}
+              justifyContent='space-between'
+              alignItems='center'
+              color='gray.100'
+            >
+              <Text>Select amount</Text>
+              <Text>
+                Balance:{' '}
+                <strong>
+                  {Number(crucible.cleanUnlockedBalance).toFixed(3)} LP
+                </strong>
+              </Text>
+            </Flex>
             <NumberInput
               value={amount}
               onChange={(val) => setAmount(val)}
@@ -59,11 +74,9 @@ const WithdrawStakeModal: React.FC<Props> = ({ onClose, crucible }) => {
               clampValueOnBlur={false}
               size='lg'
             >
-              <NumberInputField />
-              <InputRightElement width='4.5rem' zIndex={0}>
+              <NumberInputField pr='4.5rem' borderRadius='xl' />
+              <InputRightElement width='4.5rem'>
                 <Button
-                  mr={2}
-                  h='2rem'
                   variant='ghost'
                   onClick={() =>
                     setAmount(crucible.cleanUnlockedBalance || '0')

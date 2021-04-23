@@ -5,6 +5,7 @@ import {
   Text,
   InputRightElement,
   Link,
+  Flex,
 } from '@chakra-ui/react';
 import {
   Modal,
@@ -46,11 +47,9 @@ const UnstakeAndClaimModal: React.FC<Props> = ({ onClose, crucible }) => {
       <Modal isOpen={true} onClose={onClose}>
         <ModalOverlay />
         <ModalContent borderRadius='xl'>
-          <ModalHeader textAlign='center'>
-            Claim Aludel rewards and unsubscribe
-          </ModalHeader>
+          <ModalHeader>Claim Aludel rewards and unsubscribe</ModalHeader>
           <ModalCloseButton />
-          <ModalBody textAlign='center'>
+          <ModalBody>
             <Text mb={4}>
               You are claiming {crucible.tokenRewards} MIST and{' '}
               {crucible.ethRewards} Ether rewards. By claiming rewards, you are
@@ -71,6 +70,20 @@ const UnstakeAndClaimModal: React.FC<Props> = ({ onClose, crucible }) => {
               </b>
               <br />
             </Text>
+            <Flex
+              mb={2}
+              justifyContent='space-between'
+              alignItems='center'
+              color='gray.100'
+            >
+              <Text>Select amount</Text>
+              <Text>
+                Balance:{' '}
+                <strong>
+                  {Number(crucible.cleanLockedBalance).toFixed(3)} LP
+                </strong>
+              </Text>
+            </Flex>
             <NumberInput
               value={amount}
               onChange={(val) => setAmount(val)}
@@ -78,11 +91,9 @@ const UnstakeAndClaimModal: React.FC<Props> = ({ onClose, crucible }) => {
               clampValueOnBlur={false}
               size='lg'
             >
-              <NumberInputField />
-              <InputRightElement width='4.5rem' zIndex={0}>
+              <NumberInputField pr='4.5rem' borderRadius='xl' />
+              <InputRightElement width='4.5rem'>
                 <Button
-                  mr={2}
-                  h='2rem'
                   variant='ghost'
                   onClick={() => setAmount(crucible.cleanLockedBalance || '0')}
                 >

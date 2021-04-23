@@ -51,7 +51,7 @@ const UserBalance = () => {
               {value ? (
                 <CountUp isCounting end={Number(value)} duration={0.4} />
               ) : (
-                '-'
+                '0'
               )}
             </Text>
           </Flex>

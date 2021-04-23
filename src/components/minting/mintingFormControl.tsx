@@ -15,6 +15,7 @@ import {
   SliderTrack,
   SliderFilledTrack,
 } from '@chakra-ui/slider';
+import { InputRightElement } from '@chakra-ui/input';
 
 type MintAndLockParams = Parameters<
   (signer: Signer, provider: providers.Web3Provider, lpBalance: string) => void
@@ -74,8 +75,10 @@ const MintingFormControl = () => {
               borderRadius='xl'
             >
               <NumberInputField
+                pr='4.5rem'
                 fontSize='xl'
                 fontWeight='bold'
+                borderRadius='xl'
                 _hover={{
                   borderColor: 'gray.600',
                 }}
@@ -84,12 +87,22 @@ const MintingFormControl = () => {
                   borderWidth: '2px',
                 }}
               />
+              <InputRightElement width='4.5rem'>
+                <Button
+                  variant='ghost'
+                  onClick={() =>
+                    setValue(tokens[lpTokenAddress].balance.toString())
+                  }
+                >
+                  Max
+                </Button>
+              </InputRightElement>
             </NumberInput>
-            <Box mb={4}>
+            <Box mb={4} mx={4}>
               <Slider
                 step={0.001}
                 min={0}
-                max={Number(tokens[lpTokenAddress].balance.toFixed(3))}
+                max={Number(tokens[lpTokenAddress].balance)}
                 value={Number(value)}
                 onChange={handleChange}
                 focusThumbOnChange={false}

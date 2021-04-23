@@ -138,10 +138,20 @@ const Rewards: React.FC<Props> = ({ crucible }) => {
                   colorScheme='cyan'
                   backgroundColor='lightgray'
                 />
-                <Text fontSize='xs' pt={1}>
+                <Text fontSize='xs' pt={1} pb={4}>
                   {((daysAgo / 60) * 100).toFixed(0)}% Complete ({daysAgo} of 60
                   D)
                 </Text>
+                <HStack>
+                  <Text fontSize='sm'>
+                    Subscribed Crucible LP:{' '}
+                    <strong>{crucible.cleanLockedBalance}</strong>
+                  </Text>
+                  <Text fontSize='sm'>
+                    Unsubscribed Crucible LP:{' '}
+                    <strong>{crucible.cleanUnlockedBalance}</strong>
+                  </Text>
+                </HStack>
               </Box>
             </VStack>
             <HStack width='100%' justifyContent='space-between' pt={6}>
@@ -155,7 +165,7 @@ const Rewards: React.FC<Props> = ({ crucible }) => {
                   marginRight='4px'
                   onClick={() => setIncreaseStakeModalOpen(true)}
                 >
-                  <Text fontSize='md'>Increase subscription</Text>
+                  <Text fontSize='md'>Increase LP subscription</Text>
                 </Button>
                 <Button
                   width='100%'
@@ -171,7 +181,7 @@ const Rewards: React.FC<Props> = ({ crucible }) => {
                 disabled={!(crucible.cleanUnlockedBalance > 0)}
                 onClick={() => setWithdrawModalOpen(true)}
               >
-                <Text fontSize='md'>Withdraw LP balance</Text>
+                <Text fontSize='md'>Withdraw unsubscribed LP</Text>
               </Button>
               {!(crucible.cleanUnlockedBalance > 0) && (
                 <Text fontSize='sm' color='gray.400'>
