@@ -14,7 +14,7 @@ export const externalLinks = [
   {
     label: 'Code',
     icon: <GithubIcon />,
-    href: 'https://github.com/alchemist-community/alchemist-frontend',
+    href: 'https://github.com/alchemistcoin/crucible-frontend',
   },
   {
     label: 'Etherscan',

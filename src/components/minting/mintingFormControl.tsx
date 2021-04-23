@@ -87,7 +87,7 @@ const MintingFormControl = () => {
             </NumberInput>
             <Box mb={4}>
               <Slider
-                step={0.1}
+                step={0.001}
                 min={0}
                 max={Number(tokens[lpTokenAddress].balance.toFixed(3))}
                 value={Number(value)}

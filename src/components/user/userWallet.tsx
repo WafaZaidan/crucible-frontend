@@ -1,33 +1,33 @@
 import { Box } from '@chakra-ui/layout';
 import { useWeb3 } from '../../context/web3';
 import { truncate } from '../../utils/address';
-import { FaPowerOff } from 'react-icons/fa';
-import { ImPowerCord } from 'react-icons/im';
-import { Button, Spinner } from '@chakra-ui/react';
+import { Button } from '@chakra-ui/react';
 
 const UserWallet = () => {
-  const { address, onboard, resetOnboard, isLoading } = useWeb3();
-  return (
-    <Button
-      width='193px'
-      onClick={() => onboard?.walletSelect()}
-      rightIcon={
-        isLoading ? undefined : address ? (
-          <FaPowerOff onClick={() => resetOnboard()} />
-        ) : (
-          <ImPowerCord />
-        )
-      }
-    >
-      {isLoading ? (
-        <Spinner />
-      ) : address ? (
+  const { address, onboard, isLoading } = useWeb3();
+
+  const handleConnect = async () => {
+    await onboard?.walletSelect();
+    await onboard?.walletCheck();
+  };
+
+  const handleSelect = async () => {
+    await onboard?.walletSelect();
+  };
+
+  if (isLoading) {
+    return <Button isLoading />;
+  }
+
+  if (address) {
+    return (
+      <Button onClick={handleSelect}>
         <Box mr={2}>{truncate(address)}</Box>
-      ) : (
-        'Connect'
-      )}
-    </Button>
-  );
+      </Button>
+    );
+  }
+
+  return <Button onClick={handleConnect}>Connect</Button>;
 };
 
 export default UserWallet;

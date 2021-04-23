@@ -4,7 +4,7 @@ import { Button, IconButton } from '@chakra-ui/button';
 import { truncate } from '../../../utils/address';
 import { useHistory } from 'react-router-dom';
 import { Crucible } from '../../../context/crucibles/crucibles';
-import { FiArrowLeft, FiArrowUpRight, FiCopy, FiSend } from 'react-icons/fi';
+import { FiArrowLeft, FiCopy, FiSend } from 'react-icons/fi';
 import { FaLock } from 'react-icons/fa';
 import { Flex, Box, HStack, Text, Heading, Badge } from '@chakra-ui/layout';
 import { Tooltip } from '@chakra-ui/tooltip';
@@ -43,7 +43,7 @@ const CrucibleDetailCard: React.FC<Props> = ({ crucible }) => {
       <Heading top='-100px' position='absolute' width='100%'>
         Manage Crucible
       </Heading>
-      <Flex justifyContent='space-between' alignItems='center'>
+      <Flex alignItems='center'>
         <Button
           pl={2}
           pr={3}
@@ -52,15 +52,6 @@ const CrucibleDetailCard: React.FC<Props> = ({ crucible }) => {
           onClick={() => history.push('/')}
         >
           All Crucibles
-        </Button>
-        <Button
-          pl={3}
-          pr={3}
-          variant='ghost'
-          rightIcon={<FiArrowUpRight />}
-          onClick={() => setIsTransferModalOpen(true)}
-        >
-          Transfer Crucible
         </Button>
       </Flex>
       <Flex
@@ -93,7 +84,7 @@ const CrucibleDetailCard: React.FC<Props> = ({ crucible }) => {
               </Box>
               <Tooltip
                 hasArrow
-                label='Staked amount'
+                label='Subscribed amount'
                 bg='gray.800'
                 color='white'
                 placement='bottom-end'
@@ -119,7 +110,7 @@ const CrucibleDetailCard: React.FC<Props> = ({ crucible }) => {
             color='blue.400'
             variant='ghost'
             icon={<FiSend />}
-            onClick={undefined}
+            onClick={() => setIsTransferModalOpen(true)}
           />
         </HStack>
       </Flex>

@@ -15,7 +15,8 @@ import {
   StatGroup,
 } from '@chakra-ui/react';
 import { Tooltip } from '@chakra-ui/tooltip';
-import { IoChevronDownCircle, IoArrowRedoCircleSharp } from 'react-icons/io5';
+import { IoChevronDownCircle } from 'react-icons/io5';
+import { IoMdSettings } from 'react-icons/io';
 import { Skeleton } from '@chakra-ui/skeleton';
 import dayjs from 'dayjs';
 
@@ -60,7 +61,7 @@ const CrucibleCard: React.FC<Props> = ({
             </Box>
             <Tooltip
               hasArrow
-              label='Staked amount'
+              label='Subscribed amount'
               bg='gray.800'
               color='white'
               placement='bottom-end'
@@ -79,7 +80,7 @@ const CrucibleCard: React.FC<Props> = ({
             bg='none'
             fontSize='2xl'
             color='gray.300'
-            icon={<IoArrowRedoCircleSharp />}
+            icon={<IoMdSettings />}
             onClick={() => history.push('/crucible', { crucible })}
             _hover={{ bg: 'none', color: 'gray.800' }}
             _active={{ bg: 'none' }}

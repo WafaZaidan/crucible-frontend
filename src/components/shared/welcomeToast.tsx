@@ -20,7 +20,7 @@ const WelcomeToast = () => {
     if (!toast.isActive(toastId) && !faqsToastClosed) {
       toast({
         id: toastId,
-        duration: 9000,
+        duration: null,
         isClosable: true,
         position: 'bottom-left',
         render: () => (
@@ -39,7 +39,7 @@ const WelcomeToast = () => {
                 First time minting a crucible? Read our{' '}
                 <Link
                   isExternal
-                  href='https://hackmd.io/@alchemistcoin/HyJXT7tL_/%2FrJSJU5PIu'
+                  href='https://hackmd.io/@alchemistcoin/HyJXT7tL_/%2FrJSJU5PIu#AludelCrucible-FAQ'
                   color='blue.500'
                   fontWeight='bold'
                 >

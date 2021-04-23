@@ -85,9 +85,10 @@ const MintingGuide = () => {
           </h2>
           <AccordionPanel pb={4} textAlign='left' px={0}>
             <Alert borderRadius='xl' fontSize='sm'>
-              Mint a Crucible NFT using your MIST-ETH LP to enroll in the Aludel
-              Rewards program. Your Crucible will accrue MIST token rewards
-              proportional to your staked LP and the duration of the stake.
+              Mint a Crucible NFT using your MIST-ETH LP to subscribe to the
+              Aludel rewards program. Your Crucible will accrue MIST token
+              rewards proportional to your subscribed LP and the duration of the
+              stake.
             </Alert>
           </AccordionPanel>
         </AccordionItem>
@@ -106,9 +107,10 @@ const MintingGuide = () => {
           </h2>
           <AccordionPanel pb={4} textAlign='left' px={0}>
             <Alert borderRadius='xl' fontSize='sm'>
-              View how much rewards you have earned, increase your LP
-              subscription to earn more rewards, withdraw your earned rewards
-              and your LP tokens, or transfer your crucible to another wallet.
+              View the rewards you have earned, increase your LP subscription to
+              earn more rewards, withdraw your earned rewards and unsubscribe
+              your LP tokens, withdraw LP from Crucible, or transfer your
+              crucible to another wallet.
             </Alert>
           </AccordionPanel>
         </AccordionItem>
