@@ -45,7 +45,6 @@ const Rewards: React.FC<Props> = ({ crucible }) => {
       crucible.wethValue +
       crucible.wethPrice;
   }
-
   return (
     <Box p={4} bg='white' color='gray.800' borderRadius='xl'>
       <Flex justifyContent='space-between' alignItems='start'>
@@ -178,12 +177,12 @@ const Rewards: React.FC<Props> = ({ crucible }) => {
             <VStack justifyContent='center' pt={4}>
               <Button
                 width='100%'
-                disabled={!(crucible.cleanUnlockedBalance > 0)}
+                disabled={Number(crucible.cleanUnlockedBalance) <= 0}
                 onClick={() => setWithdrawModalOpen(true)}
               >
                 <Text fontSize='md'>Withdraw unsubscribed LP</Text>
               </Button>
-              {!(crucible.cleanUnlockedBalance > 0) && (
+              {Number(crucible.cleanUnlockedBalance) <= 0 && (
                 <Text fontSize='sm' color='gray.400'>
                   To withdraw, first unsubscribe your LP
                 </Text>

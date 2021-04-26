@@ -14,7 +14,7 @@ type NotifyContextProps = {
 };
 
 type Web3ContextType = {
-  monitorTx(hash: string): Promise<void>;
+  monitorTx(hash: string, reload: () => void): Promise<void>;
 };
 
 const NotifyContext = React.createContext<Web3ContextType | undefined>(
@@ -30,7 +30,7 @@ const NotifyProvider = ({ children }: NotifyContextProps) => {
     setNotify(notify);
   }, []);
 
-  async function monitorTx(hash: string) {
+  async function monitorTx(hash: string, reload: () => void) {
     if (notify && network) {
       const { emitter } = notify.hash(hash);
       emitter.on('txPool', (transaction: Transaction) => {
@@ -45,7 +45,9 @@ const NotifyProvider = ({ children }: NotifyContextProps) => {
 
       emitter.on('txSent', console.log);
       // TODO: Can reload crucibles in txConfirmed callback
-      emitter.on('txConfirmed', console.log);
+      emitter.on('txConfirmed', () => {
+        reload && reload();
+      });
       emitter.on('txSpeedUp', console.log);
       emitter.on('txCancel', console.log);
       emitter.on('txFailed', console.log);

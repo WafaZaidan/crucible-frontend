@@ -15,8 +15,7 @@ export async function mintAndLock(
   signer: Signer,
   provider: providers.Web3Provider,
   rawAmount: string,
-  callback: (args: CallbackArgs) => void,
-  monitorTx: (hash: string) => Promise<void>
+  callback: (args: CallbackArgs) => void
 ) {
   const args = {
     aludel: aludelAddress,
@@ -122,7 +121,6 @@ export async function mintAndLock(
       txHash: tx.hash,
     });
 
-    monitorTx(tx.hash);
     console.log('  in', tx.hash);
   } catch (e) {
     callback({

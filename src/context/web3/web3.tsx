@@ -12,6 +12,7 @@ import { formatEther } from '@ethersproject/units';
 import { Erc20DetailedFactory } from '../../interfaces/Erc20DetailedFactory';
 import { Erc20Detailed } from '../../interfaces/Erc20Detailed';
 import { TokenInfo, Tokens, tokensReducer } from './tokenReducer';
+import { ChainId } from '@uniswap/sdk';
 
 export type OnboardConfig = Partial<Omit<Initialization, 'networkId'>>;
 
@@ -78,7 +79,7 @@ const Web3Provider = ({
   const [provider, setProvider] = useState<providers.Web3Provider | undefined>(
     undefined
   );
-  const [network, setNetwork] = useState<number | undefined>(undefined);
+  const [network, setNetwork] = useState<ChainId>(1);
   const [ethBalance, setEthBalance] = useState<number | undefined>(undefined);
   const [wallet, setWallet] = useState<Wallet | undefined>(undefined);
   const [onboard, setOnboard] = useState<OnboardApi | undefined>(undefined);

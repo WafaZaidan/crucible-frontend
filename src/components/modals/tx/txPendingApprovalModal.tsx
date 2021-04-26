@@ -17,7 +17,7 @@ const TxPendingApprovalModal: React.FC<Props> = ({ message }) => {
       <Modal isOpen={true} onClose={() => null}>
         <ModalOverlay />
         <ModalContent borderRadius='xl'>
-          <ModalHeader textAlign='center'>Waiting for approval</ModalHeader>
+          <ModalHeader textAlign='center'>Waiting for confirmation</ModalHeader>
           <ModalBody>
             <Center my={8}>
               <Spinner width={24} height={24} />

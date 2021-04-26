@@ -13,8 +13,7 @@ export async function unstakeAndClaim(
   signer: any,
   crucibleAddress: string,
   rawAmount: string,
-  callback: (args: CallbackArgs) => void,
-  monitorTx: (hash: string) => Promise<void>
+  callback: (args: CallbackArgs) => void
 ) {
   const walletAddress = await signer.getAddress();
 
@@ -74,10 +73,9 @@ export async function unstakeAndClaim(
     callback({
       type: EVENT.PENDING_APPROVAL,
     });
+    console.log('Populated tx');
 
     const unstakeTx = await signer.sendTransaction(populatedTx);
-
-    monitorTx(unstakeTx.hash);
 
     console.log('  in', unstakeTx.hash);
     console.log('Withdraw from crucible');
@@ -94,7 +92,6 @@ export async function unstakeAndClaim(
       amount
     );
 
-    monitorTx(withdrawTx.hash);
     console.log('  in', withdrawTx?.hash);
 
     callback({

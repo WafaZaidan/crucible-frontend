@@ -9,8 +9,7 @@ export async function transferCrucible(
   signer: any,
   id: string,
   to: string,
-  callback: (args: CallbackArgs) => void,
-  monitorTx: (hash: string) => Promise<void>
+  callback: (args: CallbackArgs) => void
 ) {
   const walletAddress = await signer.getAddress();
 
@@ -34,7 +33,6 @@ export async function transferCrucible(
       message: 'success',
       txHash: tx.hash,
     });
-    monitorTx(tx.hash);
   } catch (e) {
     console.log(e);
     callback({

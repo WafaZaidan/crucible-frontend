@@ -57,6 +57,7 @@ type CruciblesContextType = {
   crucibles: Crucible[] | undefined;
   tokenBalances: TokenBalances | undefined;
   reloadCrucibles(): void;
+  reloadBalances(): void;
 };
 
 const Crucibles = React.createContext<CruciblesContextType | undefined>(
@@ -64,15 +65,16 @@ const Crucibles = React.createContext<CruciblesContextType | undefined>(
 );
 
 const CruciblesProvider = ({ children }: CruciblesProps) => {
-  const { provider, wallet, address, network } = useWeb3();
+  const { provider, address, wallet, network } = useWeb3();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isRewardsLoading, setIsRewardsLoading] = useState<boolean>(true);
   const [refreshCrucibles, setRefreshCrucibles] = useState<boolean>(false);
+  const [refreshBalances, setRefreshBalances] = useState<boolean>(false);
   const [crucibles, setCrucibles] = useState<Crucible[]>();
   const [tokenBalances, setTokenBalances] = useState<TokenBalances | undefined>(
     undefined
   );
-  const { pairAddress } = config;
+  const { pairAddress, networkId } = config;
 
   const [loadPairs, { data: pairData }] = useLazyQuery(
     GET_PAIR_HISTORY(
@@ -83,6 +85,14 @@ const CruciblesProvider = ({ children }: CruciblesProps) => {
         : [1615464000]
     )
   );
+
+  const reloadCrucibles = () => {
+    setRefreshCrucibles(true);
+  };
+  const reloadBalances = () => {
+    setRefreshBalances(true);
+  };
+
   useEffect(() => {
     if (pairData) {
       setCrucibles((crucibles) => {
@@ -106,7 +116,13 @@ const CruciblesProvider = ({ children }: CruciblesProps) => {
   useEffect(() => {
     setIsLoading(true);
     setIsRewardsLoading(true);
-    if (provider && wallet && network && address) {
+    if (
+      provider &&
+      wallet &&
+      address &&
+      network &&
+      network === Number(networkId)
+    ) {
       const signer = provider?.getSigner();
       getTokenBalances(signer, address as string, network).then(
         (balances: any) => {
@@ -114,81 +130,83 @@ const CruciblesProvider = ({ children }: CruciblesProps) => {
         }
       );
     }
-  }, [provider, wallet, network, address]);
+  }, [provider, wallet, network, address, refreshBalances]);
 
-  useEffect(() => {
-    if (tokenBalances && provider && network) {
-      setIsRewardsLoading(true);
-      const signer = provider?.getSigner();
-      getOwnedCrucibles(signer, provider)
-        .then((ownedCrucibles: Crucible[]) => {
-          const reformatted = ownedCrucibles.map((crucible) => ({
-            ...crucible,
-            cleanBalance: formatUnits(crucible.balance),
-            cleanLockedBalance: formatUnits(crucible.lockedBalance),
-            cleanUnlockedBalance: formatUnits(
-              crucible.balance.sub(crucible.lockedBalance)
-            ),
-            mistPrice: tokenBalances.mistPrice,
-            totalLpSupply: formatUnits(tokenBalances.totalLpSupply),
-            wethPrice: tokenBalances.wethPrice,
-            ...getUniswapBalances(
-              crucible.balance,
-              tokenBalances.lpMistBalance,
-              tokenBalances.lpWethBalance,
-              tokenBalances.totalLpSupply,
-              tokenBalances.wethPrice,
-              tokenBalances.mistPrice,
-              network
-            ),
-          }));
-          setCrucibles(reformatted);
-          return getUserRewards(signer, ownedCrucibles);
-        })
-        .then((rewards) => {
-          setIsLoading(false);
-          if (!!crucibles && crucibles.length && network === 1) loadPairs();
-          if (rewards?.length) {
-            Promise.all<Rewards>(
-              rewards.map((reward: EtherRewards) => {
-                return new Promise((resolve, reject) => {
-                  resolve(
-                    calculateMistRewards(
-                      signer,
-                      Number(reward.currStakeRewards)
-                    )
-                  );
+  useEffect(
+    () => {
+      if (tokenBalances && provider && network) {
+        // process.env.REACT_APP_NETWORK_ID
+
+        const signer = provider.getSigner();
+        setIsRewardsLoading(true);
+        getOwnedCrucibles(signer, provider)
+          .then((ownedCrucibles: Crucible[]) => {
+            const reformatted = ownedCrucibles.map((crucible) => ({
+              ...crucible,
+              cleanBalance: formatUnits(crucible.balance),
+              cleanLockedBalance: formatUnits(crucible.lockedBalance),
+              cleanUnlockedBalance: formatUnits(
+                crucible.balance.sub(crucible.lockedBalance)
+              ),
+              mistPrice: tokenBalances!.mistPrice,
+              totalLpSupply: formatUnits(tokenBalances!.totalLpSupply),
+              wethPrice: tokenBalances!.wethPrice,
+              ...getUniswapBalances(
+                crucible.balance,
+                tokenBalances!.lpMistBalance,
+                tokenBalances!.lpWethBalance,
+                tokenBalances!.totalLpSupply,
+                tokenBalances!.wethPrice,
+                tokenBalances!.mistPrice,
+                network
+              ),
+            }));
+            console.log('reformatted', reformatted);
+            setCrucibles(reformatted);
+            return getUserRewards(signer, ownedCrucibles);
+          })
+          .then((rewards) => {
+            setIsLoading(false);
+            if (!!crucibles && crucibles.length && network === 1) loadPairs();
+            if (rewards?.length) {
+              Promise.all<Rewards>(
+                rewards.map((reward: EtherRewards) => {
+                  return new Promise((resolve, reject) => {
+                    resolve(
+                      calculateMistRewards(
+                        signer,
+                        Number(reward.currStakeRewards)
+                      )
+                    );
+                  });
+                })
+              ).then((calculatedRewards: Rewards[]) => {
+                const cruciblesWithRewards = crucibles?.map((crucible, i) => {
+                  const calculatedReward = calculatedRewards[i];
+                  return {
+                    ...crucible,
+                    ...calculatedReward,
+                  };
                 });
-              })
-            ).then((calculatedRewards: Rewards[]) => {
-              const cruciblesWithRewards = crucibles?.map((crucible, i) => {
-                const calculatedReward = calculatedRewards[i];
-                return {
-                  ...crucible,
-                  ...calculatedReward,
-                };
+                cruciblesWithRewards && setCrucibles(cruciblesWithRewards);
+                setIsRewardsLoading(false);
               });
-              cruciblesWithRewards && setCrucibles(cruciblesWithRewards);
+            } else {
+              setIsLoading(false);
               setIsRewardsLoading(false);
-            });
-          } else {
+            }
+          })
+          .catch((e) => {
+            console.error(e);
             setIsLoading(false);
             setIsRewardsLoading(false);
-          }
-        })
-        .catch((e) => {
-          console.error(e);
-          setIsLoading(false);
-          setIsRewardsLoading(false);
-        });
-      setRefreshCrucibles(false);
-    }
+          });
+        setRefreshCrucibles(false);
+      }
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tokenBalances, provider, network, refreshCrucibles, loadPairs]);
-
-  const reloadCrucibles = () => {
-    setRefreshCrucibles(true);
-  };
+    [provider, address, network, refreshCrucibles, tokenBalances, loadPairs]
+  );
 
   return (
     <Crucibles.Provider
@@ -198,6 +216,7 @@ const CruciblesProvider = ({ children }: CruciblesProps) => {
         isRewardsLoading,
         tokenBalances,
         reloadCrucibles,
+        reloadBalances,
       }}
     >
       {children}

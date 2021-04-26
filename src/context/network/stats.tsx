@@ -16,17 +16,22 @@ const NetworkStats = React.createContext<NetworkStatsContextType | undefined>(
 );
 
 const NetworkStatsProvider = ({ children }: NetworkStatsProps) => {
-  const { provider, wallet, address } = useWeb3();
+  const { provider, wallet, address, network } = useWeb3();
   const [networkStats, setNetworkStats] = useState<any>(undefined);
 
   useEffect(() => {
-    if (provider && wallet && address) {
+    if (
+      provider &&
+      wallet &&
+      address &&
+      network === process.env.REACT_APP_NETWORK_ID
+    ) {
       const signer = provider?.getSigner();
       getNetworkStats(signer).then(setNetworkStats);
     } else {
       setNetworkStats(undefined);
     }
-  }, [provider, wallet, address]);
+  }, [provider, wallet, address, network]);
 
   return (
     <NetworkStats.Provider

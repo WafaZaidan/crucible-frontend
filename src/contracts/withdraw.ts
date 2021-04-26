@@ -11,8 +11,7 @@ export async function withdraw(
   signer: any,
   crucibleAddress: string,
   rawAmount: string,
-  callback: (args: CallbackArgs) => void,
-  monitorTx: (hash: string) => Promise<void>
+  callback: (args: CallbackArgs) => void
 ) {
   const walletAddress = await signer.getAddress();
 
@@ -43,7 +42,9 @@ export async function withdraw(
     const balance = await token.balanceOf(crucibleAddress);
     const lock = await crucible.getBalanceLocked(lpTokenAddress);
     if (balance.sub(lock) < amount) {
-      throw new Error('ser unlock pls');
+      throw new Error(
+        'Please claim and unsuubscribe before withdrawing your LP tokens'
+      );
     }
 
     console.log('Withdraw from crucible');
@@ -61,8 +62,6 @@ export async function withdraw(
       message: 'success',
       txHash: withdrawTx.hash,
     });
-    monitorTx(withdrawTx.hash);
-
     console.log('  in', withdrawTx.hash);
   } catch (e) {
     callback({

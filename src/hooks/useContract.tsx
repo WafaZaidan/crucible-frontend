@@ -4,6 +4,7 @@ import TxConfirmedModal from '../components/modals/tx/txConfirmedModal';
 import TxPendingSignatureModal from '../components/modals/tx/txPendingSignatureModal';
 import TxPendingApprovalModal from '../components/modals/tx/txPendingApprovalModal';
 import { useNotify, useWeb3 } from '../context/web3';
+import { useCrucibles } from '../context/crucibles';
 
 export enum EVENT {
   PENDING_APPROVAL = 'PENDING_APPROVAL',
@@ -39,6 +40,7 @@ export function useContract(
   successCallback?: Function
 ) {
   const { checkIsReady } = useWeb3();
+  const { reloadBalances } = useCrucibles();
   const { monitorTx } = useNotify();
   const [ui, setUI] = useState<React.ReactElement | null>(null);
 
@@ -57,6 +59,7 @@ export function useContract(
             }}
           />
         );
+        monitorTx(event.txHash, reloadBalances);
         break;
       case EVENT.TX_ERROR:
         setUI(

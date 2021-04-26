@@ -51,7 +51,7 @@ const UnstakeAndClaimModal: React.FC<Props> = ({ onClose, crucible }) => {
           <ModalCloseButton />
           <ModalBody>
             <Text mb={4}>
-              You are claiming {crucible.tokenRewards} MIST and{' '}
+              You are claiming {crucible.tokenRewards || '0'} MIST and{' '}
               {crucible.ethRewards} Ether rewards. By claiming rewards, you are
               unsubscribing your MIST-ETH LP tokens from the Aludel Rewards
               program and resetting your rewards multiplier.
@@ -62,7 +62,7 @@ const UnstakeAndClaimModal: React.FC<Props> = ({ onClose, crucible }) => {
                 (Taichi) to your wallet following{' '}
                 <Link
                   color='blue.400'
-                  href='https://github.com/Taichi-Network/docs/blob/master/sendPriveteTx_tutorial.md'
+                  href='https://hackmd.io/@alchemistcoin/HyJXT7tL_/%2FSJibHzPUu'
                   isExternal
                 >
                   this guide.
@@ -108,7 +108,7 @@ const UnstakeAndClaimModal: React.FC<Props> = ({ onClose, crucible }) => {
               onClick={handleUnstakeAndClaim}
               disabled={
                 !amount ||
-                amount === '0' ||
+                Number(amount) === 0 ||
                 Number(amount) > Number(crucible.cleanLockedBalance)
               }
             >
