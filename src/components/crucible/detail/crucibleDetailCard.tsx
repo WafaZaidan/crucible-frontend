@@ -40,7 +40,7 @@ const CrucibleDetailCard: React.FC<Props> = ({ crucible }) => {
 
   return (
     <Box position='relative'>
-      <Heading top='-100px' position='absolute' width='100%'>
+      <Heading top='-120px' position='absolute' width='100%'>
         Manage Crucible
       </Heading>
       <Flex alignItems='center'>
@@ -64,7 +64,7 @@ const CrucibleDetailCard: React.FC<Props> = ({ crucible }) => {
         <HStack spacing={3} flexGrow={1}>
           <Box
             boxSize='48px'
-            bgGradient='linear(to-tr, cyan.200, yellow.500)'
+            bgGradient='linear(to-tr, cyan.200, purple.100)'
             borderRadius='md'
           />
           <Box textAlign='left'>
@@ -79,7 +79,7 @@ const CrucibleDetailCard: React.FC<Props> = ({ crucible }) => {
             <HStack>
               <Box>
                 <Text color='gray.200' fontSize='lg'>
-                  {Number(crucible?.cleanLockedBalance).toFixed(3)}... LP
+                  {Number(crucible?.cleanLockedBalance).toFixed(3)} LP
                 </Text>
               </Box>
               <Tooltip
@@ -91,7 +91,7 @@ const CrucibleDetailCard: React.FC<Props> = ({ crucible }) => {
                 offset={[0, 16]}
               >
                 <div>
-                  <FaLock color='blue.400' />
+                  <FaLock color='cyan.400' />
                 </div>
               </Tooltip>
             </HStack>
@@ -99,7 +99,7 @@ const CrucibleDetailCard: React.FC<Props> = ({ crucible }) => {
           <IconButton
             aria-label='copy'
             fontSize='2xl'
-            color='blue.400'
+            color='cyan.400'
             variant='ghost'
             icon={<FiCopy />}
             onClick={onCopy}
@@ -107,7 +107,7 @@ const CrucibleDetailCard: React.FC<Props> = ({ crucible }) => {
           <IconButton
             aria-label='transfer'
             fontSize='2xl'
-            color='blue.400'
+            color='cyan.400'
             variant='ghost'
             icon={<FiSend />}
             onClick={() => setIsTransferModalOpen(true)}

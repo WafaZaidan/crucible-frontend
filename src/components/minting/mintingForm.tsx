@@ -11,7 +11,7 @@ const MintingForm = () => {
 
   return (
     <Box>
-      {!tokens[lpTokenAddress].balance ? (
+      {!tokens[lpTokenAddress]?.balance ? (
         <MissingIngredients />
       ) : (
         <Box>

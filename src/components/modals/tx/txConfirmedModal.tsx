@@ -32,7 +32,7 @@ const TxConfirmedModal: React.FC<Props> = ({ onClose, hash }) => {
         <ModalHeader textAlign='center'>Transaction submitted</ModalHeader>
         <ModalCloseButton />
         <ModalBody textAlign='center' py={8}>
-          <Flex justifyContent='center' color='yellow.400' pb={2}>
+          <Flex justifyContent='center' color='white' pb={2}>
             <IoArrowUpCircleOutline fontSize='80px' />
           </Flex>
           <Text color='gray.200'>

@@ -59,7 +59,7 @@ const CrucibleCard: React.FC<Props> = ({
           <HStack>
             <Box
               boxSize='38px'
-              bgGradient='linear(to-tr, cyan.200, yellow.500)'
+              bgGradient='linear(to-tr, cyan.200, purple.100)'
               borderRadius='md'
             />
             <Box textAlign='left'>

@@ -1,13 +1,13 @@
 import { IconButton } from '@chakra-ui/button';
 import { externalLinks } from '../../config/links';
-import { Center, HStack, VStack, Link as ChakraLink } from '@chakra-ui/layout';
+import { Flex, HStack, Link as ChakraLink, Box } from '@chakra-ui/layout';
 
 const Footer = () => {
   return (
-    <Center pb={8}>
-      <VStack>
+    <Flex py={4} alignItems='center' flexDirection='column'>
+      <Box>
         <HStack spacing={4}>
-          {externalLinks.map(({ href, label, icon }) => (
+          {externalLinks.map(({ href, label, icon: Icon }) => (
             <ChakraLink
               key={label}
               href={href}
@@ -19,30 +19,37 @@ const Footer = () => {
               }}
             >
               <IconButton
-                size='lg'
                 isRound
-                fontSize='2xl'
                 aria-label={label}
                 variant='ghost'
                 color='white'
-                icon={icon}
+                icon={<Icon width='40px' height='40px' />}
                 _hover={{
                   background: 'none',
-                  boxShadow: '-1px -1px 0px 1px rgb(255, 191, 0)',
+                  boxShadow: '-1px -1px 0px 1px #2EDCFF',
                 }}
               />
             </ChakraLink>
           ))}
         </HStack>
-        {/* <HStack spacing={4}>
-          {internalLinks.map((link) => (
-            <ChakraLink key={link.label} as={Link} to={link.to}>
-              {link.label}
-            </ChakraLink>
-          ))}
-        </HStack> */}
-      </VStack>
-    </Center>
+      </Box>
+      <Box py={2}>
+        <HStack spacing={4}>
+          <ChakraLink
+            href='https://hackmd.io/@alchemistcoin/HyJXT7tL_/%2FrJSJU5PIu'
+            target='_blank'
+          >
+            Documentation
+          </ChakraLink>
+          <ChakraLink
+            href='https://hackmd.io/@alchemistcoin/HyJXT7tL_/%2FrJSJU5PIu#AludelCrucible-FAQ'
+            target='_blank'
+          >
+            FAQs
+          </ChakraLink>
+        </HStack>
+      </Box>
+    </Flex>
   );
 };
 

@@ -13,7 +13,7 @@ const CrucibleTabs: React.FC<Props> = ({ crucible }) => {
     borderRadius: 'lg',
     fontWeight: 'bold',
     fontSize: ['0.7rem', 'sm'],
-    _selected: { color: 'gray.800', bg: 'cyan.500' },
+    _selected: { color: 'gray.800', bg: 'cyan.400' },
   };
 
   return (
@@ -26,13 +26,13 @@ const CrucibleTabs: React.FC<Props> = ({ crucible }) => {
         </TabList>
 
         <TabPanels>
-          <TabPanel px={0}>
+          <TabPanel px={0} pb={0}>
             <Rewards crucible={crucible} />
           </TabPanel>
-          <TabPanel px={0}>
+          <TabPanel px={0} pb={0}>
             <LpPerformance crucible={crucible} />
           </TabPanel>
-          <TabPanel px={0}>
+          <TabPanel px={0} pb={0}>
             <NetworkStats crucible={crucible} />
           </TabPanel>
         </TabPanels>

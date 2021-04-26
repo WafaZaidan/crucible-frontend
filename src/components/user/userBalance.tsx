@@ -29,7 +29,7 @@ const UserBalance = () => {
   return (
     <Box
       p={2}
-      width={480}
+      width={497}
       height={12}
       bg='gray.900'
       borderRadius='xl'

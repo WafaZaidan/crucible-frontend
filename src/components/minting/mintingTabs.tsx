@@ -11,7 +11,7 @@ const MintingTabs = () => {
   const tabProps = {
     borderRadius: 'lg',
     fontWeight: 'bold',
-    _selected: { color: 'gray.800', bg: 'cyan.500' },
+    _selected: { color: 'purple.800', bg: 'cyan.400' },
   };
 
   if (isLoading) {
@@ -24,7 +24,7 @@ const MintingTabs = () => {
 
   return (
     <Box position='relative'>
-      <Heading top='-100px' position='absolute' width='100%'>
+      <Heading top='-120px' position='absolute' width='100%'>
         Minting Crucibles
       </Heading>
       <Tabs isFitted defaultIndex={crucibles && crucibles.length > 0 ? 1 : 0}>
@@ -34,10 +34,10 @@ const MintingTabs = () => {
         </TabList>
 
         <TabPanels>
-          <TabPanel px={0}>
+          <TabPanel px={0} pb={0}>
             <MintingForm />
           </TabPanel>
-          <TabPanel px={0}>
+          <TabPanel px={0} pb={0}>
             <CruciblesListView />
           </TabPanel>
         </TabPanels>

@@ -1,4 +1,5 @@
 import {
+  CoinGeckoIcon,
   DiscordIcon,
   EtherscanIcon,
   GithubIcon,
@@ -8,25 +9,30 @@ import {
 export const externalLinks = [
   {
     label: 'Discord',
-    icon: <DiscordIcon />,
+    icon: DiscordIcon,
     href: 'http://discord.alchemist.wtf',
   },
   {
     label: 'Code',
-    icon: <GithubIcon />,
+    icon: GithubIcon,
     href: 'https://github.com/alchemistcoin/crucible-frontend',
   },
   {
     label: 'Etherscan',
-    icon: <EtherscanIcon />,
+    icon: EtherscanIcon,
     href:
       'https://etherscan.io/token/0x88acdd2a6425c3faae4bc9650fd7e27e0bebb7ab',
   },
   {
     label: 'Uniswap',
-    icon: <UniswapIcon />,
+    icon: UniswapIcon,
     href:
       'https://info.uniswap.org/token/0x88acdd2a6425c3faae4bc9650fd7e27e0bebb7ab',
+  },
+  {
+    label: 'CoinGecko',
+    icon: CoinGeckoIcon,
+    href: 'https://www.coingecko.com/en/coins/alchemist',
   },
 ];
 

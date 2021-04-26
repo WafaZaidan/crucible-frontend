@@ -12,7 +12,6 @@ import CrucibleMinting from './pages/crucibleMinting';
 const App: React.FC = () => {
   return (
     <Flex
-      px={4}
       minHeight='100vh'
       flexDirection='column'
       background={`url(${bg})`}
@@ -23,7 +22,7 @@ const App: React.FC = () => {
     >
       <Router>
         <Header />
-        <Box flexGrow={1}>
+        <Box flexGrow={1} px={4}>
           <Switch>
             {/* <Route exact path={process.env.PUBLIC_URL + '/'}>
                 <Landing />

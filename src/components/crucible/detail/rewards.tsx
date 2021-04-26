@@ -134,7 +134,7 @@ const Rewards: React.FC<Props> = ({ crucible }) => {
                 <Progress
                   value={(daysAgo / 60) * 100}
                   size='xs'
-                  colorScheme='cyan'
+                  colorScheme='purple'
                   backgroundColor='lightgray'
                 />
                 <Text fontSize='xs' pt={1} pb={4}>

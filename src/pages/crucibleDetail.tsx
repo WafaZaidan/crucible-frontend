@@ -15,8 +15,8 @@ const CrucibleDetail = () => {
   return (
     <Center>
       <Flex
-        p={8}
-        bg='gray.800'
+        p={10}
+        bg='purple.800'
         flexDir='column'
         mt={[32, 32, 40]}
         textAlign='center'

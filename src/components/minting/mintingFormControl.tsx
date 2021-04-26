@@ -57,7 +57,7 @@ const MintingFormControl = () => {
   return (
     <Box>
       <LightMode>
-        <Box bg='white' p={4} mb={4} borderRadius='xl' color='gray.800'>
+        <Box bg='white' p={4} mb={6} borderRadius='xl' color='gray.800'>
           <Flex mb={4} justifyContent='space-between' alignItems='center'>
             <Text>Select amount</Text>
             <Text>
@@ -108,9 +108,9 @@ const MintingFormControl = () => {
                 focusThumbOnChange={false}
               >
                 <SliderTrack>
-                  <SliderFilledTrack bg='gray.600' />
+                  <SliderFilledTrack bg='purple.500' />
                 </SliderTrack>
-                <SliderThumb fontSize='sm' boxSize='18px' bg='yellow.400' />
+                <SliderThumb fontSize='sm' boxSize='18px' bg='purple.500' />
               </Slider>
             </Box>
           </Box>

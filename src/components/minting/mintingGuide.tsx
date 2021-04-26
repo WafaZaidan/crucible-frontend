@@ -24,16 +24,23 @@ const MintingGuide = () => {
   };
 
   return (
-    <Box>
-      <Image src={pot} height='220px' htmlHeight='220px' mx='auto' mt={-32} />
-      <Heading size='xl' py={4}>
-        Aludel rewards
+    <Box position='relative'>
+      <Image
+        src={pot}
+        height='240px'
+        htmlHeight='240px'
+        position='absolute'
+        right='0px'
+        top='-124px'
+      />
+      <Heading textAlign='left' fontSize='2.5rem' py={4} maxW='240px'>
+        Aludel Rewards
       </Heading>
 
-      <Accordion allowMultiple mb={4}>
+      <Accordion allowMultiple mt={2} mb={8}>
         <AccordionItem border='none'>
           <h2>
-            <AccordionButton px={0} fontWeight='semibold' fontSize='xl'>
+            <AccordionButton px={0} fontSize='lg'>
               <Box flex='1' textAlign='left'>
                 <HStack alignItems='top'>
                   <Text>1.</Text>
@@ -45,7 +52,12 @@ const MintingGuide = () => {
                   </Text>
                 </HStack>
               </Box>
-              <AccordionIcon bg='gray.700' borderRadius='100%' />
+              <AccordionIcon
+                bg='blue.600'
+                fontSize='18px'
+                color='purple.800'
+                borderRadius='100%'
+              />
             </AccordionButton>
           </h2>
           <AccordionPanel pb={4} textAlign='left' px={0}>
@@ -73,14 +85,19 @@ const MintingGuide = () => {
 
         <AccordionItem border='none'>
           <h2>
-            <AccordionButton px={0} fontWeight='semibold' fontSize='xl'>
+            <AccordionButton px={0} fontSize='lg'>
               <Box flex='1' textAlign='left'>
                 <HStack alignItems='top'>
                   <Text>2.</Text>
                   <Text>Mint a Crucible using LP tokens</Text>
                 </HStack>
               </Box>
-              <AccordionIcon bg='gray.700' borderRadius='100%' />
+              <AccordionIcon
+                bg='blue.600'
+                fontSize='18px'
+                color='purple.800'
+                borderRadius='100%'
+              />
             </AccordionButton>
           </h2>
           <AccordionPanel pb={4} textAlign='left' px={0}>
@@ -95,14 +112,19 @@ const MintingGuide = () => {
 
         <AccordionItem border='none'>
           <h2>
-            <AccordionButton px={0} fontWeight='semibold' fontSize='xl'>
+            <AccordionButton px={0} fontSize='lg'>
               <Box flex='1' textAlign='left'>
                 <HStack alignItems='top'>
                   <Text>3.</Text>
                   <Text>Earn rewards with Crucible</Text>
                 </HStack>
               </Box>
-              <AccordionIcon bg='gray.700' borderRadius='100%' />
+              <AccordionIcon
+                bg='blue.600'
+                fontSize='18px'
+                color='purple.800'
+                borderRadius='100%'
+              />
             </AccordionButton>
           </h2>
           <AccordionPanel pb={4} textAlign='left' px={0}>
@@ -117,7 +139,7 @@ const MintingGuide = () => {
       </Accordion>
 
       <Button size='lg' isFullWidth onClick={handleConnect}>
-        Connect wallet
+        Connect Wallet
       </Button>
       <WelcomeToast />
     </Box>

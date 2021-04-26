@@ -6,26 +6,32 @@ export const Button = {
   sizes: {
     sm: {
       fontSize: '12px',
-      padding: '16px',
+      paddingX: '16px',
+      paddingY: '12px',
     },
     md: {
       fontSize: '18px',
-      padding: '24px',
+      paddingX: '16px',
+      paddingY: '20px',
     },
     lg: {
-      fontSize: '24px',
-      padding: '32px',
+      fontSize: '20px',
+      paddingx: '16px',
+      paddingY: '24px',
     },
   },
   variants: {
     solid: {
-      bg: 'yellow.500',
-      color: 'gray.800',
+      bg: 'cyan.300',
+      color: 'purple.800',
       _hover: {
-        bg: 'yellow.400',
+        bg: 'cyan.500',
+        _disabled: {
+          bg: 'cyan.200',
+        },
       },
       _active: {
-        bg: 'yellow.400',
+        bg: 'cyan.200',
       },
     },
   },

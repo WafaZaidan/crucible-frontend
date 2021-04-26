@@ -4,7 +4,7 @@ import { Box, Link, Text } from '@chakra-ui/layout';
 import { Image } from '@chakra-ui/image';
 import { IconButton } from '@chakra-ui/button';
 import { IoCloseCircle } from 'react-icons/io5';
-import pot from '../../img/pot.png';
+import pot3d from '../../img/pot-3d.png';
 
 const WelcomeToast = () => {
   const toast = useToast();
@@ -27,15 +27,13 @@ const WelcomeToast = () => {
           <Box
             m={4}
             p={8}
-            bg='white'
-            color='gray.800'
+            bg='gray.700'
             position='relative'
-            borderTopLeftRadius='3xl'
-            borderBottomRightRadius='3xl'
-            width={['300px', '300px', '368px']}
+            borderRadius='3xl'
+            width={['320px', '320px', '340px']}
           >
-            <Box ml={24}>
-              <Text>
+            <Box ml={20}>
+              <Text fontWeight='bold'>
                 First time minting a crucible? Read our{' '}
                 <Link
                   isExternal
@@ -49,11 +47,11 @@ const WelcomeToast = () => {
             </Box>
             <IconButton
               bg='none'
-              top={-3}
-              right={-3}
+              top={1}
+              right={1}
               position='absolute'
-              fontSize='4xl'
-              color='red.400'
+              fontSize='xl'
+              color='gray.200'
               icon={<IoCloseCircle />}
               onClick={handleClose}
               aria-label='close toast'
@@ -61,9 +59,9 @@ const WelcomeToast = () => {
               _active={{ bg: 'none' }}
             />
             <Image
-              src={pot}
-              top={-8}
-              left={-6}
+              src={pot3d}
+              top={-10}
+              left={0}
               height='160px'
               htmlHeight='160px'
               position='absolute'
