@@ -5,8 +5,8 @@ const {
   networkId,
   dappId,
   rpcUrl,
-  appUrl,
-  contactEmail,
+  // appUrl,
+  // contactEmail,
   infuraApiKey,
 } = config;
 
@@ -19,24 +19,25 @@ const onboardConfig: Initialization = {
     wallets: [
       { walletName: 'metamask', preferred: true },
       { walletName: 'trust', preferred: true },
-      {
-        walletName: 'trezor',
-        appUrl: appUrl,
-        email: contactEmail,
-        rpcUrl: rpcUrl,
-        preferred: true,
-      },
-      {
-        walletName: 'ledger',
-        rpcUrl: rpcUrl,
-        preferred: true,
-      },
+      // {
+      //   walletName: 'trezor',
+      //   appUrl: appUrl,
+      //   email: contactEmail,
+      //   rpcUrl: rpcUrl,
+      //   preferred: false,
+      // },
+      // {
+      //   walletName: 'ledger',
+      //   rpcUrl: rpcUrl,
+      //   preferred: false,
+      // },
       {
         walletName: 'walletConnect',
         infuraKey: infuraApiKey,
         preferred: true,
       },
       { walletName: 'imToken', rpcUrl: rpcUrl, preferred: true },
+      { walletName: 'trust', preferred: true },
     ],
   },
   walletCheck: [
