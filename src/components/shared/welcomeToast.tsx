@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useToast } from '@chakra-ui/toast';
 import { Box, Link, Text } from '@chakra-ui/layout';
 import { Image } from '@chakra-ui/image';
-import { IconButton } from '@chakra-ui/button';
+import { Button, IconButton } from '@chakra-ui/button';
 import { IoCloseCircle } from 'react-icons/io5';
 import pot3d from '../../img/pot-3d.png';
 
@@ -26,24 +26,32 @@ const WelcomeToast = () => {
         render: () => (
           <Box
             m={4}
-            p={8}
+            p={6}
             bg='gray.700'
             position='relative'
             borderRadius='3xl'
-            width={['320px', '320px', '340px']}
+            width='330px'
           >
-            <Box ml={20}>
-              <Text fontWeight='bold'>
-                First time minting a crucible? Read our{' '}
-                <Link
-                  isExternal
-                  href='https://hackmd.io/@alchemistcoin/HyJXT7tL_/%2FrJSJU5PIu#AludelCrucible-FAQ'
-                  color='blue.500'
-                  fontWeight='bold'
-                >
-                  FAQs.
-                </Link>
+            <Box ml={28}>
+              <Text fontWeight='bold' mb={2}>
+                First time minting a crucible?
               </Text>
+              <Button
+                as={Link}
+                color='white'
+                variant='outline'
+                fontWeight='normal'
+                borderWidth='2px'
+                borderColor='cyan.400'
+                isExternal
+                isFullWidth
+                href='https://hackmd.io/@alchemistcoin/HyJXT7tL_/%2FrJSJU5PIu#AludelCrucible-FAQ'
+                _hover={{
+                  textDecor: 'none',
+                }}
+              >
+                Read FAQs
+              </Button>
             </Box>
             <IconButton
               bg='none'
@@ -62,8 +70,8 @@ const WelcomeToast = () => {
               src={pot3d}
               top={-10}
               left={0}
-              height='160px'
-              htmlHeight='160px'
+              height='186px'
+              htmlHeight='186px'
               position='absolute'
             />
           </Box>

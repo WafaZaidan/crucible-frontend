@@ -37,7 +37,7 @@ const NotifyProvider = ({ children }: NotifyContextProps) => {
         return {
           message: `Your transaction is pending, click <a href="https://${networkName(
             network
-          )}.etherscan.io/tx/${
+          ).toLowerCase()}.etherscan.io/tx/${
             transaction.hash
           }" rel="noopener noreferrer" target="_blank">here</a> for more info.`,
         };

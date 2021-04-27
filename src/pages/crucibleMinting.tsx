@@ -28,7 +28,7 @@ const CrucibleMinting = () => {
           <Flex justifyContent='center' alignItems='center' flexGrow={1}>
             <Spinner />
           </Flex>
-        ) : network && networkUnsupported ? (
+        ) : address && networkUnsupported ? (
           <Flex justifyContent='center' alignItems='center' flexGrow={1}>
             <VStack>
               <Spinner />

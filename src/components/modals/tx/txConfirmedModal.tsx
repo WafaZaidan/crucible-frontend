@@ -23,7 +23,7 @@ const TxConfirmedModal: React.FC<Props> = ({ onClose, hash }) => {
 
   const etherscanLink = `https://${networkName(
     network || 1
-  )}.etherscan.io/tx/${hash}`;
+  ).toLowerCase()}.etherscan.io/tx/${hash}`;
 
   return (
     <Modal isOpen={true} onClose={onClose}>

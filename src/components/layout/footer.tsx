@@ -4,7 +4,7 @@ import { Flex, HStack, Link as ChakraLink, Box } from '@chakra-ui/layout';
 
 const Footer = () => {
   return (
-    <Flex py={4} alignItems='center' flexDirection='column'>
+    <Flex p={4} alignItems='flex-end' flexDirection='column'>
       <Box>
         <HStack spacing={4}>
           {externalLinks.map(({ href, label, icon: Icon }) => (
@@ -35,12 +35,6 @@ const Footer = () => {
       </Box>
       <Box py={2}>
         <HStack spacing={4}>
-          <ChakraLink
-            href='https://hackmd.io/@alchemistcoin/HyJXT7tL_/%2FrJSJU5PIu'
-            target='_blank'
-          >
-            Documentation
-          </ChakraLink>
           <ChakraLink
             href='https://hackmd.io/@alchemistcoin/HyJXT7tL_/%2FrJSJU5PIu#AludelCrucible-FAQ'
             target='_blank'

@@ -15,7 +15,6 @@ const App: React.FC = () => {
       minHeight='100vh'
       flexDirection='column'
       background={`url(${bg})`}
-      backgroundPosition='center'
       backgroundRepeat='no-repeat'
       backgroundAttachment='fixed'
       backgroundSize='cover'

@@ -10,17 +10,17 @@ export enum Network {
 export function networkName(networkId: Network) {
   switch (Number(networkId)) {
     case 1:
-      return 'main';
+      return 'Mainnet';
     case 3:
-      return 'ropsten';
+      return 'Ropsten';
     case 4:
-      return 'rinkeby';
+      return 'Rinkeby';
     case 5:
-      return 'goerli';
+      return 'Goerli';
     case 6:
-      return 'kotti';
+      return 'Kotti';
     case 42:
-      return 'kovan';
+      return 'Kovan';
     default:
       return 'localhost';
   }
