@@ -1,3 +1,4 @@
+import React, { FC, useMemo, useState } from 'react';
 import { Box, Flex, HStack, Text, VStack } from '@chakra-ui/layout';
 import {
   Stat,
@@ -12,7 +13,6 @@ import { Crucible } from '../../../context/crucibles/crucibles';
 import { Button } from '@chakra-ui/button';
 import dayjs from 'dayjs';
 import { commify } from 'ethers/lib/utils';
-import { useState } from 'react';
 import UnstakeAndClaimModal from '../../modals/unstakeAndClaimModal';
 import IncreaseStakeModal from '../../modals/increaseStakeModal';
 import WithdrawModal from '../../modals/withdrawModal';
@@ -20,7 +20,7 @@ import WithdrawModal from '../../modals/withdrawModal';
 type Props = {
   crucible: Crucible;
 };
-const Rewards: React.FC<Props> = ({ crucible }) => {
+const Rewards: FC<Props> = ({ crucible }) => {
   const [claimRewardsModalOpen, setClaimRewardsModalOpen] = useState(false);
   const [increaseStakeModalOpen, setIncreaseStakeModalOpen] = useState(false);
   const [withdrawModalOpen, setWithdrawModalOpen] = useState(false);
@@ -45,6 +45,22 @@ const Rewards: React.FC<Props> = ({ crucible }) => {
       crucible.wethValue +
       crucible.wethPrice;
   }
+
+  const earnedRewards: {
+    mist: number | string;
+    mistUsd: number | string;
+    eth: number | string;
+    ethUsd: number | string;
+  } = useMemo(() => {
+    const { tokenRewards, mistPrice, ethRewards, wethPrice } = crucible;
+    const mist = tokenRewards ? +tokenRewards.toFixed(4) : 0;
+    const mistUsd = mistPrice ? mist * mistPrice : '--';
+    const eth = ethRewards ? +ethRewards.toFixed(4) : 0;
+    const ethUsd = wethPrice ? commify((eth * wethPrice).toFixed(0)) : '--';
+
+    return { mist, mistUsd, eth, ethUsd };
+  }, [crucible]);
+
   return (
     <Box p={4} bg='white' color='gray.800' borderRadius='xl'>
       <Flex justifyContent='space-between' alignItems='start'>
@@ -85,14 +101,9 @@ const Rewards: React.FC<Props> = ({ crucible }) => {
                     <>
                       <StatHelpText>
                         <StatNumber fontSize='md' pl={2}>
-                          {crucible.tokenRewards?.toFixed(4) || '0.0000'}
+                          {earnedRewards.mist}
                         </StatNumber>
-                        <StatArrow type='increase' />$
-                        {crucible.tokenRewards && crucible.mistPrice
-                          ? (
-                              crucible.tokenRewards * crucible.mistPrice
-                            ).toFixed(0)
-                          : '0'}
+                        <StatArrow type='increase' />${earnedRewards.mistUsd}
                       </StatHelpText>
                     </>
                   </HStack>
@@ -110,16 +121,9 @@ const Rewards: React.FC<Props> = ({ crucible }) => {
                     <>
                       <StatHelpText>
                         <StatNumber fontSize='md' pl={2}>
-                          {crucible.ethRewards?.toFixed(4) || '0.0000'}
+                          {earnedRewards.eth}
                         </StatNumber>
-                        <StatArrow type='increase' />$
-                        {crucible.ethRewards && crucible.wethPrice
-                          ? commify(
-                              (
-                                crucible.ethRewards * crucible.wethPrice
-                              ).toFixed(0)
-                            )
-                          : '0'}
+                        <StatArrow type='increase' />${earnedRewards.ethUsd}
                       </StatHelpText>
                     </>
                   </HStack>
