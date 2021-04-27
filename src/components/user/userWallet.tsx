@@ -18,6 +18,7 @@ const UserWallet = () => {
   };
 
   const handleReset = () => {
+    localStorage.setItem('onboard.selectedWallet', '');
     onboard?.walletReset();
   };
 
