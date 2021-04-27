@@ -23,7 +23,7 @@ const UserWallet = () => {
   };
 
   const walletButtonProps = {
-    borderColor: 'purple.500',
+    borderColor: 'cyan.400',
     borderWidth: '2px',
     variant: 'outline',
   };
