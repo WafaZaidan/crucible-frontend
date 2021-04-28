@@ -4,7 +4,7 @@ import CrucibleTabs from './crucibleTabs';
 import { Button, IconButton } from '@chakra-ui/button';
 import { truncate } from '../../../utils/address';
 import { useHistory } from 'react-router-dom';
-import { Crucible } from '../../../context/crucibles/crucibles';
+import { Crucible, Stake } from '../../../context/crucibles/crucibles';
 import { FiArrowLeft, FiCopy, FiSend } from 'react-icons/fi';
 import { FaLock } from 'react-icons/fa';
 import { Flex, Box, HStack, Text, Heading, Badge } from '@chakra-ui/layout';
@@ -70,9 +70,16 @@ const CrucibleDetailCard: FC<Props> = ({ crucible }) => {
           />
           <Box textAlign='left'>
             <Text fontSize='xl'>ID: {truncate(crucible!.id)}</Text>
-            <Text fontSize='lg' color='gray.300'>
-              Minted {dayjs(crucible!.mintTimestamp).format('MMM-DD YYYY')}
-            </Text>
+            <HStack>
+              {crucible!.stakes.map((stake: Stake, i) => {
+                return (
+                  <Text key={i} fontSize='sm' color='gray.300'>
+                    Subscription {i + 1}:{' '}
+                    {dayjs(stake.timestamp).format('MMM-DD YYYY')}
+                  </Text>
+                );
+              })}
+            </HStack>
           </Box>
         </HStack>
         <HStack>

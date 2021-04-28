@@ -125,6 +125,5 @@ export async function calculateMistRewards(
   ]);
 
   const mistRewards = (totalMistRewards * weiRewards) / totalWeiRewards;
-  console.log('typeof ', typeof weiRewards);
   return { tokenRewards: mistRewards, ethRewards: weiRewards };
 }

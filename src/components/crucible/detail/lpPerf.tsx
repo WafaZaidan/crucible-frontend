@@ -32,7 +32,7 @@ const LpPerformance: FC<Props> = ({ crucible }) => {
     <Box p={4} bg='white' color='gray.800' borderRadius='xl'>
       <StatGroup mt={4} justifyContent='space-between'>
         <Tooltip
-          label='Current MIST deposited in your staked liquidity pool tokens'
+          label='Current MIST deposited in your subscribed liquidity pool tokens'
           placement='top'
           hasArrow={true}
         >
@@ -45,7 +45,7 @@ const LpPerformance: FC<Props> = ({ crucible }) => {
           />
         </Tooltip>
         <Tooltip
-          label='Current ETH deposited in your staked liquidity pool tokens'
+          label='Current ETH deposited in your subscribed liquidity pool tokens'
           placement='top'
           hasArrow={true}
         >
@@ -72,7 +72,7 @@ const LpPerformance: FC<Props> = ({ crucible }) => {
         </Tooltip>
         {!!cummulativeGainLossUSD && (
           <Tooltip
-            label='Impermanment gains or loss (USD) due to arbitrage and fees on the Uniswap liquidity pool.'
+            label='Impermanent gains or loss (USD) due to arbitrage and fees on the Uniswap liquidity pool.'
             placement='top'
             hasArrow={true}
           >

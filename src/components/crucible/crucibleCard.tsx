@@ -68,7 +68,12 @@ const CrucibleCard: FC<Props> = ({
                 <FiCopy />
               </HStack>
               <Text fontSize='sm' color='gray.400'>
-                Minted {dayjs(crucible.mintTimestamp).format('MMM-DD YYYY')}
+                Minted{' '}
+                {dayjs(
+                  crucible.stakes[0]?.timestamp
+                    ? crucible.stakes[0]?.timestamp
+                    : crucible.mintTimestamp
+                ).format('MMM-DD YYYY')}
               </Text>
             </Box>
           </HStack>
@@ -138,8 +143,8 @@ const CrucibleCard: FC<Props> = ({
                 <StatLabel>Earned MIST Rewards</StatLabel>
                 <StatNumber>
                   {crucible.tokenRewards
-                    ? crucible.tokenRewards.toFixed(4)
-                    : '0'}
+                    ? crucible.tokenRewards.toFixed(3)
+                    : '0.000'}
                 </StatNumber>
                 <StatHelpText>
                   <StatArrow type='increase' />$
@@ -158,7 +163,7 @@ const CrucibleCard: FC<Props> = ({
               <Stat>
                 <StatLabel>Earned ETH Rewards</StatLabel>
                 <StatNumber>
-                  {crucible.ethRewards?.toFixed(4) || '0'}
+                  {crucible.ethRewards?.toFixed(3) || '0.000'}
                 </StatNumber>
                 <StatHelpText>
                   <StatArrow type='increase' />$

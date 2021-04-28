@@ -63,7 +63,7 @@ const Rewards: FC<Props> = ({ crucible }) => {
               <HStack justifyContent='center' pt={4}>
                 <Text>Total Value</Text>
                 <Text fontWeight='bold' mr={4} fontSize='lg'>
-                  {`$${commify((lpValueUSD + aggregateRewardsUSD).toFixed(2))}`}
+                  {`$${commify((lpValueUSD + aggregateRewardsUSD).toFixed(0))}`}
                 </Text>
               </HStack>
               <HStack justifyContent='center' pt={4}>
@@ -102,16 +102,38 @@ const Rewards: FC<Props> = ({ crucible }) => {
                 <Text fontSize='sm' pb={1}>
                   Reward Scaling Period
                 </Text>
-                <Progress
-                  value={(daysAgo / 60) * 100}
-                  size='xs'
-                  colorScheme='purple'
-                  backgroundColor='lightgray'
-                />
-                <Text fontSize='xs' pt={1} pb={4}>
-                  {((daysAgo / 60) * 100).toFixed(0)}% Complete ({daysAgo} of 60
-                  D)
-                </Text>
+                <VStack>
+                  <Progress
+                    value={(daysAgo / 60) * 100}
+                    size='xs'
+                    colorScheme='purple'
+                    backgroundColor='lightgray'
+                  />
+                  {crucible!.stakes.map((stake, i) => {
+                    const daysAgo: number = dayjs().diff(
+                      stake.timestamp,
+                      'day'
+                    );
+
+                    return (
+                      <Box key={i} width='100%'>
+                        <Text fontSize='xs' pt={1} pb={2}>
+                          Subscription {i + 1}: {stake.amount} LP
+                        </Text>
+                        <Progress
+                          value={(daysAgo / 60) * 100}
+                          size='xs'
+                          colorScheme='purple'
+                          backgroundColor='lightgray'
+                        />
+                        <Text fontSize='xs' pt={1} pb={4}>
+                          {((daysAgo / 60) * 100).toFixed(0)}% Complete (
+                          {daysAgo} of 60 D to max reward multiplier)
+                        </Text>
+                      </Box>
+                    );
+                  })}
+                </VStack>
                 <HStack>
                   <Text fontSize='sm'>
                     Subscribed Crucible LP:{' '}

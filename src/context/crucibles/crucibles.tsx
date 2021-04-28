@@ -21,6 +21,11 @@ import { GET_PAIR_HISTORY } from '../../queries/uniswap';
 import { useLazyQuery } from '@apollo/client';
 import { config } from '../../config/variables';
 
+export type Stake = {
+  amount: string;
+  timestamp: number;
+};
+
 export type Crucible = {
   id: string;
   balance: string | any;
@@ -28,6 +33,7 @@ export type Crucible = {
   owner: string;
   cleanBalance: any;
   cleanLockedBalance: any;
+  stakes: Stake[];
   cleanUnlockedBalance?: any;
   mintTimestamp?: any;
   tokenRewards?: number;
@@ -165,7 +171,6 @@ const CruciblesProvider = ({ children }: CruciblesProps) => {
                 network
               ),
             }));
-            console.log('reformatted', reformatted);
             setCrucibles(reformatted);
             return getUserRewards(signer, ownedCrucibles);
           })
