@@ -1,3 +1,4 @@
+import React, { FC } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { Flex, Box } from '@chakra-ui/layout';
 import Footer from './components/layout/footer';
@@ -9,7 +10,7 @@ import NoMatch from './pages/noMatch';
 import CrucibleDetail from './pages/crucibleDetail';
 import CrucibleMinting from './pages/crucibleMinting';
 
-const App: React.FC = () => {
+const App: FC = () => {
   return (
     <Flex
       minHeight='100vh'

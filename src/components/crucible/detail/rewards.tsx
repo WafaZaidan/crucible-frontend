@@ -1,14 +1,6 @@
 import React, { FC, useMemo, useState } from 'react';
 import { Box, Flex, HStack, Text, VStack } from '@chakra-ui/layout';
-import {
-  Stat,
-  StatLabel,
-  StatNumber,
-  Progress,
-  StatArrow,
-  StatGroup,
-  StatHelpText,
-} from '@chakra-ui/react';
+import { Progress, StatGroup } from '@chakra-ui/react';
 import { Crucible } from '../../../context/crucibles/crucibles';
 import { Button } from '@chakra-ui/button';
 import dayjs from 'dayjs';
@@ -16,6 +8,7 @@ import { commify } from 'ethers/lib/utils';
 import UnstakeAndClaimModal from '../../modals/unstakeAndClaimModal';
 import IncreaseStakeModal from '../../modals/increaseStakeModal';
 import WithdrawModal from '../../modals/withdrawModal';
+import StatCard from '../../shared/StatCard';
 
 type Props = {
   crucible: Crucible;
@@ -86,50 +79,24 @@ const Rewards: FC<Props> = ({ crucible }) => {
                 </Text>
               </HStack>
             </HStack>
+
             <HStack>
               <StatGroup mt={5} alignItems='baseline' width='100%'>
-                <Stat
-                  textAlign='center'
-                  backgroundColor='whitesmoke'
-                  borderRadius='xl'
-                  margin='.1rem'
-                >
-                  <StatLabel paddingBottom='.2rem' fontWeight='bold'>
-                    Earned MIST Rewards
-                  </StatLabel>
-                  <HStack justifyContent='center'>
-                    <>
-                      <StatHelpText>
-                        <StatNumber fontSize='md' pl={2}>
-                          {earnedRewards.mist}
-                        </StatNumber>
-                        <StatArrow type='increase' />${earnedRewards.mistUsd}
-                      </StatHelpText>
-                    </>
-                  </HStack>
-                </Stat>
-                <Stat
-                  textAlign='center'
-                  backgroundColor='whitesmoke'
-                  borderRadius='xl'
-                  margin='.1rem'
-                >
-                  <StatLabel paddingBottom='.2rem' fontWeight='bold'>
-                    Earned ETH Rewards
-                  </StatLabel>
-                  <HStack justifyContent='center'>
-                    <>
-                      <StatHelpText>
-                        <StatNumber fontSize='md' pl={2}>
-                          {earnedRewards.eth}
-                        </StatNumber>
-                        <StatArrow type='increase' />${earnedRewards.ethUsd}
-                      </StatHelpText>
-                    </>
-                  </HStack>
-                </Stat>
+                <StatCard
+                  title='Earned MIST Rewards'
+                  label={earnedRewards.mist.toString()}
+                  subLabel={`$${earnedRewards.mistUsd}`}
+                  arrowOnSubLabel
+                />
+                <StatCard
+                  title='Earned ETH Rewards'
+                  label={earnedRewards.eth.toString()}
+                  subLabel={`$${earnedRewards.ethUsd}`}
+                  arrowOnSubLabel
+                />
               </StatGroup>
             </HStack>
+
             <VStack width='100%' align='stretch' mt={6}>
               <Box>
                 <Text fontSize='sm' pb={1}>
@@ -157,6 +124,7 @@ const Rewards: FC<Props> = ({ crucible }) => {
                 </HStack>
               </Box>
             </VStack>
+
             <HStack width='100%' justifyContent='space-between' pt={6}>
               <Flex
                 justifyContent='space-between'
@@ -178,6 +146,7 @@ const Rewards: FC<Props> = ({ crucible }) => {
                 </Button>
               </Flex>
             </HStack>
+
             <VStack justifyContent='center' pt={4}>
               <Button
                 width='100%'

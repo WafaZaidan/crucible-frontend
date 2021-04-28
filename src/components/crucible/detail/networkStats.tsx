@@ -1,16 +1,5 @@
 import React, { FC } from 'react';
-import {
-  Box,
-  HStack,
-  Flex,
-  Stat,
-  StatLabel,
-  StatNumber,
-  StatArrow,
-  StatGroup,
-  Spinner,
-  StatHelpText,
-} from '@chakra-ui/react';
+import { Box, HStack, Flex, StatGroup, Spinner } from '@chakra-ui/react';
 import { Crucible } from '../../../context/crucibles/crucibles';
 import { config } from '../../../config/variables';
 import dayjs from 'dayjs';
@@ -18,6 +7,7 @@ import { commify } from 'ethers/lib/utils';
 import { useCrucibles } from '../../../context/crucibles';
 import { useLpStats } from '../../../context/lp';
 import { useNetworkStats } from '../../../context/network';
+import StatCard from '../../shared/StatCard';
 
 const { inflationStartTimestamp } = config;
 
@@ -80,133 +70,41 @@ const LpPerformance: FC<Props> = ({ crucible }) => {
       >
         <HStack width='100%' direction='row'>
           <StatGroup mt={4} alignItems='baseline' width='100%'>
-            <Stat
-              textAlign='center'
-              backgroundColor='whitesmoke'
-              borderRadius='xl'
-              margin='.2rem'
-              height='5rem'
-            >
-              <StatLabel paddingBottom='.2rem' fontWeight='bold'>
-                Market Cap
-              </StatLabel>
-              <HStack justifyContent='center'>
-                <>
-                  <StatHelpText>
-                    <StatNumber fontSize='md'>
-                      {tokenBalances?.mistPrice
-                        ? `$${commify(
-                            (tokenBalances?.mistPrice * totalSupply).toFixed(2)
-                          )}`
-                        : '$ -'}
-                    </StatNumber>
-                  </StatHelpText>
-                </>
-              </HStack>
-            </Stat>
-            <Stat
-              textAlign='center'
-              backgroundColor='whitesmoke'
-              borderRadius='xl'
-              margin='.2rem'
-              height='5rem'
-            >
-              <StatLabel paddingBottom='.2rem' fontWeight='bold'>
-                Total Volume Locked
-              </StatLabel>
-              <HStack justifyContent='center'>
-                <>
-                  <StatHelpText>
-                    <StatNumber fontSize='md'>
-                      $
-                      {lpStats?.totalVolume
-                        ? commify(lpStats.totalVolume.toFixed(2))
-                        : 0}
-                    </StatNumber>
-                  </StatHelpText>
-                </>
-              </HStack>
-            </Stat>
-            <Stat
-              textAlign='center'
-              backgroundColor='whitesmoke'
-              borderRadius='xl'
-              margin='.2rem'
-              height='5rem'
-            >
-              <StatLabel paddingBottom='.2rem' fontWeight='bold'>
-                Inflation Rate
-              </StatLabel>
-              <HStack justifyContent='center'>
-                <>
-                  <StatHelpText>
-                    <StatNumber fontSize='md'>1%</StatNumber>
-                    Every 14 days
-                  </StatHelpText>
-                </>
-              </HStack>
-            </Stat>
+            <StatCard
+              title='Market Cap'
+              label={
+                tokenBalances?.mistPrice
+                  ? `$${commify(
+                      (tokenBalances?.mistPrice * totalSupply).toFixed(2)
+                    )}`
+                  : '$ -'
+              }
+            />
+            <StatCard
+              title='Total Volume Locked'
+              label={`$${
+                lpStats?.totalVolume
+                  ? commify(lpStats.totalVolume.toFixed(2))
+                  : 0
+              }`}
+            />
+            <StatCard
+              title='Inflation Rate'
+              label='1%'
+              subLabel='Every 14 days'
+            />
           </StatGroup>
         </HStack>
         <HStack width='100%' direction='row'>
           <StatGroup mt={2} alignItems='baseline' width='100%'>
-            <Stat
-              textAlign='center'
-              backgroundColor='whitesmoke'
-              borderRadius='xl'
-              margin='.2rem'
-              height='5rem'
-            >
-              <StatLabel paddingBottom='.2rem' fontWeight='bold'>
-                Rewards Programs
-              </StatLabel>
-              <HStack justifyContent='center'>
-                <>
-                  <StatHelpText>
-                    <StatNumber fontSize='md'>2</StatNumber>
-                    MIST, ETH
-                  </StatHelpText>
-                </>
-              </HStack>
-            </Stat>
-            <Stat
-              textAlign='center'
-              backgroundColor='whitesmoke'
-              borderRadius='xl'
-              margin='.2rem'
-              height='5rem'
-            >
-              <StatLabel paddingBottom='.2rem' fontWeight='bold'>
-                Rewards Rate
-              </StatLabel>
-              <HStack justifyContent='center'>
-                <StatHelpText>
-                  <StatNumber fontSize='md'>
-                    {`${commify(weeklyRewardsRate.toFixed(0))} MIST / week`}
-                  </StatNumber>
-                  <StatArrow type='increase' />
-                  {`${commify(rewardsRateIncrease.toFixed(0))}`}
-                </StatHelpText>
-              </HStack>
-            </Stat>
-            <Stat
-              textAlign='center'
-              backgroundColor='whitesmoke'
-              borderRadius='xl'
-              margin='.2rem'
-              height='5rem'
-            >
-              <StatLabel paddingBottom='.2rem' fontWeight='bold'>
-                Reward Scaling Period
-              </StatLabel>
-              <HStack justifyContent='center'>
-                <>
-                  <StatHelpText>
-                    <StatNumber fontSize='md'>60 days</StatNumber>
-                  </StatHelpText>
-                </>
-              </HStack>
-            </Stat>
+            <StatCard title='Rewards Programs' label='2' subLabel='MIST, ETH' />
+            <StatCard
+              title='Rewards Rate'
+              label={`${commify(weeklyRewardsRate.toFixed(0))} MIST / week`}
+              subLabel={`${commify(rewardsRateIncrease.toFixed(0))}`}
+              arrowOnSubLabel
+            />
+            <StatCard title='Reward Scaling Period' label='60 days' />
           </StatGroup>
         </HStack>
       </Flex>
