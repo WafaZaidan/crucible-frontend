@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC } from 'react';
 import {
   Box,
   Stat,
@@ -15,7 +15,7 @@ import { Crucible } from '../../../context/crucibles/crucibles';
 type Props = {
   crucible: Crucible;
 };
-const LpPerformance: React.FC<Props> = ({ crucible }) => {
+const LpPerformance: FC<Props> = ({ crucible }) => {
   if (!crucible) return <Spinner width={24} height={24} />;
   const netMistGainLoss =
     Number(crucible.mistValue) - Number(crucible.initialMistInLP);

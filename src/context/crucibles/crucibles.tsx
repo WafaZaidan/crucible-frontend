@@ -1,6 +1,12 @@
+import React, {
+  useState,
+  useEffect,
+  createContext,
+  useContext,
+  ReactNode,
+} from 'react';
 import { BigNumber } from 'ethers';
 import { useWeb3 } from '../web3';
-import React, { useState, useEffect } from 'react';
 import { formatUnits } from 'ethers/lib/utils';
 import { getTokenBalances } from '../../contracts/getTokenBalances';
 import { getOwnedCrucibles } from '../../contracts/getOwnedCrucibles';
@@ -48,7 +54,7 @@ type TokenBalances = {
 };
 
 type CruciblesProps = {
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 type CruciblesContextType = {
@@ -60,9 +66,7 @@ type CruciblesContextType = {
   reloadBalances(): void;
 };
 
-const Crucibles = React.createContext<CruciblesContextType | undefined>(
-  undefined
-);
+const Crucibles = createContext<CruciblesContextType | undefined>(undefined);
 
 const CruciblesProvider = ({ children }: CruciblesProps) => {
   const { provider, address, wallet, network } = useWeb3();
@@ -225,7 +229,7 @@ const CruciblesProvider = ({ children }: CruciblesProps) => {
 };
 
 const useCrucibles = () => {
-  const context = React.useContext(Crucibles);
+  const context = useContext(Crucibles);
   if (context === undefined) {
     throw new Error('useCrucibles must be used within a CruciblesProvider');
   }

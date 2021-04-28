@@ -1,3 +1,4 @@
+import React, { FC } from 'react';
 import { Box, Center, Spinner, Text } from '@chakra-ui/react';
 import {
   Modal,
@@ -13,7 +14,7 @@ type Props = {
   message?: string;
 };
 
-const TxPendingSignatureModal: React.FC<Props> = ({ step, totalSteps }) => {
+const TxPendingSignatureModal: FC<Props> = ({ step, totalSteps }) => {
   return (
     <>
       <Modal isOpen={true} onClose={() => null}>

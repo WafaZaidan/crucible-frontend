@@ -1,3 +1,4 @@
+import React, { FC } from 'react';
 import { Button, Flex, Text, Link } from '@chakra-ui/react';
 import { IoArrowUpCircleOutline } from 'react-icons/io5';
 import {
@@ -18,7 +19,7 @@ type Props = {
   hash: string;
 };
 
-const TxConfirmedModal: React.FC<Props> = ({ onClose, hash }) => {
+const TxConfirmedModal: FC<Props> = ({ onClose, hash }) => {
   const { network } = useWeb3();
 
   const etherscanLink = `https://${networkName(

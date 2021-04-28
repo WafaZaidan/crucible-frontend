@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { FC, useState } from 'react';
 import { providers } from 'ethers';
 import { Button } from '@chakra-ui/button';
 import { LightMode } from '@chakra-ui/color-mode';
@@ -21,7 +21,7 @@ type MintAndLockParams = Parameters<
   (signer: Signer, provider: providers.Web3Provider, lpBalance: string) => void
 >;
 
-const MintingFormControl = () => {
+const MintingFormControl: FC = () => {
   const [value, setValue] = useState('0');
   const { provider } = useWeb3();
   const { invokeContract, ui } = useContract(mintAndLock);

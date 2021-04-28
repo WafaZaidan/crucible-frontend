@@ -1,3 +1,4 @@
+import React, { FC } from 'react';
 import { Center, Flex, Text, VStack } from '@chakra-ui/layout';
 import { Spinner } from '@chakra-ui/spinner';
 import { useWeb3 } from '../context/web3';
@@ -5,7 +6,7 @@ import { networkName } from '../utils/network';
 import MintingTabs from '../components/minting/mintingTabs';
 import MintingGuide from '../components/minting/mintingGuide';
 
-const CrucibleMinting = () => {
+const CrucibleMinting: FC = () => {
   const { address, isLoading, network } = useWeb3();
 
   const supportedNetwork = Number(process.env.REACT_APP_NETWORK_ID);

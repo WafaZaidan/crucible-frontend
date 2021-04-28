@@ -1,3 +1,4 @@
+import React, { FC } from 'react';
 import {
   Box,
   Center,
@@ -68,7 +69,7 @@ const faqsArray = [
   },
 ];
 
-const Faqs = () => {
+const Faqs: FC = () => {
   return (
     <Box mt={16}>
       <Heading textAlign='center' size='2xl' mb={8}>

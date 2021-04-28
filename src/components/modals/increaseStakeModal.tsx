@@ -1,3 +1,4 @@
+import React, { FC } from 'react';
 import {
   Button,
   Link,
@@ -32,7 +33,7 @@ type Props = {
   onClose: () => void;
 };
 
-const IncreaseStakeModal: React.FC<Props> = ({ onClose, crucible }) => {
+const IncreaseStakeModal: FC<Props> = ({ onClose, crucible }) => {
   const { provider } = useWeb3();
   const [amount, setAmount] = useState('0');
 

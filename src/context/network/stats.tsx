@@ -1,17 +1,22 @@
-import * as React from 'react';
+import React, {
+  ReactNode,
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+} from 'react';
 import { useWeb3 } from '../web3';
-import { useState, useEffect } from 'react';
 import { getNetworkStats } from '../../contracts/aludel';
 
 type NetworkStatsProps = {
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 type NetworkStatsContextType = {
   networkStats: any;
 };
 
-const NetworkStats = React.createContext<NetworkStatsContextType | undefined>(
+const NetworkStats = createContext<NetworkStatsContextType | undefined>(
   undefined
 );
 
@@ -45,7 +50,7 @@ const NetworkStatsProvider = ({ children }: NetworkStatsProps) => {
 };
 
 const useNetworkStats = () => {
-  const context = React.useContext(NetworkStats);
+  const context = useContext(NetworkStats);
   if (context === undefined) {
     throw new Error(
       'useNetworkStats must be used within a NetworkStatsProvider'

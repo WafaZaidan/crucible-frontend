@@ -1,3 +1,4 @@
+import React, { FC } from 'react';
 import { Button, Flex, Text } from '@chakra-ui/react';
 import { IoWarningOutline } from 'react-icons/io5';
 import {
@@ -16,7 +17,7 @@ type Props = {
   code?: number;
 };
 
-const TxErrorModal: React.FC<Props> = ({ onClose, message, code }) => {
+const TxErrorModal: FC<Props> = ({ onClose, message, code }) => {
   return (
     <Modal isOpen={true} onClose={onClose}>
       <ModalOverlay />

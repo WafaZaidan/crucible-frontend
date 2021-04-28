@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { createContext, useContext, ReactNode } from 'react';
 import { API as NotifyAPI } from 'bnc-notify';
 import { useState, useEffect } from 'react';
 import { initNotify } from '../../config/notify';
@@ -10,16 +10,14 @@ type Transaction = {
 };
 
 type NotifyContextProps = {
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 type Web3ContextType = {
   monitorTx(hash: string, reload: () => void): Promise<void>;
 };
 
-const NotifyContext = React.createContext<Web3ContextType | undefined>(
-  undefined
-);
+const NotifyContext = createContext<Web3ContextType | undefined>(undefined);
 
 const NotifyProvider = ({ children }: NotifyContextProps) => {
   const { network } = useWeb3();
@@ -68,7 +66,7 @@ const NotifyProvider = ({ children }: NotifyContextProps) => {
 };
 
 const useNotify = () => {
-  const context = React.useContext(NotifyContext);
+  const context = useContext(NotifyContext);
   if (context === undefined) {
     throw new Error('useNotify must be used within a NotifyProvider');
   }

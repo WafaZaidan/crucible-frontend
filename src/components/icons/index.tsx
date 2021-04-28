@@ -1,8 +1,6 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, SVGProps } from 'react';
 
-const DiscordIcon = ({
-  ...props
-}: React.SVGProps<SVGSVGElement>): ReactElement => {
+const DiscordIcon = ({ ...props }: SVGProps<SVGSVGElement>): ReactElement => {
   return (
     <svg width='48' height='48' viewBox='0 0 48 48' fill='none' {...props}>
       <path
@@ -21,9 +19,7 @@ const DiscordIcon = ({
   );
 };
 
-const EtherscanIcon = ({
-  ...props
-}: React.SVGProps<SVGSVGElement>): ReactElement => {
+const EtherscanIcon = ({ ...props }: SVGProps<SVGSVGElement>): ReactElement => {
   return (
     <svg width='48' height='48' viewBox='0 0 48 48' fill='none' {...props}>
       <path
@@ -38,9 +34,7 @@ const EtherscanIcon = ({
   );
 };
 
-const GithubIcon = ({
-  ...props
-}: React.SVGProps<SVGSVGElement>): ReactElement => {
+const GithubIcon = ({ ...props }: SVGProps<SVGSVGElement>): ReactElement => {
   return (
     <svg width='48' height='48' viewBox='0 0 48 48' fill='none' {...props}>
       <path
@@ -51,9 +45,7 @@ const GithubIcon = ({
   );
 };
 
-const UniswapIcon = ({
-  ...props
-}: React.SVGProps<SVGSVGElement>): ReactElement => {
+const UniswapIcon = ({ ...props }: SVGProps<SVGSVGElement>): ReactElement => {
   return (
     <svg width='48' height='48' viewBox='0 0 48 48' fill='none' {...props}>
       <path
@@ -66,9 +58,7 @@ const UniswapIcon = ({
   );
 };
 
-const CoinGeckoIcon = ({
-  ...props
-}: React.SVGProps<SVGSVGElement>): ReactElement => {
+const CoinGeckoIcon = ({ ...props }: SVGProps<SVGSVGElement>): ReactElement => {
   return (
     <svg width='48' height='48' viewBox='0 0 48 48' fill='none' {...props}>
       <path

@@ -1,9 +1,10 @@
+import React, { FC } from 'react';
 import { SimpleGrid, Box, Flex } from '@chakra-ui/layout';
 import UserBalance from '../user/userBalance';
 import UserWallet from '../user/userWallet';
 import Logo from '../shared/logo';
 
-const Header = () => {
+const Header: FC = () => {
   return (
     <SimpleGrid
       p={4}

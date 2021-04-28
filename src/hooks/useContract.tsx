@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, ReactElement } from 'react';
 import TxErrorModal from '../components/modals/tx/txErrorModal';
 import TxConfirmedModal from '../components/modals/tx/txConfirmedModal';
 import TxPendingSignatureModal from '../components/modals/tx/txPendingSignatureModal';
@@ -42,7 +42,7 @@ export function useContract(
   const { checkIsReady } = useWeb3();
   const { reloadBalances } = useCrucibles();
   const { monitorTx } = useNotify();
-  const [ui, setUI] = useState<React.ReactElement | null>(null);
+  const [ui, setUI] = useState<ReactElement | null>(null);
 
   const callback = (event: CallbackArgs) => {
     switch (event.type) {

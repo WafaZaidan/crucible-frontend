@@ -1,11 +1,8 @@
+import React, { ReactNode } from 'react';
 import { useWeb3 } from '../web3';
 import { useQuery } from '@apollo/client';
 import { useState, createContext, useContext } from 'react';
-import {
-  GET_PRICES,
-  GET_UNISWAP_MINTS,
-  GET_TOTAL_VOLUME,
-} from '../../queries/uniswap';
+import { GET_UNISWAP_MINTS, GET_TOTAL_VOLUME } from '../../queries/uniswap';
 import { config } from '../../config/variables';
 
 type LpStatsType = {
@@ -24,7 +21,7 @@ type LpStatsContextType = {
 };
 
 type LpStatsProviderProps = {
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 const LpStats = createContext<LpStatsContextType | undefined>(undefined);

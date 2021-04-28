@@ -1,3 +1,4 @@
+import React, { FC } from 'react';
 import {
   Button,
   NumberInput,
@@ -31,7 +32,7 @@ type Props = {
   onClose: () => void;
 };
 
-const UnstakeAndClaimModal: React.FC<Props> = ({ onClose, crucible }) => {
+const UnstakeAndClaimModal: FC<Props> = ({ onClose, crucible }) => {
   const { provider } = useWeb3();
   const [amount, setAmount] = useState('0');
 

@@ -1,3 +1,4 @@
+import React, { FC } from 'react';
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/tabs';
 import { Box, Flex, Heading } from '@chakra-ui/layout';
 import { useCrucibles } from '../../context/crucibles';
@@ -5,7 +6,7 @@ import { Spinner } from '@chakra-ui/spinner';
 import CruciblesListView from '../crucible/cruciblesListView';
 import MintingForm from './mintingForm';
 
-const MintingTabs = () => {
+const MintingTabs: FC = () => {
   const { crucibles, isLoading } = useCrucibles();
 
   const tabProps = {

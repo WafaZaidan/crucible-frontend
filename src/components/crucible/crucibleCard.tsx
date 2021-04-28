@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { truncate } from '../../utils/address';
 import { useHistory } from 'react-router-dom';
 import { Button, IconButton } from '@chakra-ui/button';
@@ -29,7 +29,7 @@ type Props = {
   isRewardsLoading: boolean;
 };
 
-const CrucibleCard: React.FC<Props> = ({
+const CrucibleCard: FC<Props> = ({
   crucible,
   isExpanded,
   isRewardsLoading,

@@ -1,3 +1,4 @@
+import React, { FC } from 'react';
 import {
   Button,
   FormControl,
@@ -30,7 +31,7 @@ type Props = {
   onClose: () => void;
 };
 
-const TransferModal: React.FC<Props> = ({ onClose, id }) => {
+const TransferModal: FC<Props> = ({ onClose, id }) => {
   const history = useHistory();
   const { provider } = useWeb3();
   const [error, setError] = useState('');

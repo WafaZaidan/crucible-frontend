@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC } from 'react';
 import {
   Box,
   HStack,
@@ -30,7 +30,7 @@ type Props = {
 //     * Total Supply w/inflation
 //     * Total Volume (of LP) Locked
 
-const LpPerformance: React.FC<Props> = ({ crucible }) => {
+const LpPerformance: FC<Props> = ({ crucible }) => {
   const { tokenBalances } = useCrucibles();
   const { lpStats } = useLpStats();
   const { networkStats } = useNetworkStats();

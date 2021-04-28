@@ -1,3 +1,4 @@
+import React, { FC } from 'react';
 import { Box } from '@chakra-ui/layout';
 import { useWeb3 } from '../../context/web3';
 import { truncate } from '../../utils/address';
@@ -5,7 +6,7 @@ import { Button, IconButton } from '@chakra-ui/react';
 import { TiPower } from 'react-icons/ti';
 import { VscLink } from 'react-icons/vsc';
 
-const UserWallet = () => {
+const UserWallet: FC = () => {
   const { address, onboard, isLoading } = useWeb3();
 
   const handleConnect = async () => {

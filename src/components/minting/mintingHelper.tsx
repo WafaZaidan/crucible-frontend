@@ -1,3 +1,4 @@
+import React, { FC } from 'react';
 import {
   Accordion,
   AccordionButton,
@@ -8,7 +9,7 @@ import {
 import { Alert } from '@chakra-ui/alert';
 import { Box } from '@chakra-ui/layout';
 
-const MintingHelper = () => {
+const MintingHelper: FC = () => {
   return (
     <Accordion allowMultiple mb={4}>
       <AccordionItem border='none'>

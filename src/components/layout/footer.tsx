@@ -1,8 +1,9 @@
+import React, { FC } from 'react';
 import { IconButton } from '@chakra-ui/button';
 import { externalLinks } from '../../config/links';
 import { Flex, HStack, Link as ChakraLink, Box } from '@chakra-ui/layout';
 
-const Footer = () => {
+const Footer: FC = () => {
   return (
     <Flex p={4} alignItems='flex-end' flexDirection='column'>
       <Box>

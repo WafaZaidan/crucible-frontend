@@ -1,3 +1,4 @@
+import React, { FC } from 'react';
 import { Center, Flex } from '@chakra-ui/layout';
 import { useLocation } from 'react-router';
 import { Crucible } from '../context/crucibles/crucibles';
@@ -7,7 +8,7 @@ type LocationState = {
   crucible: Crucible;
 };
 
-const CrucibleDetail = () => {
+const CrucibleDetail: FC = () => {
   const {
     state: { crucible },
   } = useLocation<LocationState>();

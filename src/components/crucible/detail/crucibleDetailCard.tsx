@@ -1,3 +1,4 @@
+import React, { FC } from 'react';
 import dayjs from 'dayjs';
 import CrucibleTabs from './crucibleTabs';
 import { Button, IconButton } from '@chakra-ui/button';
@@ -17,7 +18,7 @@ type Props = {
   crucible: Crucible;
 };
 
-const CrucibleDetailCard: React.FC<Props> = ({ crucible }) => {
+const CrucibleDetailCard: FC<Props> = ({ crucible }) => {
   const id = 'copy-toast';
 
   const toast = useToast();

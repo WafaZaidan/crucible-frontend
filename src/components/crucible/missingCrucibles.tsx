@@ -1,8 +1,9 @@
+import React, { FC } from 'react';
 import { Image } from '@chakra-ui/image';
 import { Box, Heading, Text } from '@chakra-ui/layout';
 import pot from '../../img/pot.png';
 
-const MissingCrucibles = () => {
+const MissingCrucibles: FC = () => {
   return (
     <Box textAlign='center'>
       <Image src={pot} height='220px' htmlHeight='220px' mx='auto' my={8} />

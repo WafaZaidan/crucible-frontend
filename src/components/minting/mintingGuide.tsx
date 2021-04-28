@@ -1,3 +1,4 @@
+import React, { FC } from 'react';
 import { Box, Heading, HStack, Link, Text } from '@chakra-ui/layout';
 import { Image } from '@chakra-ui/image';
 import pot from '../../img/pot.png';
@@ -14,7 +15,7 @@ import { useWeb3 } from '../../context/web3';
 import { config } from '../../config/variables';
 import WelcomeToast from '../shared/welcomeToast';
 
-const MintingGuide = () => {
+const MintingGuide: FC = () => {
   const { onboard } = useWeb3();
   const { uniswapPoolUrl, getMistUrl } = config;
 

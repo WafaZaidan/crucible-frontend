@@ -1,9 +1,10 @@
+import React, { FC } from 'react';
 import { Box, Flex, SimpleGrid, Text } from '@chakra-ui/layout';
 import { useWeb3 } from '../../context/web3';
 import { config } from '../../config/variables';
 import { CountUp } from 'use-count-up';
 
-const UserBalance = () => {
+const UserBalance: FC = () => {
   const { tokens, ethBalance } = useWeb3();
   const { mistTokenAddress, lpTokenAddress } = config;
 

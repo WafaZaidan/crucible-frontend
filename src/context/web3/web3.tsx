@@ -1,5 +1,11 @@
-import * as React from 'react';
-import { useState, useEffect, useReducer } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useReducer,
+  createContext,
+  useContext,
+  ReactNode,
+} from 'react';
 import Onboard from 'bnc-onboard';
 import {
   API as OnboardApi,
@@ -33,7 +39,7 @@ type TokensToWatch = {
 type Web3ContextProps = {
   cacheWalletSelection?: boolean;
   checkNetwork?: boolean;
-  children: React.ReactNode;
+  children: ReactNode;
   ethGasStationApiKey?: string;
   gasPricePollingInterval?: number; //Seconds between gas price polls. Defaults to 0 - Disabled
   gasPriceSetting?: EthGasStationSettings | EtherchainGasSettings;
@@ -61,7 +67,7 @@ type Web3ContextType = {
   signMessage(message: string): Promise<string>;
 };
 
-const Web3Context = React.createContext<Web3ContextType | undefined>(undefined);
+const Web3Context = createContext<Web3ContextType | undefined>(undefined);
 
 const Web3Provider = ({
   children,
@@ -408,7 +414,7 @@ const Web3Provider = ({
 };
 
 const useWeb3 = () => {
-  const context = React.useContext(Web3Context);
+  const context = useContext(Web3Context);
   if (context === undefined) {
     throw new Error('useOnboard must be used within a OnboardProvider');
   }

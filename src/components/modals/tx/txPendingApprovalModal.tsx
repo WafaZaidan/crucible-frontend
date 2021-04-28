@@ -1,3 +1,4 @@
+import React, { FC } from 'react';
 import { Box, Center, Spinner, Text } from '@chakra-ui/react';
 import {
   Modal,
@@ -11,7 +12,7 @@ type Props = {
   message?: string;
 };
 
-const TxPendingApprovalModal: React.FC<Props> = ({ message }) => {
+const TxPendingApprovalModal: FC<Props> = ({ message }) => {
   return (
     <>
       <Modal isOpen={true} onClose={() => null}>

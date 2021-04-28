@@ -1,3 +1,4 @@
+import React, { FC } from 'react';
 import { useEffect } from 'react';
 import { useToast } from '@chakra-ui/toast';
 import { Box, Link, Text } from '@chakra-ui/layout';
@@ -6,7 +7,7 @@ import { Button, IconButton } from '@chakra-ui/button';
 import { IoCloseCircle } from 'react-icons/io5';
 import pot3d from '../../img/pot-3d.png';
 
-const WelcomeToast = () => {
+const WelcomeToast: FC = () => {
   const toast = useToast();
   const toastId = 'faqs-toast';
   const faqsToastClosed = localStorage.getItem('faqs-toast-closed');
