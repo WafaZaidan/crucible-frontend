@@ -9,7 +9,6 @@ import { Stake } from '../context/crucibles/crucibles';
 
 export async function getOwnedCrucibles(signer: any, provider: any) {
   const { crucibleFactoryAddress, lpTokenAddress, aludelAddress } = config;
-  const aludelCreationBlockHeight = 11881242;
   const address = await signer.getAddress();
   const token = new ethers.Contract(lpTokenAddress, _abi, signer);
   const crucibleFactory = new ethers.Contract(
@@ -18,16 +17,12 @@ export async function getOwnedCrucibles(signer: any, provider: any) {
     signer
   );
   const filter = crucibleFactory.filters.Transfer(null, address);
-  const crucibleEvents = await crucibleFactory.queryFilter(
-    filter,
-    aludelCreationBlockHeight,
-    'latest'
-  );
+  const crucibleEvents = await crucibleFactory.queryFilter(filter, 0, 'latest');
 
   // const aludelInterface = new ethers.utils.Interface(aludelAbi);
   // const logs = await provider.getLogs({
   //   address: aludelAddress,
-  //   fromBlock: aludelCreationBlockHeight,
+  //   fromBlock: 0,
   // });
   // const decodedEvents = logs.map((log: any) => {
   //   if (
