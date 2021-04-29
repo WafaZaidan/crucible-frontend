@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 import { providers } from 'ethers';
 import { Button } from '@chakra-ui/button';
 import { LightMode } from '@chakra-ui/color-mode';
@@ -7,7 +7,6 @@ import { Signer } from '@ethersproject/abstract-signer';
 import { NumberInput, NumberInputField } from '@chakra-ui/number-input';
 import { useContract } from '../../hooks/useContract';
 import { mintAndLock } from '../../contracts/alchemist';
-import { config } from '../../config/variables';
 import { useWeb3 } from '../../context/web3';
 import {
   Slider,
@@ -16,43 +15,38 @@ import {
   SliderFilledTrack,
 } from '@chakra-ui/slider';
 import { InputRightElement } from '@chakra-ui/input';
+import useTokenBalances from '../../hooks/useTokenBalances';
 
 type MintAndLockParams = Parameters<
   (signer: Signer, provider: providers.Web3Provider, lpBalance: string) => void
 >;
 
 const MintingFormControl: FC = () => {
-  const [value, setValue] = useState('0');
+  const [amountLpToMint, setAmountLpToMint] = useState(0);
   const { provider } = useWeb3();
   const { invokeContract, ui } = useContract(mintAndLock);
+  const { lpBalanceDisplay, lpBalanceRaw } = useTokenBalances();
 
-  const handleChange = (value: number) => setValue(value.toString());
-
-  const handleNumberInputChange = (valueAsString: string) => {
-    if (isNaN(+valueAsString)) return;
-    setValue(valueAsString);
+  const handleChange = (amount: number | string) => {
+    if (isNaN(+amount)) return;
+    setAmountLpToMint(+amount);
   };
 
   const handleMintCrucible = () => {
-    const lpBalance = value.toString();
+    const amountToMint = amountLpToMint.toString();
     const signer = provider?.getSigner() as Signer;
+
     invokeContract<MintAndLockParams>(
       signer,
       provider as providers.Web3Provider,
-      lpBalance
+      amountToMint
     );
   };
 
-  const { tokens } = useWeb3();
-  const { lpTokenAddress } = config;
-
-  const isDisabled = () => {
-    return (
-      !value ||
-      value === '0' ||
-      Number(value) > Number(tokens[lpTokenAddress].balance)
-    );
-  };
+  const isDisabled = useMemo(
+    () => !amountLpToMint || amountLpToMint > lpBalanceRaw,
+    [amountLpToMint, lpBalanceRaw]
+  );
 
   return (
     <Box>
@@ -61,8 +55,7 @@ const MintingFormControl: FC = () => {
           <Flex mb={4} justifyContent='space-between' alignItems='center'>
             <Text>Select amount</Text>
             <Text>
-              Balance:{' '}
-              <strong>{tokens[lpTokenAddress].balance.toFixed(3)} LP</strong>
+              Balance: <strong>{lpBalanceDisplay} LP</strong>
             </Text>
           </Flex>
           <Box>
@@ -70,8 +63,8 @@ const MintingFormControl: FC = () => {
               mb={4}
               size='lg'
               bg='gray.50'
-              value={value}
-              onChange={handleNumberInputChange}
+              value={amountLpToMint}
+              onChange={handleChange}
               borderRadius='xl'
             >
               <NumberInputField
@@ -90,9 +83,8 @@ const MintingFormControl: FC = () => {
               <InputRightElement width='4.5rem'>
                 <Button
                   variant='ghost'
-                  onClick={() =>
-                    setValue(tokens[lpTokenAddress].balance.toString())
-                  }
+                  // fixing to 8 decimals to account for dust
+                  onClick={() => setAmountLpToMint(+lpBalanceRaw.toFixed(8))}
                 >
                   Max
                 </Button>
@@ -102,8 +94,8 @@ const MintingFormControl: FC = () => {
               <Slider
                 step={0.001}
                 min={0}
-                max={Number(tokens[lpTokenAddress].balance)}
-                value={Number(value)}
+                max={lpBalanceRaw}
+                value={amountLpToMint}
                 onChange={handleChange}
                 focusThumbOnChange={false}
               >
@@ -119,7 +111,7 @@ const MintingFormControl: FC = () => {
       <Button
         size='lg'
         isFullWidth
-        disabled={isDisabled()}
+        disabled={isDisabled}
         onClick={handleMintCrucible}
       >
         Mint a crucible

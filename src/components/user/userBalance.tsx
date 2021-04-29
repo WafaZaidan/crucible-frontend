@@ -1,29 +1,27 @@
 import React, { FC } from 'react';
 import { Box, Flex, SimpleGrid, Text } from '@chakra-ui/layout';
-import { useWeb3 } from '../../context/web3';
-import { config } from '../../config/variables';
 import { CountUp } from 'use-count-up';
+import useTokenBalances from '../../hooks/useTokenBalances';
 
 const UserBalance: FC = () => {
-  const { tokens, ethBalance } = useWeb3();
-  const { mistTokenAddress, lpTokenAddress } = config;
+  const {
+    ethBalanceDisplay,
+    mistBalanceDisplay,
+    lpBalanceDisplay,
+  } = useTokenBalances();
 
   const balances = [
     {
       label: 'ETH',
-      value: ethBalance ? ethBalance?.toFixed(3) : null,
+      value: ethBalanceDisplay,
     },
     {
       label: 'MIST',
-      value: tokens[mistTokenAddress]
-        ? tokens[mistTokenAddress].balance.toFixed(3)
-        : null,
+      value: mistBalanceDisplay,
     },
     {
       label: 'LP',
-      value: tokens[lpTokenAddress]
-        ? tokens[lpTokenAddress].balance.toFixed(3)
-        : null,
+      value: lpBalanceDisplay,
     },
   ];
 
@@ -49,11 +47,7 @@ const UserBalance: FC = () => {
               {label}:
             </Text>{' '}
             <Text fontWeight='bold'>
-              {value ? (
-                <CountUp isCounting end={Number(value)} duration={0.4} />
-              ) : (
-                '0'
-              )}
+              <CountUp isCounting end={Number(value)} duration={0.4} />
             </Text>
           </Flex>
         ))}
