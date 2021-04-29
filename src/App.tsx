@@ -1,5 +1,10 @@
 import React, { FC } from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Redirect,
+} from 'react-router-dom';
 import { Flex, Box } from '@chakra-ui/layout';
 import Footer from './components/layout/footer';
 import Header from './components/layout/header';
@@ -27,12 +32,17 @@ const App: FC = () => {
             {/* <Route exact path={process.env.PUBLIC_URL + '/'}>
                 <Landing />
               </Route> */}
-            <Route exact path={process.env.PUBLIC_URL + '/'}>
-              <CrucibleMinting />
-            </Route>
-            <Route path={process.env.PUBLIC_URL + '/crucible'}>
-              <CrucibleDetail />
-            </Route>
+            <Route
+              exact
+              path={process.env.PUBLIC_URL + '/'}
+              component={CrucibleMinting}
+            />
+            <Route
+              path={process.env.PUBLIC_URL + '/crucible/:crucibleId'}
+              component={CrucibleDetail}
+            />
+            <Redirect from='/crucible/' to='/' />
+
             {/* <Route exact path={process.env.PUBLIC_URL + '/faqs'}>
               <Faqs />
             </Route> */}

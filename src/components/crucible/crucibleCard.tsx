@@ -40,6 +40,10 @@ const CrucibleCard: FC<Props> = ({
 
   let { hasCopied, onCopy } = useClipboard(crucible.id);
 
+  const routeToCrucibleDetails = () => {
+    history.push(`/crucible/${crucible.id}`);
+  };
+
   useEffect(() => {
     if (hasCopied) {
       toast({
@@ -107,7 +111,7 @@ const CrucibleCard: FC<Props> = ({
             fontSize='2xl'
             color='gray.300'
             icon={<IoMdSettings />}
-            onClick={() => history.push('/crucible', { crucible })}
+            onClick={routeToCrucibleDetails}
             _hover={{ bg: 'none', color: 'gray.800' }}
             _active={{ bg: 'none' }}
           />
@@ -178,7 +182,7 @@ const CrucibleCard: FC<Props> = ({
         <Button
           isFullWidth
           disabled={isRewardsLoading}
-          onClick={() => history.push('/crucible', { crucible })}
+          onClick={routeToCrucibleDetails}
         >
           Manage crucible
         </Button>

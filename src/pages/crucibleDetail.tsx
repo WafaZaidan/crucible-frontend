@@ -1,17 +1,46 @@
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import { Center, Flex } from '@chakra-ui/layout';
-import { useLocation } from 'react-router';
-import { Crucible } from '../context/crucibles/crucibles';
+import { useParams } from 'react-router';
+import { Crucible, useCrucibles } from '../context/crucibles/crucibles';
 import CrucibleDetailCard from '../components/crucible/detail/crucibleDetailCard';
-
-type LocationState = {
-  crucible: Crucible;
-};
+import { Spinner } from '@chakra-ui/react';
+import { useWeb3 } from '../context/web3';
 
 const CrucibleDetail: FC = () => {
-  const {
-    state: { crucible },
-  } = useLocation<LocationState>();
+  const { crucibleId } = useParams<{ crucibleId: string }>();
+  const { isLoading: isCrucibleLoading, crucibles } = useCrucibles();
+  const selectedCrucible: Crucible | undefined = useMemo(() => {
+    return crucibles?.find(({ id }) => id === crucibleId);
+  }, [crucibles, crucibleId]);
+  const { address, isLoading: isWalletLoading } = useWeb3();
+
+  const renderContent = useMemo(() => {
+    if (!address) {
+      return (
+        <Flex justifyContent='center' alignItems='center' flexGrow={1}>
+          You must connect your wallet to view your crucible details
+        </Flex>
+      );
+    }
+
+    if (isCrucibleLoading || isWalletLoading) {
+      return (
+        <Flex justifyContent='center' alignItems='center' flexGrow={1}>
+          <Spinner />
+        </Flex>
+      );
+    }
+
+    if (!selectedCrucible) {
+      return (
+        <Flex justifyContent='center' alignItems='center' flexGrow={1}>
+          A crucible with that ID does not exist, or you do not own it.
+        </Flex>
+      );
+    }
+
+    return <CrucibleDetailCard crucible={selectedCrucible} />;
+  }, [isCrucibleLoading, isWalletLoading, address, selectedCrucible]);
 
   return (
     <Center>
@@ -26,7 +55,7 @@ const CrucibleDetail: FC = () => {
         boxShadow='xl'
         minH='400px'
       >
-        <CrucibleDetailCard crucible={crucible} />
+        {renderContent}
       </Flex>
     </Center>
   );
