@@ -35,8 +35,7 @@ const Rewards: FC<Props> = ({ crucible }) => {
       crucible.tokenRewards * crucible.mistPrice;
     lpValueUSD =
       crucible.mistValue * crucible.mistPrice +
-      crucible.wethValue +
-      crucible.wethPrice;
+      crucible.wethValue * crucible.wethPrice;
   }
 
   const earnedRewards: {
