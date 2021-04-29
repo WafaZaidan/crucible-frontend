@@ -41,9 +41,9 @@ export async function withdraw(
 
     const balance = await token.balanceOf(crucibleAddress);
     const lock = await crucible.getBalanceLocked(lpTokenAddress);
-    if (balance.sub(lock) < amount) {
+    if (balance.sub(lock).lt(amount)) {
       throw new Error(
-        'Please claim and unsuubscribe before withdrawing your LP tokens'
+        'Please claim and unsubscribe before withdrawing your LP tokens'
       );
     }
 

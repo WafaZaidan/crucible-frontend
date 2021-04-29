@@ -97,7 +97,7 @@ const LpPerformance: FC<Props> = ({ crucible }) => {
         </HStack>
         <HStack width='100%' direction='row'>
           <StatGroup mt={2} alignItems='baseline' width='100%'>
-            <StatCard title='Rewards Programs' label='2' subLabel='MIST, ETH' />
+            <StatCard title='Rewards Programs' label='1' subLabel='MIST, ETH' />
             <StatCard
               title='Rewards Rate'
               label={`${commify(weeklyRewardsRate.toFixed(0))} MIST / week`}

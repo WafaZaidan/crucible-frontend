@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC, useState } from 'react';
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/tabs';
 import { Box, Flex, Heading } from '@chakra-ui/layout';
 import { useCrucibles } from '../../context/crucibles';
@@ -8,6 +8,9 @@ import MintingForm from './mintingForm';
 
 const MintingTabs: FC = () => {
   const { crucibles, isLoading } = useCrucibles();
+  const [tabIndex, setTabIndex] = useState(
+    crucibles && crucibles.length > 0 ? 1 : 0
+  );
 
   const tabProps = {
     borderRadius: 'lg',
@@ -26,9 +29,13 @@ const MintingTabs: FC = () => {
   return (
     <Box position='relative'>
       <Heading top='-120px' position='absolute' width='100%'>
-        Minting Crucibles
+        {tabIndex === 0 ? 'Mint a Crucible' : 'Crucibles Collection'}
       </Heading>
-      <Tabs isFitted defaultIndex={crucibles && crucibles.length > 0 ? 1 : 0}>
+      <Tabs
+        isFitted
+        defaultIndex={tabIndex}
+        onChange={(index) => setTabIndex(index)}
+      >
         <TabList bg='gray.700' borderRadius='xl' border='none' p={2}>
           <Tab {...tabProps}>Mint</Tab>
           <Tab {...tabProps}>Your Crucibles</Tab>

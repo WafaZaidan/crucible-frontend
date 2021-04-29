@@ -21,7 +21,7 @@ const LpPerformance: FC<Props> = ({ crucible }) => {
     Number(netMistGainLossUSD) + Number(netWethGainLossUSD);
 
   const mistSubLabel = !!netMistGainLoss
-    ? `${netMistGainLoss.toFixed(3)} · ($${netMistGainLossUSD.toFixed(0)})`
+    ? `${netMistGainLoss.toFixed(3)} ⚗️ ($${netMistGainLossUSD.toFixed(0)})`
     : undefined;
 
   const ethSubLabel = !!netMistGainLoss

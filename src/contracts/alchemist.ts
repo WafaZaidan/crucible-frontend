@@ -50,7 +50,7 @@ export async function mintAndLock(
 
   try {
     // validate balances
-    if ((await stakingToken.balanceOf(walletAddress)) < amount) {
+    if ((await stakingToken.balanceOf(walletAddress)).lt(amount)) {
       throw new Error('Not enough balance');
     }
 

@@ -55,11 +55,12 @@ const IncreaseStakeModal: FC<Props> = ({ onClose, crucible }) => {
           <ModalBody>
             <Text mb={4}>
               Increase your subscription in the Aludel Rewards program by
-              depositing Uniswap Liquidity Pool tokens. You can get LP tokens by
-              depositing ETH and MIST to the trading pair{' '}
+              depositing Uniswap Liquidity Pool tokens in your Crucible. You can
+              get LP tokens by staking ETH and MIST to the{' '}
               <Link color='blue.400' isExternal href={config.uniswapPoolUrl}>
-                here.
+                Uniswap trading pool
               </Link>
+              .
             </Text>
             <Flex
               mb={2}

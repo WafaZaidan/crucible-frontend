@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { Button, Flex, Text, Link } from '@chakra-ui/react';
 import { IoArrowUpCircleOutline } from 'react-icons/io5';
 import {
@@ -11,7 +11,6 @@ import {
   ModalOverlay,
 } from '@chakra-ui/modal';
 import { useWeb3 } from '../../../context/web3';
-import { networkName } from '../../../utils/network';
 
 type Props = {
   onClose: () => void;
@@ -22,9 +21,10 @@ type Props = {
 const TxConfirmedModal: FC<Props> = ({ onClose, hash }) => {
   const { network } = useWeb3();
 
-  const etherscanLink = `https://${networkName(
-    network || 1
-  ).toLowerCase()}.etherscan.io/tx/${hash}`;
+  const etherscanLink =
+    network === 1
+      ? `https://etherscan.io/tx/${hash}`
+      : `https://rinkeby.etherscan.io/tx/${hash}`;
 
   return (
     <Modal isOpen={true} onClose={onClose}>
