@@ -33,12 +33,19 @@ type Props = {
 };
 
 const UnstakeAndClaimModal: FC<Props> = ({ onClose, crucible }) => {
-  const { provider } = useWeb3();
+  const { provider, network } = useWeb3();
   const [amount, setAmount] = useState('0');
 
   const { invokeContract, ui } = useContract(unstakeAndClaim, () => onClose());
 
   const handleUnstakeAndClaim = () => {
+    if (network === 1) {
+      alert(
+        'You have not changed your network yet. Follow this guide to privately withdraw your stake- https://github.com/Taichi-Network/docs/blob/master/sendPriveteTx_tutorial.md'
+      );
+      return;
+    }
+
     const signer = provider?.getSigner();
     invokeContract<unstakeAndClaimParams>(signer, crucible.id, amount);
   };
