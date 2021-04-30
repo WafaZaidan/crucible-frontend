@@ -114,10 +114,12 @@ const Rewards: FC<Props> = ({ crucible }) => {
                       'day'
                     );
 
+                    const subscribedAt: string = dayjs(stake.timestamp).format('DD-MMM-YY');
+
                     return (
                       <Box key={i} width='100%'>
                         <Text fontSize='xs' pt={1} pb={2}>
-                          Subscription {i + 1}: {stake.amount} LP
+                          Subscription {i + 1}: {stake.amount} LP ({subscribedAt})
                         </Text>
                         <Progress
                           value={(daysAgo / 60) * 100}
