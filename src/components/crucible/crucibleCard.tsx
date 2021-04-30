@@ -4,7 +4,15 @@ import { useHistory } from 'react-router-dom';
 import { Button, IconButton } from '@chakra-ui/button';
 import { Collapse } from '@chakra-ui/transition';
 import { Crucible } from '../../context/crucibles/crucibles';
-import { Box, Flex, HStack, Stack, Text, Badge } from '@chakra-ui/layout';
+import {
+  Box,
+  Flex,
+  HStack,
+  VStack,
+  Stack,
+  Text,
+  Badge,
+} from '@chakra-ui/layout';
 import { FaLock } from 'react-icons/fa';
 import { useClipboard } from '@chakra-ui/hooks';
 import {
@@ -62,7 +70,7 @@ const CrucibleCard: FC<Props> = ({
         <Box flexGrow={1}>
           <HStack>
             <Box
-              boxSize='38px'
+              boxSize='48px'
               bgGradient='linear(to-tr, cyan.200, purple.100)'
               borderRadius='md'
             />
@@ -71,13 +79,15 @@ const CrucibleCard: FC<Props> = ({
                 <Text onClick={onCopy}>ID: {truncate(crucible.id)}</Text>
                 <FiCopy />
               </HStack>
-              <Text fontSize='sm' color='gray.400'>
-                Minted{' '}
-                {dayjs(
-                  crucible.stakes[0]?.timestamp
-                    ? crucible.stakes[0]?.timestamp
-                    : crucible.mintTimestamp
-                ).format('MMM-DD YYYY')}
+              <Text fontSize='xs' color='gray.400' width='100%'>
+                {!!crucible.stakes?.length &&
+                  `Subscribed on ${dayjs(
+                    crucible.stakes[0]?.timestamp
+                      ? crucible.stakes[0]?.timestamp
+                      : crucible.mintTimestamp
+                  ).format('MM-DD-YY')}`}
+                <br />
+                {crucible.stakes?.length || 'No'} subscriptions
               </Text>
             </Box>
           </HStack>

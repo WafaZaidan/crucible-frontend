@@ -136,11 +136,15 @@ const Rewards: FC<Props> = ({ crucible }) => {
                 <HStack>
                   <Text fontSize='sm'>
                     Subscribed Crucible LP:{' '}
-                    <strong>{crucible.cleanLockedBalance}</strong>
+                    <strong>
+                      {Number(crucible.cleanLockedBalance).toFixed(3)}
+                    </strong>
                   </Text>
                   <Text fontSize='sm'>
                     Unsubscribed Crucible LP:{' '}
-                    <strong>{crucible.cleanUnlockedBalance}</strong>
+                    <strong>
+                      {Number(crucible.cleanUnlockedBalance).toFixed(3)}
+                    </strong>
                   </Text>
                 </HStack>
               </Box>

@@ -71,14 +71,12 @@ const CrucibleDetailCard: FC<Props> = ({ crucible }) => {
           <Box textAlign='left'>
             <Text fontSize='xl'>ID: {truncate(crucible!.id)}</Text>
             <HStack>
-              {crucible!.stakes.map((stake: Stake, i) => {
-                return (
-                  <Text key={i} fontSize='sm' color='gray.300'>
-                    Subscription {i + 1}:{' '}
-                    {dayjs(stake.timestamp).format('MMM-DD YYYY')}
-                  </Text>
-                );
-              })}
+              {crucible?.stakes && (
+                <Text key={0} fontSize='sm' color='gray.300'>
+                  Subscribed on{' '}
+                  {dayjs(crucible.stakes[0].timestamp).format('MMM-DD YYYY')}
+                </Text>
+              )}
             </HStack>
           </Box>
         </HStack>
