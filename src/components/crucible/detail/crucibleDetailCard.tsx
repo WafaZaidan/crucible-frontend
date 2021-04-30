@@ -1,10 +1,10 @@
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import dayjs from 'dayjs';
 import CrucibleTabs from './crucibleTabs';
 import { Button, IconButton } from '@chakra-ui/button';
 import { truncate } from '../../../utils/address';
 import { useHistory } from 'react-router-dom';
-import { Crucible, Stake } from '../../../context/crucibles/crucibles';
+import { Crucible } from '../../../context/crucibles/crucibles';
 import { FiArrowLeft, FiCopy, FiSend } from 'react-icons/fi';
 import { FaLock } from 'react-icons/fa';
 import { Flex, Box, HStack, Text, Heading, Badge } from '@chakra-ui/layout';
@@ -26,6 +26,13 @@ const CrucibleDetailCard: FC<Props> = ({ crucible }) => {
   let { hasCopied, onCopy } = useClipboard(crucible.id);
 
   const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
+
+  const subscribeDate = useMemo(() => {
+    if (crucible.stakes.length > 0) {
+      return dayjs(crucible.stakes[0].timestamp).format('MMM-DD YYYY');
+    }
+    return dayjs(crucible.mintTimestamp).format('MMM-DD YYYY');
+  }, [crucible.stakes, crucible.mintTimestamp]);
 
   useEffect(() => {
     if (hasCopied && !toast.isActive(id)) {
@@ -71,12 +78,9 @@ const CrucibleDetailCard: FC<Props> = ({ crucible }) => {
           <Box textAlign='left'>
             <Text fontSize='xl'>ID: {truncate(crucible!.id)}</Text>
             <HStack>
-              {crucible?.stakes && (
-                <Text key={0} fontSize='sm' color='gray.300'>
-                  Subscribed on{' '}
-                  {dayjs(crucible.stakes[0].timestamp).format('MMM-DD YYYY')}
-                </Text>
-              )}
+              <Text key={0} fontSize='sm' color='gray.300'>
+                Subscribed on {subscribeDate}
+              </Text>
             </HStack>
           </Box>
         </HStack>
