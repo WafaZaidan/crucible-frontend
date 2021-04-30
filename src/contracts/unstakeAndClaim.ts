@@ -100,6 +100,10 @@ export async function unstakeAndClaim(
       txHash: withdrawTx.hash,
     });
   } catch (e) {
+    // Hack to silence 'Internal JSON-RPC error'
+    if (e.code === -32603) {
+      return;
+    }
     callback({
       type: EVENT.TX_ERROR,
       message: e.message,

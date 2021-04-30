@@ -8,7 +8,6 @@ import {
   Box,
   Flex,
   HStack,
-  VStack,
   Stack,
   Text,
   Badge,
