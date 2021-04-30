@@ -21,16 +21,16 @@ const useTokenBalances = () => {
 
   const ethBalanceRaw = ethBalance;
 
-  const lpBalanceDisplay = numbro(lpBalanceRaw).format({
+  const lpBalanceDisplay = numbro(lpBalanceRaw || 0).format({
     thousandSeparated: true,
     mantissa: 4,
   });
 
-  const mistBalanceDisplay = numbro(mistBalanceRaw).format({
+  const mistBalanceDisplay = numbro(mistBalanceRaw || 0).format({
     thousandSeparated: true,
     mantissa: 4,
   });
-  const ethBalanceDisplay = numbro(ethBalanceRaw).format({
+  const ethBalanceDisplay = numbro(ethBalanceRaw || 0).format({
     thousandSeparated: true,
     mantissa: 4,
   });

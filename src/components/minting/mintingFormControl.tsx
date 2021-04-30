@@ -22,14 +22,14 @@ type MintAndLockParams = Parameters<
 >;
 
 const MintingFormControl: FC = () => {
-  const [amountLpToMint, setAmountLpToMint] = useState(0);
+  const [amountLpToMint, setAmountLpToMint] = useState('0');
   const { provider } = useWeb3();
   const { invokeContract, ui } = useContract(mintAndLock);
   const { lpBalanceDisplay, lpBalanceRaw } = useTokenBalances();
 
   const handleChange = (amount: number | string) => {
     if (isNaN(+amount)) return;
-    setAmountLpToMint(+amount);
+    setAmountLpToMint(amount.toString());
   };
 
   const handleMintCrucible = () => {
@@ -44,7 +44,10 @@ const MintingFormControl: FC = () => {
   };
 
   const isDisabled = useMemo(
-    () => !amountLpToMint || amountLpToMint > lpBalanceRaw,
+    () =>
+      !amountLpToMint ||
+      amountLpToMint === '0' ||
+      Number(amountLpToMint) > lpBalanceRaw,
     [amountLpToMint, lpBalanceRaw]
   );
 
@@ -84,7 +87,9 @@ const MintingFormControl: FC = () => {
                 <Button
                   variant='ghost'
                   // fixing to 8 decimals to account for dust
-                  onClick={() => setAmountLpToMint(+lpBalanceRaw.toFixed(8))}
+                  onClick={() =>
+                    setAmountLpToMint(lpBalanceRaw.toFixed(8).toString())
+                  }
                 >
                   Max
                 </Button>
@@ -95,7 +100,7 @@ const MintingFormControl: FC = () => {
                 step={0.001}
                 min={0}
                 max={lpBalanceRaw}
-                value={amountLpToMint}
+                value={Number(amountLpToMint)}
                 onChange={handleChange}
                 focusThumbOnChange={false}
               >

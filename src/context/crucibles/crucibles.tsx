@@ -70,6 +70,7 @@ type CruciblesContextType = {
   tokenBalances: TokenBalances | undefined;
   reloadCrucibles(): void;
   reloadBalances(): void;
+  cruciblesOnCurrentNetwork(): Promise<Crucible[]>;
 };
 
 const Crucibles = createContext<CruciblesContextType | undefined>(undefined);
@@ -221,6 +222,12 @@ const CruciblesProvider = ({ children }: CruciblesProps) => {
     [provider, address, network, refreshCrucibles, tokenBalances, loadPairs]
   );
 
+  const cruciblesOnCurrentNetwork = async () => {
+    const signer = provider?.getSigner();
+    const ownedCrucibles = await getOwnedCrucibles(signer, provider);
+    return ownedCrucibles;
+  };
+
   return (
     <Crucibles.Provider
       value={{
@@ -230,6 +237,7 @@ const CruciblesProvider = ({ children }: CruciblesProps) => {
         tokenBalances,
         reloadCrucibles,
         reloadBalances,
+        cruciblesOnCurrentNetwork,
       }}
     >
       {children}

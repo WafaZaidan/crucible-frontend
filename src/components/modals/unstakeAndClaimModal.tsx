@@ -20,7 +20,7 @@ import {
 import { useState } from 'react';
 import { useWeb3 } from '../../context/web3';
 import { useContract } from '../../hooks/useContract';
-import { Crucible } from '../../context/crucibles/crucibles';
+import { Crucible, useCrucibles } from '../../context/crucibles/crucibles';
 import { unstakeAndClaim } from '../../contracts/unstakeAndClaim';
 
 type unstakeAndClaimParams = Parameters<
@@ -33,21 +33,29 @@ type Props = {
 };
 
 const UnstakeAndClaimModal: FC<Props> = ({ onClose, crucible }) => {
+  const { cruciblesOnCurrentNetwork } = useCrucibles();
   const { provider, network } = useWeb3();
   const [amount, setAmount] = useState('0');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const { invokeContract, ui } = useContract(unstakeAndClaim, () => onClose());
+  const { invokeContract, ui } = useContract(unstakeAndClaim, () => {
+    onClose();
+  });
 
-  const handleUnstakeAndClaim = () => {
-    if (network === 1) {
+  const handleUnstakeAndClaim = async () => {
+    setIsLoading(true);
+    const crucibles = await cruciblesOnCurrentNetwork();
+    if (crucibles.length !== 0 && network === 1) {
       alert(
         'You have not changed your network yet. Follow this guide to privately withdraw your stake- https://github.com/Taichi-Network/docs/blob/master/sendPriveteTx_tutorial.md'
       );
+      setIsLoading(false);
       return;
     }
 
     const signer = provider?.getSigner();
     invokeContract<unstakeAndClaimParams>(signer, crucible.id, amount);
+    setIsLoading(false)
   };
 
   return (
@@ -113,6 +121,7 @@ const UnstakeAndClaimModal: FC<Props> = ({ onClose, crucible }) => {
           <ModalFooter>
             <Button
               isFullWidth
+              isLoading={isLoading}
               onClick={handleUnstakeAndClaim}
               disabled={
                 !amount ||
