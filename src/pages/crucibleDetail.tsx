@@ -1,6 +1,6 @@
 import React, { FC, useMemo } from 'react';
 import { Center, Flex } from '@chakra-ui/layout';
-import { useParams } from 'react-router';
+import { useParams, Redirect } from 'react-router';
 import { Crucible, useCrucibles } from '../context/crucibles/crucibles';
 import CrucibleDetailCard from '../components/crucible/detail/crucibleDetailCard';
 import { Spinner } from '@chakra-ui/react';
@@ -32,11 +32,7 @@ const CrucibleDetail: FC = () => {
     }
 
     if (!selectedCrucible) {
-      return (
-        <Flex justifyContent='center' alignItems='center' flexGrow={1}>
-          A crucible with that ID does not exist, or you do not own it.
-        </Flex>
-      );
+      return <Redirect to='/' />;
     }
 
     return <CrucibleDetailCard crucible={selectedCrucible} />;

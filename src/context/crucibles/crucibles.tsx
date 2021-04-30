@@ -144,6 +144,7 @@ const CruciblesProvider = ({ children }: CruciblesProps) => {
 
   useEffect(
     () => {
+      let updatedCrucibles: Crucible[] = [];
       if (tokenBalances && provider && network) {
         // process.env.REACT_APP_NETWORK_ID
 
@@ -151,7 +152,7 @@ const CruciblesProvider = ({ children }: CruciblesProps) => {
         setIsRewardsLoading(true);
         getOwnedCrucibles(signer, provider)
           .then((ownedCrucibles: Crucible[]) => {
-            const reformatted = ownedCrucibles.map((crucible) => ({
+            const updatedCrucibles = ownedCrucibles.map((crucible) => ({
               ...crucible,
               cleanBalance: formatUnits(crucible.balance),
               cleanLockedBalance: formatUnits(crucible.lockedBalance),
@@ -171,12 +172,13 @@ const CruciblesProvider = ({ children }: CruciblesProps) => {
                 network
               ),
             }));
-            setCrucibles(reformatted);
+            setCrucibles(updatedCrucibles);
             return getUserRewards(signer, ownedCrucibles);
           })
           .then((rewards) => {
             setIsLoading(false);
-            if (!!crucibles && crucibles.length && network === 1) loadPairs();
+            if (!!updatedCrucibles && updatedCrucibles.length && network === 1)
+              loadPairs();
             if (rewards?.length) {
               Promise.all<Rewards>(
                 rewards.map((reward: EtherRewards) => {
@@ -190,13 +192,15 @@ const CruciblesProvider = ({ children }: CruciblesProps) => {
                   });
                 })
               ).then((calculatedRewards: Rewards[]) => {
-                const cruciblesWithRewards = crucibles?.map((crucible, i) => {
-                  const calculatedReward = calculatedRewards[i];
-                  return {
-                    ...crucible,
-                    ...calculatedReward,
-                  };
-                });
+                const cruciblesWithRewards = updatedCrucibles?.map(
+                  (crucible, i) => {
+                    const calculatedReward = calculatedRewards[i];
+                    return {
+                      ...crucible,
+                      ...calculatedReward,
+                    };
+                  }
+                );
                 cruciblesWithRewards && setCrucibles(cruciblesWithRewards);
                 setIsRewardsLoading(false);
               });
