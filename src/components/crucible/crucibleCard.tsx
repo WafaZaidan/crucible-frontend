@@ -81,7 +81,7 @@ const CrucibleCard: FC<Props> = ({
               </HStack>
               <Text fontSize='xs' color='gray.400' width='100%'>
                 {!!crucible.stakes?.length &&
-                  `Subscribed on ${dayjs(
+                  `Minted on ${dayjs(
                     crucible.stakes[0]?.timestamp
                       ? crucible.stakes[0]?.timestamp
                       : crucible.mintTimestamp

@@ -79,7 +79,7 @@ const CrucibleDetailCard: FC<Props> = ({ crucible }) => {
             <Text fontSize='xl'>ID: {truncate(crucible!.id)}</Text>
             <HStack>
               <Text key={0} fontSize='sm' color='gray.300'>
-                Subscribed on {subscribeDate}
+                Minted on {subscribeDate}
               </Text>
             </HStack>
           </Box>
