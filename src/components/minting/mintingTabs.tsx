@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/tabs';
 import { Box, Flex, Heading } from '@chakra-ui/layout';
 import { useCrucibles } from '../../context/crucibles';
@@ -11,6 +11,12 @@ const MintingTabs: FC = () => {
   const [tabIndex, setTabIndex] = useState(
     crucibles && crucibles.length > 0 ? 1 : 0
   );
+
+  useEffect(() => {
+    if (crucibles && crucibles.length > 0) {
+      setTabIndex(1);
+    }
+  }, [crucibles?.length]);
 
   const tabProps = {
     borderRadius: 'lg',

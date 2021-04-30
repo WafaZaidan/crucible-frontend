@@ -1,9 +1,9 @@
 import React, {
-  useState,
-  useEffect,
   createContext,
-  useContext,
   ReactNode,
+  useContext,
+  useEffect,
+  useState,
 } from 'react';
 import { BigNumber } from 'ethers';
 import { useWeb3 } from '../web3';
@@ -12,9 +12,9 @@ import { getTokenBalances } from '../../contracts/getTokenBalances';
 import { getOwnedCrucibles } from '../../contracts/getOwnedCrucibles';
 import { getUniswapBalances } from '../../contracts/getUniswapTokenBalances';
 import {
-  getUserRewards,
   calculateMistRewards,
   EtherRewards,
+  getUserRewards,
   Rewards,
 } from '../../contracts/aludel';
 import { GET_PAIR_HISTORY } from '../../queries/uniswap';
@@ -153,7 +153,7 @@ const CruciblesProvider = ({ children }: CruciblesProps) => {
         setIsRewardsLoading(true);
         getOwnedCrucibles(signer, provider)
           .then((ownedCrucibles: Crucible[]) => {
-            const updatedCrucibles = ownedCrucibles.map((crucible) => ({
+            updatedCrucibles = ownedCrucibles.map((crucible) => ({
               ...crucible,
               cleanBalance: formatUnits(crucible.balance),
               cleanLockedBalance: formatUnits(crucible.lockedBalance),
@@ -178,8 +178,14 @@ const CruciblesProvider = ({ children }: CruciblesProps) => {
           })
           .then((rewards) => {
             setIsLoading(false);
-            if (!!updatedCrucibles && updatedCrucibles.length && network === 1)
+            if (
+              !!updatedCrucibles &&
+              updatedCrucibles.length &&
+              network === 1
+            ) {
               loadPairs();
+            }
+
             if (rewards?.length) {
               Promise.all<Rewards>(
                 rewards.map((reward: EtherRewards) => {
@@ -202,7 +208,10 @@ const CruciblesProvider = ({ children }: CruciblesProps) => {
                     };
                   }
                 );
-                cruciblesWithRewards && setCrucibles(cruciblesWithRewards);
+
+                if (cruciblesWithRewards) {
+                  setCrucibles(cruciblesWithRewards);
+                }
                 setIsRewardsLoading(false);
               });
             } else {
