@@ -13,7 +13,7 @@ const MissingIngredients: FC = () => {
       <Text color='gray.200' my={3}>
         You need MIST-ETH LP tokens to mint a Crucible. Get them by adding MIST
         and ETH to the{' '}
-        <Link color='blue.400' href={uniswapPoolUrl}>
+        <Link color='blue.400' href={uniswapPoolUrl} isExternal>
           Uniswap pool.
         </Link>{' '}
         If you don't have any MIST tokens, you can purchase them{' '}

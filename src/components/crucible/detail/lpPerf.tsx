@@ -18,7 +18,7 @@ const LpPerformance: FC<Props> = ({ crucible }) => {
   const netMistGainLossUSD = netMistGainLoss * crucible.mistPrice!;
   const netWethGainLossUSD = netWethGainLoss * crucible.wethPrice!;
   const cummulativeGainLossUSD =
-    Number(netMistGainLossUSD) + Number(netWethGainLossUSD);
+    Number(netMistGainLossUSD) + Number(netWethGainLossUSD) || 0;
 
   const mistSubLabel = !!netMistGainLoss
     ? `${netMistGainLoss.toFixed(3)} ⚗️ ($${netMistGainLossUSD.toFixed(0)})`
@@ -70,18 +70,16 @@ const LpPerformance: FC<Props> = ({ crucible }) => {
             ).toFixed(4)}%`}
           />
         </Tooltip>
-        {!!cummulativeGainLossUSD && (
-          <Tooltip
-            label='Impermanent gains or loss (USD) due to arbitrage and fees on the Uniswap liquidity pool.'
-            placement='top'
-            hasArrow={true}
-          >
-            <StatCard
-              title={`Net LP ${cummulativeGainLossUSD > 0 ? 'Gain' : 'Loss'}`}
-              label={`$${cummulativeGainLossUSD.toFixed(0)}`}
-            />
-          </Tooltip>
-        )}
+        <Tooltip
+          label='Impermanent gains or loss (USD) due to arbitrage and fees on the Uniswap liquidity pool.'
+          placement='top'
+          hasArrow={true}
+        >
+          <StatCard
+            title={`Net LP ${cummulativeGainLossUSD >= 0 ? 'Gain' : 'Loss'}`}
+            label={`$${cummulativeGainLossUSD.toFixed(0)}`}
+          />
+        </Tooltip>
       </StatGroup>
     </Box>
   );

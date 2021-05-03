@@ -12,4 +12,9 @@ export const GlobalStyles = css`
   .bn-onboard-modal {
     z-index: 999;
   }
+  .bn-notify-notification-info-message a {
+    text-decoration: underline;
+    font-weight: bold;
+    color: #4299e1;
+  }
 `;

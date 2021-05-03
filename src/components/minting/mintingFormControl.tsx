@@ -28,7 +28,7 @@ const MintingFormControl: FC = () => {
   const { lpBalanceDisplay, lpBalanceRaw } = useTokenBalances();
 
   const handleChange = (amount: number | string) => {
-    if (isNaN(+amount)) return;
+    if (isNaN(+amount) && amount !== '.') return;
     setAmountLpToMint(amount.toString());
   };
 
@@ -46,7 +46,7 @@ const MintingFormControl: FC = () => {
   const isDisabled = useMemo(
     () =>
       !amountLpToMint ||
-      amountLpToMint === '0' ||
+      Number(amountLpToMint) <= 0 ||
       Number(amountLpToMint) > lpBalanceRaw,
     [amountLpToMint, lpBalanceRaw]
   );
@@ -119,7 +119,7 @@ const MintingFormControl: FC = () => {
         disabled={isDisabled}
         onClick={handleMintCrucible}
       >
-        Mint a crucible
+        Mint a Crucible
       </Button>
       {ui}
     </Box>

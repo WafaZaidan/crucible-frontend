@@ -114,12 +114,15 @@ const Rewards: FC<Props> = ({ crucible }) => {
                       'day'
                     );
 
-                    const subscribedAt: string = dayjs(stake.timestamp).format('DD-MMM-YY');
+                    const subscribedAt: string = dayjs(stake.timestamp).format(
+                      'DD-MMM-YY'
+                    );
 
                     return (
                       <Box key={i} width='100%'>
                         <Text fontSize='xs' pt={1} pb={2}>
-                          Subscription {i + 1}: {stake.amount} LP ({subscribedAt})
+                          Subscription {i + 1}: {stake.amount} LP (
+                          {subscribedAt})
                         </Text>
                         <Progress
                           value={(daysAgo / 60) * 100}
@@ -129,7 +132,7 @@ const Rewards: FC<Props> = ({ crucible }) => {
                         />
                         <Text fontSize='xs' pt={1} pb={4}>
                           {((daysAgo / 60) * 100).toFixed(0)}% Complete (
-                          {daysAgo} of 60 D to max reward multiplier)
+                          {daysAgo} of 60 Days to max reward multiplier)
                         </Text>
                       </Box>
                     );
@@ -167,6 +170,7 @@ const Rewards: FC<Props> = ({ crucible }) => {
                 </Button>
                 <Button
                   width='100%'
+                  disabled={Number(crucible.cleanLockedBalance || '0') === 0}
                   onClick={() => setClaimRewardsModalOpen(true)}
                 >
                   <Text fontSize='md'>Claim rewards and unsubscribe</Text>
