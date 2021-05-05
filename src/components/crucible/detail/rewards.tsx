@@ -56,6 +56,10 @@ const Rewards: FC<Props> = ({ crucible }) => {
     totalUsd = lpUsd.add(aggregateRewardsUsd);
   }
 
+  const isInFlight = () => {
+    return !!localStorage.getItem('inFlightSubscriptionHash');
+  };
+
   return (
     <Box p={4} bg='white' color='gray.800' borderRadius='xl'>
       <Flex justifyContent='space-between' alignItems='start'>
@@ -172,6 +176,7 @@ const Rewards: FC<Props> = ({ crucible }) => {
               >
                 <Button
                   width='100%'
+                  disabled={isInFlight()}
                   marginRight='4px'
                   onClick={() => setIncreaseStakeModalOpen(true)}
                 >

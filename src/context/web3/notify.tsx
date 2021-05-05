@@ -43,7 +43,10 @@ const NotifyProvider = ({ children }: NotifyContextProps) => {
 
       emitter.on('txSent', console.log);
       // TODO: Can reload crucibles in txConfirmed callback
-      emitter.on('txConfirmed', () => {
+      emitter.on('txConfirmed', (tx) => {
+        if (tx.hash === localStorage.getItem('inFlightSubscriptionHash')) {
+          localStorage.setItem('inFlightSubscriptionHash', '');
+        }
         if (reload) {
           setTimeout(reload, 5000);
         }

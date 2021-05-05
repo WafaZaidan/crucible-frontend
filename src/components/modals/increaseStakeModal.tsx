@@ -44,7 +44,15 @@ const IncreaseStakeModal: FC<Props> = ({ onClose, crucible }) => {
   const [amount, setAmount] = useState('0');
   const amountBigNumber = numberishToBigNumber(amount || 0);
 
-  const { invokeContract, ui } = useContract(increaseStake, () => onClose());
+  const successCallback = (txHash: string) => {
+    // Hacky
+    localStorage.setItem('inFlightSubscriptionHash', txHash);
+    onClose();
+  };
+
+  const { invokeContract, ui } = useContract(increaseStake, (txHash: string) =>
+    successCallback(txHash)
+  );
   const { tokenBalances } = useCrucibles();
   const lpBalance = tokenBalances?.lpBalance || BigNumber.from(0);
   const lpBalanceNumber = bigNumberishToNumber(lpBalance);

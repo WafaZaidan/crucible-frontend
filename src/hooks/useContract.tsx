@@ -54,7 +54,7 @@ export function useContract(
             onClose={() => {
               setUI(null);
               if (successCallback) {
-                successCallback();
+                successCallback(event.txHash);
               }
             }}
           />
