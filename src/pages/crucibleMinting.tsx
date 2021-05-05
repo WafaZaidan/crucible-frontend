@@ -35,7 +35,10 @@ const CrucibleMinting: FC = () => {
               <Spinner />
               <Text pt={4}>
                 Unsupported network. Please switch to{' '}
-                {networkName(supportedNetwork)}
+                <strong>{networkName(supportedNetwork)}</strong>. If you are on
+                the <strong>Taichi</strong> network you need to switch back to{' '}
+                <strong>{networkName(supportedNetwork)}</strong> to view your
+                Crucibles.
               </Text>
             </VStack>
           </Flex>
