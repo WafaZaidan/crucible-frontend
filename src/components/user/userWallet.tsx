@@ -10,8 +10,13 @@ const UserWallet: FC = () => {
   const { address, onboard, isLoading } = useWeb3();
 
   const handleConnect = async () => {
-    await onboard?.walletSelect();
-    await onboard?.walletCheck();
+    try {
+      onboard?.walletReset();
+      const wallet = await onboard?.walletSelect();
+      wallet && onboard?.walletCheck();
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const handleSelect = async () => {

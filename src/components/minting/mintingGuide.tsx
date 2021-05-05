@@ -20,8 +20,13 @@ const MintingGuide: FC = () => {
   const { uniswapPoolUrl, getMistUrl } = config;
 
   const handleConnect = async () => {
-    await onboard?.walletSelect();
-    await onboard?.walletCheck();
+    try {
+      onboard?.walletReset();
+      const wallet = await onboard?.walletSelect();
+      wallet && onboard?.walletCheck();
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (
