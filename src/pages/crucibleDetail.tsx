@@ -4,7 +4,7 @@ import { useParams, Redirect } from 'react-router';
 import { Crucible, useCrucibles } from '../context/crucibles/crucibles';
 import CrucibleDetailCard from '../components/crucible/detail/crucibleDetailCard';
 import { Spinner } from '@chakra-ui/react';
-import { useWeb3 } from '../context/web3';
+import { useWeb3React } from '@web3-react/core';
 
 const CrucibleDetail: FC = () => {
   const { crucibleId } = useParams<{ crucibleId: string }>();
@@ -12,10 +12,10 @@ const CrucibleDetail: FC = () => {
   const selectedCrucible: Crucible | undefined = useMemo(() => {
     return crucibles?.find(({ id }) => id === crucibleId);
   }, [crucibles, crucibleId]);
-  const { address, isLoading: isWalletLoading } = useWeb3();
+  const { account } = useWeb3React();
 
   const renderContent = useMemo(() => {
-    if (!address) {
+    if (!account) {
       return (
         <Flex justifyContent='center' alignItems='center' flexGrow={1}>
           You must connect your wallet to view your crucible details
@@ -23,7 +23,7 @@ const CrucibleDetail: FC = () => {
       );
     }
 
-    if (isCrucibleLoading || isWalletLoading) {
+    if (isCrucibleLoading) {
       return (
         <Flex justifyContent='center' alignItems='center' flexGrow={1}>
           <Spinner />
@@ -36,7 +36,7 @@ const CrucibleDetail: FC = () => {
     }
 
     return <CrucibleDetailCard crucible={selectedCrucible} />;
-  }, [isCrucibleLoading, isWalletLoading, address, selectedCrucible]);
+  }, [isCrucibleLoading, account, selectedCrucible]);
 
   return (
     <Center>
