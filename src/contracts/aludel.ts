@@ -1,27 +1,19 @@
-import { ethers, Signer } from 'ethers';
-import { formatUnits, formatEther } from 'ethers/lib/utils';
+import { BigNumber, ethers, Signer } from 'ethers';
+import { formatEther, formatUnits } from 'ethers/lib/utils';
 import { config } from '../config/variables';
 import { aludelAbi } from '../abi/aludelAbi';
 import { _abi } from '../interfaces/Erc20DetailedFactory';
+import { Crucible } from '../context/crucibles/crucibles';
 
 const { aludelAddress, mistTokenAddress, wethAddress, rewardPool } = config;
 
 export interface EtherRewards {
-  currStakeRewards: number;
-  currVaultRewards: number;
-  stakeRewardsIn30Days: number;
-  vaultRewardsIn30Days: number;
-}
-
-export interface Rewards {
-  ethRewards: number;
-  tokenRewards: number;
-}
-
-interface Crucible {
-  id: string;
-  balance: string;
-  lockedBalance: string;
+  currStakeRewards: BigNumber;
+  currVaultRewards: BigNumber;
+  stakeRewardsIn30Days: BigNumber;
+  vaultRewardsIn30Days: BigNumber;
+  mistRewards: BigNumber;
+  wethRewards: BigNumber;
 }
 
 export async function getNetworkStats(signer: Signer) {
@@ -30,7 +22,7 @@ export async function getNetworkStats(signer: Signer) {
     ,
     ,
     ,
-    rewardScaling, // arrray of big numbers, floor ceiling time
+    rewardScaling, // array of big numbers, floor ceiling time
     rewardSharesOutstanding,
     totalStake,
     totalStakeUnits,
@@ -65,65 +57,40 @@ export async function getUserRewards(
   signer: any,
   crucibles: Crucible[]
 ): Promise<EtherRewards[]> {
-  const plusOneMonth = Date.now() + 60 * 60 * 24 * 30;
-  const aludel = new ethers.Contract(aludelAddress, aludelAbi, signer);
-  const crucibleRewards = [];
-  for (let i = 0; i < crucibles.length; i++) {
-    const [
-      currStakeRewards,
-      currVaultRewards,
-      stakeRewardsIn30Days,
-      vaultRewardsIn30Days,
-    ] = await Promise.all([
-      aludel
-        .getCurrentStakeReward(crucibles[i].id, crucibles[i].lockedBalance)
-        .then(formatUnits),
-      aludel.getCurrentVaultReward(crucibles[i].id).then(formatUnits),
-      aludel
-        .getFutureStakeReward(
-          crucibles[i].id,
-          crucibles[i].lockedBalance,
-          plusOneMonth
-        )
-        .then(formatUnits),
-      aludel
-        .getFutureVaultReward(crucibles[i].id, plusOneMonth)
-        .then(formatUnits),
-    ]);
-    crucibleRewards.push({
-      currStakeRewards,
-      currVaultRewards,
-      stakeRewardsIn30Days,
-      vaultRewardsIn30Days,
-    });
-  }
-  return crucibleRewards;
-}
-
-// Calculate mist rewards based on eth
-// eth rewards / total eth pool * total mist rewards (remaining rewards)
-export async function calculateMistRewards(
-  signer: any,
-  weiRewards: number
-): Promise<Rewards> {
-  // const aludel = new ethers.Contract(args.aludel, aludelAbi, signer);
-  // Bonus token (mist) & Reward Pool Addreess
-  const weth = new ethers.Contract(
-    wethAddress, // bonus token address
-    _abi,
-    signer
+  const plusOneMonth = Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30;
+  const aludelContract = new ethers.Contract(aludelAddress, aludelAbi, signer);
+  const wethContract = new ethers.Contract(wethAddress, _abi, signer);
+  const mistContract = new ethers.Contract(mistTokenAddress, _abi, signer);
+  return Promise.all(
+    crucibles.map(async (crucible: Crucible) => {
+      const { id, lockedBalance } = crucible;
+      const [
+        currStakeRewards,
+        currVaultRewards,
+        stakeRewardsIn30Days,
+        vaultRewardsIn30Days,
+        totalWeiRewards,
+        totalMistRewards,
+      ] = await Promise.all([
+        aludelContract.getCurrentStakeReward(id, lockedBalance),
+        aludelContract.getCurrentVaultReward(id),
+        aludelContract.getFutureStakeReward(id, lockedBalance, plusOneMonth),
+        aludelContract.getFutureVaultReward(id, plusOneMonth),
+        wethContract.balanceOf(rewardPool),
+        mistContract.balanceOf(rewardPool),
+      ]);
+      const mistRewards = totalMistRewards
+        .mul(currStakeRewards)
+        .div(totalWeiRewards);
+      const wethRewards = currStakeRewards;
+      return {
+        currStakeRewards,
+        currVaultRewards,
+        stakeRewardsIn30Days,
+        vaultRewardsIn30Days,
+        mistRewards,
+        wethRewards,
+      };
+    })
   );
-  const bonusMistToken = new ethers.Contract(
-    mistTokenAddress, // bonus token address
-    _abi,
-    signer
-  );
-
-  const [totalWeiRewards, totalMistRewards] = await Promise.all([
-    weth.balanceOf(rewardPool),
-    bonusMistToken.balanceOf(rewardPool),
-  ]);
-
-  const mistRewards = (totalMistRewards * weiRewards) / totalWeiRewards;
-  return { tokenRewards: mistRewards, ethRewards: weiRewards };
 }

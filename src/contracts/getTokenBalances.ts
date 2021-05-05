@@ -1,8 +1,9 @@
 import { ethers, Signer } from 'ethers';
-import { formatUnits } from 'ethers/lib/utils';
 import { config } from '../config/variables';
 import { _abi } from '../interfaces/Erc20DetailedFactory';
-import { ChainId, Token, WETH, Fetcher } from '@uniswap/sdk';
+import { ChainId, Fetcher, Token, WETH } from '@uniswap/sdk';
+import { parseUnits } from 'ethers/lib/utils';
+import getMultiplier from '../utils/getMultiplier';
 
 const { lpTokenAddress, mistTokenAddress, wethAddress, daiAddress } = config;
 
@@ -14,24 +15,24 @@ export async function getTokenBalances(
   const MIST = new Token(chainId, mistTokenAddress, 18, '⚗', 'Alchemist');
   const DAI = new Token(chainId, daiAddress, 18);
 
+  const contractMist = new ethers.Contract(mistTokenAddress, _abi, signer);
+  const contractWeth = new ethers.Contract(wethAddress, _abi, signer);
+  const contractLpToken = new ethers.Contract(lpTokenAddress, _abi, signer);
+
   const [
     mistBalance,
     lpBalance,
     lpMistBalance,
     lpWethBalance,
     totalLpSupply,
-    wethPrice,
-    mistPrice,
+    wethPriceString,
+    mistPriceInWethString,
   ] = await Promise.all([
-    new ethers.Contract(mistTokenAddress, _abi, signer).balanceOf(
-      walletAddress
-    ),
-    new ethers.Contract(lpTokenAddress, _abi, signer).balanceOf(walletAddress),
-    new ethers.Contract(mistTokenAddress, _abi, signer).balanceOf(
-      lpTokenAddress
-    ),
-    new ethers.Contract(wethAddress, _abi, signer).balanceOf(lpTokenAddress),
-    new ethers.Contract(lpTokenAddress, _abi, signer).totalSupply(),
+    contractMist.balanceOf(walletAddress),
+    contractLpToken.balanceOf(walletAddress),
+    contractMist.balanceOf(lpTokenAddress),
+    contractWeth.balanceOf(lpTokenAddress),
+    contractLpToken.totalSupply(),
     (
       await Fetcher.fetchPairData(DAI, WETH[DAI.chainId])
     ).token1Price.toSignificant(),
@@ -39,15 +40,17 @@ export async function getTokenBalances(
       await Fetcher.fetchPairData(MIST, WETH[DAI.chainId])
     ).token1Price.toSignificant(),
   ]);
+  const wethPrice = parseUnits(wethPriceString);
+  const mistPrice = wethPrice
+    .mul(getMultiplier())
+    .div(parseUnits(mistPriceInWethString));
   return {
     mistBalance,
     lpBalance,
-    cleanMist: formatUnits(mistBalance),
-    cleanLp: formatUnits(lpBalance),
     lpMistBalance,
     lpWethBalance,
     totalLpSupply,
-    wethPrice: Number(wethPrice),
-    mistPrice: Number(wethPrice) / Number(mistPrice),
+    wethPrice,
+    mistPrice,
   };
 }

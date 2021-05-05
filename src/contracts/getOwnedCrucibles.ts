@@ -1,11 +1,34 @@
-import { ethers } from 'ethers';
+import { BigNumber, BigNumberish, ethers } from 'ethers';
 import { crucibleAbi } from '../abi/crucibleAbi';
 import { crucibleFactoryAbi } from '../abi/crucibleFactoryAbi';
 import { _abi } from '../interfaces/Erc20DetailedFactory';
 import { config } from '../config/variables';
 import { aludelAbi } from '../abi/aludelAbi';
-import { formatUnits } from '@ethersproject/units';
-import { Stake } from '../context/crucibles/crucibles';
+
+function convertTokenIdToAddress(tokenId: BigNumberish) {
+  let id = BigNumber.from(tokenId).toHexString();
+  if (id.length < 42) {
+    id = '0x' + id.slice(2).padStart(40, '0');
+  }
+  return id;
+}
+
+function getCrucibleIdsFromEvents(events: ethers.Event[]) {
+  const handledIds = new Set();
+  const crucibleIds = [];
+  for (const event of events) {
+    if (!event.args || !event.args.tokenId) {
+      console.error(`Missing tokenId arg`, event);
+      continue;
+    }
+    const id = convertTokenIdToAddress(event.args.tokenId);
+    if (!handledIds.has(id)) {
+      handledIds.add(id);
+      crucibleIds.push({ id, event });
+    }
+  }
+  return crucibleIds;
+}
 
 export async function getOwnedCrucibles(signer: any, provider: any) {
   const { crucibleFactoryAddress, lpTokenAddress, aludelAddress } = config;
@@ -18,6 +41,7 @@ export async function getOwnedCrucibles(signer: any, provider: any) {
   );
   const filter = crucibleFactory.filters.Transfer(null, address);
   const crucibleEvents = await crucibleFactory.queryFilter(filter, 0, 'latest');
+  const ids = getCrucibleIdsFromEvents(crucibleEvents);
 
   // const aludelInterface = new ethers.utils.Interface(aludelAbi);
   // const logs = await provider.getLogs({
@@ -33,41 +57,47 @@ export async function getOwnedCrucibles(signer: any, provider: any) {
   //   }
   //   return;
   // });
-  const crucibles = crucibleEvents.map(async (data) => {
-    let id = (data.args!.tokenId as ethers.BigNumber).toHexString();
-    if (id.length < 42) {
-      id = '0x' + id.slice(2).padStart(40, '0');
-    }
-    const aludel = new ethers.Contract(aludelAddress, aludelAbi, signer);
-    const crucible = new ethers.Contract(id, crucibleAbi, signer);
-    const owner = crucibleFactory.ownerOf(id);
-    const balance = token.balanceOf(crucible.address);
-    const lockedBalance = crucible.getBalanceLocked(lpTokenAddress);
-    const [totalStake, stakes] = await aludel.getVaultData(id);
-    let parsedStakes = stakes.map((stake: Stake) => {
+  const crucibles = await Promise.all(
+    ids.map(async ({ id, event }) => {
+      const aludel = new ethers.Contract(aludelAddress, aludelAbi, signer);
+      const crucible = new ethers.Contract(id, crucibleAbi, signer);
+      const ownerPromise = crucibleFactory.ownerOf(id);
+      const balancePromise = token.balanceOf(crucible.address);
+      const lockedBalancePromise = crucible.getBalanceLocked(lpTokenAddress);
+      const vaultDataPromise = aludel.getVaultData(id);
+      // TODO get the block in which the crucible was actually minted, not the block it was transferred to the latest owner
+      const blockPromise = provider.getBlock(event.blockNumber);
+
+      const [
+        owner,
+        balance,
+        lockedBalance,
+        vaultData,
+        block,
+      ] = await Promise.all([
+        ownerPromise,
+        balancePromise,
+        lockedBalancePromise,
+        vaultDataPromise,
+        blockPromise,
+      ]);
+      const [, stakes] = vaultData;
+
       return {
-        amount: Number(formatUnits(stake.amount)).toFixed(3),
-        timestamp: stake.timestamp * 1000,
+        id,
+        balance,
+        lockedBalance,
+        unlockedBalance: balance.sub(lockedBalance),
+        owner,
+        mintTimestamp: block.timestamp,
+        stakes,
       };
-    });
-
-    return {
-      id,
-      balance: await balance,
-      lockedBalance: await lockedBalance,
-      owner: await owner,
-      mintTimestamp:
-        (await provider.getBlock(data.blockNumber))?.timestamp * 1000,
-      cleanBalance: formatUnits(await balance),
-      cleanLockedBalance: formatUnits(await lockedBalance),
-      stakes: parsedStakes,
-    };
-  });
-
-  return (await Promise.all(crucibles)).filter(
-    (crucible, index, resolvedCrucibles) =>
-      crucible.owner === address &&
-      resolvedCrucibles.slice(0, index).find((c) => c.id === crucible.id) ===
-        undefined
+    })
   );
+
+  // There is the possibility that a Crucible has been transferred to an account which has transferred it on again to another
+  // The initial filter doesn't distinguish this, so we filter again to remove Crucibles who report an owner different to the desired account address
+  return crucibles.filter((crucible) => {
+    return crucible.owner === address;
+  });
 }

@@ -7,44 +7,37 @@ import React, {
 } from 'react';
 import { BigNumber } from 'ethers';
 import { useWeb3 } from '../web3';
-import { formatUnits } from 'ethers/lib/utils';
 import { getTokenBalances } from '../../contracts/getTokenBalances';
 import { getOwnedCrucibles } from '../../contracts/getOwnedCrucibles';
 import { getUniswapBalances } from '../../contracts/getUniswapTokenBalances';
-import {
-  calculateMistRewards,
-  EtherRewards,
-  getUserRewards,
-  Rewards,
-} from '../../contracts/aludel';
+import { getUserRewards } from '../../contracts/aludel';
 import { GET_PAIR_HISTORY } from '../../queries/uniswap';
 import { useLazyQuery } from '@apollo/client';
 import { config } from '../../config/variables';
+import numberishToBigNumber from '../../utils/numberishToBigNumber';
 
 export type Stake = {
-  amount: string;
+  amount: BigNumber;
   timestamp: number;
 };
 
 export type Crucible = {
   id: string;
-  balance: string | any;
-  lockedBalance: string;
   owner: string;
-  cleanBalance: any;
-  cleanLockedBalance: any;
+  balance: BigNumber;
+  lockedBalance: BigNumber;
+  unlockedBalance: BigNumber;
   stakes: Stake[];
-  cleanUnlockedBalance?: any;
-  mintTimestamp?: any;
-  tokenRewards?: number;
-  ethRewards?: number;
-  mistPrice?: number;
-  wethPrice?: number;
-  totalLpSupply?: any;
-  initialMistInLP?: any;
-  initialEthInLP?: any;
-  wethValue?: number;
-  mistValue?: number;
+  mintTimestamp: number;
+  mistRewards?: BigNumber;
+  wethRewards?: BigNumber;
+  mistPrice?: BigNumber;
+  wethPrice?: BigNumber;
+  totalLpSupply?: BigNumber;
+  initialMistInLP?: BigNumber;
+  initialEthInLP?: BigNumber;
+  currentWethInLp?: BigNumber;
+  currentMistInLp?: BigNumber;
 };
 
 type TokenBalances = {
@@ -53,10 +46,8 @@ type TokenBalances = {
   totalLpSupply: BigNumber;
   mistBalance: BigNumber;
   lpBalance: BigNumber;
-  wethPrice: number;
-  mistPrice: number;
-  cleanMist: string;
-  cleanLp: string;
+  wethPrice: BigNumber;
+  mistPrice: BigNumber;
 };
 
 type CruciblesProps = {
@@ -92,7 +83,7 @@ const CruciblesProvider = ({ children }: CruciblesProps) => {
       pairAddress,
       // [1615464001, 1615264001]
       crucibles && crucibles.length
-        ? crucibles.map((crucible) => crucible.mintTimestamp / 1000)
+        ? crucibles.map((crucible) => crucible.mintTimestamp)
         : [1615464000]
     )
   );
@@ -108,16 +99,23 @@ const CruciblesProvider = ({ children }: CruciblesProps) => {
     if (pairData) {
       setCrucibles((crucibles) => {
         return crucibles!.map((crucible, i) => {
-          let percentOfPool =
-            crucible.cleanBalance / pairData[`pairDay${i}`][0].totalSupply;
+          // TODO This whole thing breaks down with multiple LP subscriptions in a single crucible
+          const { totalSupply, reserve0, reserve1 } = pairData[
+            `pairDay${i}`
+          ][0];
+          const initialMistInLP = crucible.balance
+            .mul(numberishToBigNumber(reserve0))
+            .div(numberishToBigNumber(totalSupply));
+          const initialEthInLP = crucible.balance
+            .mul(numberishToBigNumber(reserve1))
+            .div(numberishToBigNumber(totalSupply));
           return {
             ...crucible,
-            initialMistInLP:
-              percentOfPool * pairData[`pairDay${i}`][0].reserve0,
-            initialEthInLP: percentOfPool * pairData[`pairDay${i}`][0].reserve1,
-            ratio:
-              pairData[`pairHour${i}`][0].reserve0 /
-              pairData[`pairHour${i}`][0].reserve1,
+            initialMistInLP,
+            initialEthInLP,
+            // ratio:
+            //   pairData[`pairHour${i}`][0].reserve0 /
+            //   pairData[`pairHour${i}`][0].reserve1
           };
         });
       });
@@ -136,12 +134,12 @@ const CruciblesProvider = ({ children }: CruciblesProps) => {
     ) {
       const signer = provider?.getSigner();
       getTokenBalances(signer, address as string, network).then(
-        (balances: any) => {
+        (balances: TokenBalances) => {
           setTokenBalances(balances);
         }
       );
     }
-  }, [provider, wallet, network, address, refreshBalances]);
+  }, [provider, wallet, network, networkId, address, refreshBalances]);
 
   useEffect(
     () => {
@@ -153,16 +151,12 @@ const CruciblesProvider = ({ children }: CruciblesProps) => {
         setIsRewardsLoading(true);
         getOwnedCrucibles(signer, provider)
           .then((ownedCrucibles: Crucible[]) => {
+            const { mistPrice, totalLpSupply, wethPrice } = tokenBalances;
             updatedCrucibles = ownedCrucibles.map((crucible) => ({
               ...crucible,
-              cleanBalance: formatUnits(crucible.balance),
-              cleanLockedBalance: formatUnits(crucible.lockedBalance),
-              cleanUnlockedBalance: formatUnits(
-                crucible.balance.sub(crucible.lockedBalance)
-              ),
-              mistPrice: tokenBalances!.mistPrice,
-              totalLpSupply: formatUnits(tokenBalances!.totalLpSupply),
-              wethPrice: tokenBalances!.wethPrice,
+              mistPrice,
+              totalLpSupply,
+              wethPrice,
               ...getUniswapBalances(
                 crucible.balance,
                 tokenBalances!.lpMistBalance,
@@ -178,46 +172,28 @@ const CruciblesProvider = ({ children }: CruciblesProps) => {
           })
           .then((rewards) => {
             setIsLoading(false);
-            if (
-              !!updatedCrucibles &&
-              updatedCrucibles.length &&
-              network === 1
-            ) {
+            if (updatedCrucibles && updatedCrucibles.length && network === 1) {
               loadPairs();
             }
 
             if (rewards?.length) {
-              Promise.all<Rewards>(
-                rewards.map((reward: EtherRewards) => {
-                  return new Promise((resolve, reject) => {
-                    resolve(
-                      calculateMistRewards(
-                        signer,
-                        Number(reward.currStakeRewards)
-                      )
-                    );
-                  });
-                })
-              ).then((calculatedRewards: Rewards[]) => {
-                const cruciblesWithRewards = updatedCrucibles?.map(
-                  (crucible, i) => {
-                    const calculatedReward = calculatedRewards[i];
-                    return {
-                      ...crucible,
-                      ...calculatedReward,
-                    };
-                  }
-                );
-
-                if (cruciblesWithRewards) {
-                  setCrucibles(cruciblesWithRewards);
+              const cruciblesWithRewards = updatedCrucibles?.map(
+                (crucible, i) => {
+                  const { mistRewards, wethRewards } = rewards[i];
+                  return {
+                    ...crucible,
+                    mistRewards,
+                    wethRewards,
+                  };
                 }
-                setIsRewardsLoading(false);
-              });
+              );
+              if (cruciblesWithRewards) {
+                setCrucibles(cruciblesWithRewards);
+              }
             } else {
               setIsLoading(false);
-              setIsRewardsLoading(false);
             }
+            setIsRewardsLoading(false);
           })
           .catch((e) => {
             console.error(e);
@@ -231,10 +207,9 @@ const CruciblesProvider = ({ children }: CruciblesProps) => {
     [provider, address, network, refreshCrucibles, tokenBalances, loadPairs]
   );
 
-  const cruciblesOnCurrentNetwork = async () => {
+  const cruciblesOnCurrentNetwork = () => {
     const signer = provider?.getSigner();
-    const ownedCrucibles = await getOwnedCrucibles(signer, provider);
-    return ownedCrucibles;
+    return getOwnedCrucibles(signer, provider);
   };
 
   return (

@@ -16,7 +16,7 @@ export enum EVENT {
 export type CallbackArgs =
   | {
       type: EVENT.PENDING_APPROVAL;
-      mmessage?: string;
+      message?: string;
     }
   | {
       type: EVENT.PENDING_SIGNATURE;
@@ -71,7 +71,7 @@ export function useContract(
         );
         break;
       case EVENT.PENDING_APPROVAL:
-        setUI(<TxPendingApprovalModal message={event.mmessage} />);
+        setUI(<TxPendingApprovalModal message={event.message} />);
         break;
       case EVENT.PENDING_SIGNATURE:
         setUI(

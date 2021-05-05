@@ -1,5 +1,5 @@
-import React, { FC, useMemo, useState } from 'react';
-import { providers } from 'ethers';
+import { FC, useState } from 'react';
+import { BigNumber, providers } from 'ethers';
 import { Button } from '@chakra-ui/button';
 import { LightMode } from '@chakra-ui/color-mode';
 import { Box, Flex, Text } from '@chakra-ui/layout';
@@ -10,46 +10,56 @@ import { mintAndLock } from '../../contracts/alchemist';
 import { useWeb3 } from '../../context/web3';
 import {
   Slider,
+  SliderFilledTrack,
   SliderThumb,
   SliderTrack,
-  SliderFilledTrack,
 } from '@chakra-ui/slider';
 import { InputRightElement } from '@chakra-ui/input';
 import useTokenBalances from '../../hooks/useTokenBalances';
+import numberishToBigNumber from '../../utils/numberishToBigNumber';
+import formatNumber from '../../utils/formatNumber';
+import bigNumberishToNumber from '../../utils/bigNumberishToNumber';
+import getStep from '../../utils/getStep';
+import onNumberInputChange from '../../utils/onNumberInputChange';
 
 type MintAndLockParams = Parameters<
-  (signer: Signer, provider: providers.Web3Provider, lpBalance: string) => void
+  (signer: Signer, provider: providers.Web3Provider, amount: BigNumber) => void
 >;
 
 const MintingFormControl: FC = () => {
-  const [amountLpToMint, setAmountLpToMint] = useState('0');
+  const [isMax, setIsMax] = useState(false);
+  const [amount, setAmount] = useState('0');
+  const amountBigNumber = numberishToBigNumber(amount || 0);
   const { provider } = useWeb3();
   const { invokeContract, ui } = useContract(mintAndLock);
-  const { lpBalanceDisplay, lpBalanceRaw } = useTokenBalances();
+  const { lpBalance } = useTokenBalances();
+  let lpBalanceNumber = 0;
+  let step = 1;
+  if (lpBalance) {
+    lpBalanceNumber = bigNumberishToNumber(lpBalance);
+    step = getStep(lpBalanceNumber);
+  }
 
-  const handleChange = (amount: number | string) => {
-    if (isNaN(+amount) && amount !== '.') return;
-    setAmountLpToMint(amount.toString());
+  const onChange = (amountNew: number | string) => {
+    onNumberInputChange(
+      amountNew,
+      amount,
+      lpBalance,
+      isMax,
+      setAmount,
+      setIsMax
+    );
   };
 
   const handleMintCrucible = () => {
-    const amountToMint = amountLpToMint.toString();
     const signer = provider?.getSigner() as Signer;
 
     invokeContract<MintAndLockParams>(
       signer,
       provider as providers.Web3Provider,
-      amountToMint
+      isMax && lpBalance ? lpBalance : amountBigNumber
     );
   };
-
-  const isDisabled = useMemo(
-    () =>
-      !amountLpToMint ||
-      Number(amountLpToMint) <= 0 ||
-      Number(amountLpToMint) > lpBalanceRaw,
-    [amountLpToMint, lpBalanceRaw]
-  );
 
   return (
     <Box>
@@ -58,7 +68,10 @@ const MintingFormControl: FC = () => {
           <Flex mb={4} justifyContent='space-between' alignItems='center'>
             <Text>Select amount</Text>
             <Text>
-              Balance: <strong>{lpBalanceDisplay} LP</strong>
+              Balance:{' '}
+              <strong>
+                {lpBalance ? formatNumber.token(lpBalance) : '-'} LP
+              </strong>
             </Text>
           </Flex>
           <Box>
@@ -66,8 +79,11 @@ const MintingFormControl: FC = () => {
               mb={4}
               size='lg'
               bg='gray.50'
-              value={amountLpToMint}
-              onChange={handleChange}
+              step={step}
+              min={0}
+              max={lpBalanceNumber}
+              value={isMax ? lpBalanceNumber.toString() : amount}
+              onChange={onChange}
               borderRadius='xl'
             >
               <NumberInputField
@@ -84,24 +100,18 @@ const MintingFormControl: FC = () => {
                 }}
               />
               <InputRightElement width='4.5rem'>
-                <Button
-                  variant='ghost'
-                  // fixing to 8 decimals to account for dust
-                  onClick={() =>
-                    setAmountLpToMint(lpBalanceRaw.toFixed(8).toString())
-                  }
-                >
+                <Button variant='ghost' onClick={() => setIsMax(true)}>
                   Max
                 </Button>
               </InputRightElement>
             </NumberInput>
             <Box mb={4} mx={4}>
               <Slider
-                step={0.001}
+                step={step}
                 min={0}
-                max={lpBalanceRaw}
-                value={Number(amountLpToMint)}
-                onChange={handleChange}
+                max={lpBalanceNumber}
+                value={isMax ? lpBalanceNumber : parseFloat(amount)}
+                onChange={onChange}
                 focusThumbOnChange={false}
               >
                 <SliderTrack>
@@ -116,7 +126,12 @@ const MintingFormControl: FC = () => {
       <Button
         size='lg'
         isFullWidth
-        disabled={isDisabled}
+        disabled={
+          !isMax &&
+          (!lpBalance ||
+            amountBigNumber.lte(0) ||
+            amountBigNumber.gt(lpBalance))
+        }
         onClick={handleMintCrucible}
       >
         Mint a Crucible

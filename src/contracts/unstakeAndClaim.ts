@@ -1,5 +1,4 @@
-import { ethers } from 'ethers';
-import { parseUnits } from 'ethers/lib/utils';
+import { BigNumber, ethers } from 'ethers';
 import { signPermission } from './utils';
 import { aludelAbi } from '../abi/aludelAbi';
 import { crucibleAbi } from '../abi/crucibleAbi';
@@ -12,30 +11,22 @@ const { aludelAddress } = config;
 export async function unstakeAndClaim(
   signer: any,
   crucibleAddress: string,
-  rawAmount: string,
+  amount: BigNumber,
   callback: (args: CallbackArgs) => void
 ) {
   const walletAddress = await signer.getAddress();
 
-  const args = {
-    crucible: crucibleAddress,
-    aludel: aludelAddress,
-    recipient: walletAddress,
-    amount: rawAmount,
-  };
-
   // fetch contracts
-  const aludel = new ethers.Contract(args.aludel, aludelAbi, signer);
+  const aludel = new ethers.Contract(aludelAddress, aludelAbi, signer);
   const stakingToken = new ethers.Contract(
     (await aludel.getAludelData()).stakingToken,
     IUniswapV2ERC20.abi,
     signer
   );
-  const crucible = new ethers.Contract(args.crucible, crucibleAbi, signer);
+  const crucible = new ethers.Contract(crucibleAddress, crucibleAbi, signer);
 
-  const amount = parseUnits(args.amount, await stakingToken.decimals());
   const nonce = await crucible.getNonce();
-  const recipient = args.recipient;
+  const recipient = walletAddress;
 
   try {
     // validate balances

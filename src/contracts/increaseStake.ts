@@ -1,5 +1,4 @@
-import { ethers } from 'ethers';
-import { parseUnits } from 'ethers/lib/utils';
+import { BigNumber, ethers } from 'ethers';
 import { signPermission, signPermitEIP2612 } from './utils';
 import { aludelAbi } from '../abi/aludelAbi';
 import { crucibleAbi } from '../abi/crucibleAbi';
@@ -8,40 +7,30 @@ import { config } from '../config/variables';
 import { CallbackArgs, EVENT } from '../hooks/useContract';
 import IUniswapV2ERC20 from '@uniswap/v2-core/build/IUniswapV2ERC20.json';
 
-const { aludelAddress, transmuterAddress, crucibleFactoryAddress } = config;
+const { aludelAddress, transmuterAddress } = config;
 
 export async function increaseStake(
   signer: any,
   crucibleAddress: string,
-  rawAmount: string,
+  amount: BigNumber,
   callback: (args: CallbackArgs) => void
 ) {
   const walletAddress = await signer.getAddress();
 
-  const args = {
-    crucible: crucibleAddress,
-    aludel: aludelAddress,
-    transmuter: transmuterAddress,
-    crucibleFactory: crucibleFactoryAddress,
-    amount: rawAmount,
-  };
-
   // fetch contracts
-  const aludel = new ethers.Contract(args.aludel, aludelAbi, signer);
+  const aludel = new ethers.Contract(aludelAddress, aludelAbi, signer);
   const stakingToken = new ethers.Contract(
     (await aludel.getAludelData()).stakingToken,
     IUniswapV2ERC20.abi,
     signer
   );
-  const crucible = new ethers.Contract(args.crucible, crucibleAbi, signer);
-
+  const crucible = new ethers.Contract(crucibleAddress, crucibleAbi, signer);
   const transmuter = new ethers.Contract(
-    args.transmuter,
+    transmuterAddress,
     transmuterAbi,
     signer
   );
 
-  const amount = parseUnits(args.amount, await stakingToken.decimals());
   const nonce = await crucible.getNonce();
   const deadline = Date.now() + 60 * 60 * 24; // 1 day deadline
 

@@ -1,12 +1,12 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import {
   Button,
+  Flex,
+  InputRightElement,
+  Link,
   NumberInput,
   NumberInputField,
   Text,
-  InputRightElement,
-  Link,
-  Flex,
 } from '@chakra-ui/react';
 import {
   Modal,
@@ -17,14 +17,19 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/modal';
-import { useState } from 'react';
 import { useWeb3 } from '../../context/web3';
 import { useContract } from '../../hooks/useContract';
 import { Crucible, useCrucibles } from '../../context/crucibles/crucibles';
 import { unstakeAndClaim } from '../../contracts/unstakeAndClaim';
+import formatNumber from '../../utils/formatNumber';
+import { BigNumber } from 'ethers';
+import numberishToBigNumber from '../../utils/numberishToBigNumber';
+import bigNumberishToNumber from '../../utils/bigNumberishToNumber';
+import getStep from '../../utils/getStep';
+import onNumberInputChange from '../../utils/onNumberInputChange';
 
 type unstakeAndClaimParams = Parameters<
-  (signer: any, crucibleAddress: string, rawAmount: string) => void
+  (signer: any, crucibleAddress: string, amount: BigNumber) => void
 >;
 
 type Props = {
@@ -35,8 +40,13 @@ type Props = {
 const UnstakeAndClaimModal: FC<Props> = ({ onClose, crucible }) => {
   const { cruciblesOnCurrentNetwork } = useCrucibles();
   const { provider, network } = useWeb3();
-  const [amount, setAmount] = useState('0');
   const [isLoading, setIsLoading] = useState(false);
+  const [isMax, setIsMax] = useState(false);
+  const [amount, setAmount] = useState('0');
+  const amountBigNumber = numberishToBigNumber(amount || 0);
+  const lockedBalance = crucible?.lockedBalance || BigNumber.from(0);
+  const lockedBalanceNumber = bigNumberishToNumber(lockedBalance);
+  const step = getStep(lockedBalanceNumber);
 
   const { invokeContract, ui } = useContract(unstakeAndClaim, () => {
     onClose();
@@ -47,15 +57,32 @@ const UnstakeAndClaimModal: FC<Props> = ({ onClose, crucible }) => {
     const crucibles = await cruciblesOnCurrentNetwork();
     if (crucibles.length !== 0 && network === 1) {
       alert(
-        'You have not changed your network yet. Follow this guide to privately withdraw your stake- https://github.com/Taichi-Network/docs/blob/master/sendPriveteTx_tutorial.md'
+        `You have not changed your network yet.
+
+Follow this guide to privately withdraw your stake: https://github.com/Taichi-Network/docs/blob/master/sendPriveteTx_tutorial.md`
       );
       setIsLoading(false);
       return;
     }
 
     const signer = provider?.getSigner();
-    invokeContract<unstakeAndClaimParams>(signer, crucible.id, amount);
-    setIsLoading(false)
+    invokeContract<unstakeAndClaimParams>(
+      signer,
+      crucible.id,
+      isMax ? lockedBalance : amountBigNumber
+    );
+    setIsLoading(false);
+  };
+
+  const onChange = (amountNew: number | string) => {
+    onNumberInputChange(
+      amountNew,
+      amount,
+      lockedBalance,
+      isMax,
+      setAmount,
+      setIsMax
+    );
   };
 
   return (
@@ -67,10 +94,12 @@ const UnstakeAndClaimModal: FC<Props> = ({ onClose, crucible }) => {
           <ModalCloseButton />
           <ModalBody>
             <Text mb={4}>
-              You are claiming {crucible.tokenRewards || '0'} MIST and{' '}
-              {crucible.ethRewards} Ether rewards. By claiming rewards, you are
-              unsubscribing your MIST-ETH LP tokens from the Aludel Rewards
-              program and resetting your rewards multiplier.
+              You are claiming{' '}
+              {formatNumber.tokenFull(crucible.mistRewards || 0)} MIST and{' '}
+              {formatNumber.tokenFull(crucible.wethRewards || 0)} Ether rewards.
+              By claiming rewards, you are unsubscribing your MIST-ETH LP tokens
+              from the Aludel Rewards program and resetting your rewards
+              multiplier.
               <br />
               <br />
               <b>
@@ -94,25 +123,21 @@ const UnstakeAndClaimModal: FC<Props> = ({ onClose, crucible }) => {
             >
               <Text>Select amount</Text>
               <Text>
-                Balance:{' '}
-                <strong>
-                  {Number(crucible.cleanLockedBalance).toFixed(3)} LP
-                </strong>
+                Balance: <strong>{formatNumber.token(lockedBalance)} LP</strong>
               </Text>
             </Flex>
             <NumberInput
-              value={amount}
-              onChange={(val) => setAmount(val)}
-              max={Number(crucible.cleanLockedBalance)}
+              value={isMax ? lockedBalanceNumber.toString() : amount}
+              onChange={onChange}
+              step={step}
+              min={0}
+              max={lockedBalanceNumber}
               clampValueOnBlur={false}
               size='lg'
             >
               <NumberInputField pr='4.5rem' borderRadius='xl' />
               <InputRightElement width='4.5rem'>
-                <Button
-                  variant='ghost'
-                  onClick={() => setAmount(crucible.cleanLockedBalance || '0')}
-                >
+                <Button variant='ghost' onClick={() => setIsMax(true)}>
                   Max
                 </Button>
               </InputRightElement>
@@ -124,9 +149,8 @@ const UnstakeAndClaimModal: FC<Props> = ({ onClose, crucible }) => {
               isLoading={isLoading}
               onClick={handleUnstakeAndClaim}
               disabled={
-                !amount ||
-                Number(amount) === 0 ||
-                Number(amount) > Number(crucible.cleanLockedBalance)
+                !isMax &&
+                (amountBigNumber.lte(0) || amountBigNumber.gt(lockedBalance))
               }
             >
               Claim rewards and unsubscribe LP

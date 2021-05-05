@@ -1,14 +1,15 @@
-import React, { FC, useMemo, useState } from 'react';
+import React, { FC, useState } from 'react';
 import { Box, Flex, HStack, Text, VStack } from '@chakra-ui/layout';
 import { Progress, StatGroup } from '@chakra-ui/react';
 import { Crucible } from '../../../context/crucibles/crucibles';
 import { Button } from '@chakra-ui/button';
 import dayjs from 'dayjs';
-import { commify } from 'ethers/lib/utils';
 import UnstakeAndClaimModal from '../../modals/unstakeAndClaimModal';
 import IncreaseStakeModal from '../../modals/increaseStakeModal';
 import WithdrawModal from '../../modals/withdrawModal';
 import StatCard from '../../shared/StatCard';
+import formatNumber from '../../../utils/formatNumber';
+import getMultiplier from '../../../utils/getMultiplier';
 
 type Props = {
   crucible: Crucible;
@@ -18,40 +19,42 @@ const Rewards: FC<Props> = ({ crucible }) => {
   const [increaseStakeModalOpen, setIncreaseStakeModalOpen] = useState(false);
   const [withdrawModalOpen, setWithdrawModalOpen] = useState(false);
 
-  const daysAgo: number = dayjs().diff(crucible.mintTimestamp, 'day');
-  let aggregateRewardsUSD: number = 0;
-  let lpValueUSD: number = 0;
+  let mistRewardsUsd;
+  let wethRewardsUsd;
+  let aggregateRewardsUsd;
+  let lpUsd;
+  let totalUsd;
+
+  const {
+    mistRewards,
+    wethRewards,
+    mistPrice,
+    wethPrice,
+    currentWethInLp,
+    currentMistInLp,
+  } = crucible;
 
   if (
-    crucible.tokenRewards &&
-    crucible.ethRewards &&
-    crucible.mistPrice &&
-    crucible.wethPrice &&
-    crucible.wethValue &&
-    crucible.mistValue
+    mistRewards &&
+    wethRewards &&
+    mistPrice &&
+    wethPrice &&
+    currentWethInLp &&
+    currentMistInLp
   ) {
-    aggregateRewardsUSD =
-      crucible.ethRewards * crucible.wethPrice +
-      crucible.tokenRewards * crucible.mistPrice;
-    lpValueUSD =
-      crucible.mistValue * crucible.mistPrice +
-      crucible.wethValue * crucible.wethPrice;
+    mistRewardsUsd = mistRewards.mul(mistPrice).div(getMultiplier());
+    wethRewardsUsd = wethRewards.mul(wethPrice).div(getMultiplier());
+    aggregateRewardsUsd = mistRewardsUsd.add(wethRewardsUsd);
+
+    const currentMistInLpUsd = currentMistInLp
+      .mul(mistPrice)
+      .div(getMultiplier());
+    const currentWethInLpUsd = currentWethInLp
+      .mul(wethPrice)
+      .div(getMultiplier());
+    lpUsd = currentMistInLpUsd.add(currentWethInLpUsd);
+    totalUsd = lpUsd.add(aggregateRewardsUsd);
   }
-
-  const earnedRewards: {
-    mist: number | string;
-    mistUsd: number | string;
-    eth: number | string;
-    ethUsd: number | string;
-  } = useMemo(() => {
-    const { tokenRewards, mistPrice, ethRewards, wethPrice } = crucible;
-    const mist = tokenRewards ? +tokenRewards.toFixed(4) : 0;
-    const mistUsd = mistPrice ? mist * mistPrice : '--';
-    const eth = ethRewards ? +ethRewards.toFixed(4) : 0;
-    const ethUsd = wethPrice ? commify((eth * wethPrice).toFixed(0)) : '--';
-
-    return { mist, mistUsd, eth, ethUsd };
-  }, [crucible]);
 
   return (
     <Box p={4} bg='white' color='gray.800' borderRadius='xl'>
@@ -62,19 +65,21 @@ const Rewards: FC<Props> = ({ crucible }) => {
               <HStack justifyContent='center' pt={4}>
                 <Text>Total Value</Text>
                 <Text fontWeight='bold' mr={4} fontSize='lg'>
-                  {`$${commify((lpValueUSD + aggregateRewardsUSD).toFixed(0))}`}
+                  {totalUsd ? formatNumber.currency(totalUsd) : '-'}
                 </Text>
               </HStack>
               <HStack justifyContent='center' pt={4}>
                 <Text>LP Value</Text>
                 <Text fontWeight='bold' mr={4} fontSize='lg'>
-                  {`$${commify(lpValueUSD?.toFixed(0))}`}
+                  {lpUsd ? formatNumber.currency(lpUsd) : '-'}
                 </Text>
               </HStack>
               <HStack justifyContent='center' pt={4}>
                 <Text>Rewards</Text>
                 <Text fontWeight='bold' mr={4} fontSize='lg'>
-                  {`$${commify(aggregateRewardsUSD?.toFixed(0))}`}
+                  {aggregateRewardsUsd
+                    ? formatNumber.currency(aggregateRewardsUsd)
+                    : '-'}
                 </Text>
               </HStack>
             </HStack>
@@ -83,14 +88,18 @@ const Rewards: FC<Props> = ({ crucible }) => {
               <StatGroup mt={5} alignItems='baseline' width='100%'>
                 <StatCard
                   title='Earned MIST Rewards'
-                  label={earnedRewards.mist.toString()}
-                  subLabel={`$${earnedRewards.mistUsd}`}
+                  label={mistRewards ? formatNumber.token(mistRewards) : '-'}
+                  subLabel={
+                    mistRewardsUsd ? formatNumber.currency(mistRewardsUsd) : '-'
+                  }
                   arrowOnSubLabel
                 />
                 <StatCard
                   title='Earned ETH Rewards'
-                  label={earnedRewards.eth.toString()}
-                  subLabel={`$${earnedRewards.ethUsd}`}
+                  label={wethRewards ? formatNumber.token(wethRewards) : '-'}
+                  subLabel={
+                    wethRewardsUsd ? formatNumber.currency(wethRewardsUsd) : '-'
+                  }
                   arrowOnSubLabel
                 />
               </StatGroup>
@@ -102,37 +111,37 @@ const Rewards: FC<Props> = ({ crucible }) => {
                   Reward Scaling Period
                 </Text>
                 <VStack>
-                  <Progress
-                    value={(daysAgo / 60) * 100}
-                    size='xs'
-                    colorScheme='purple'
-                    backgroundColor='lightgray'
-                  />
                   {crucible!.stakes.map((stake, i) => {
                     const daysAgo: number = dayjs().diff(
-                      stake.timestamp,
+                      stake.timestamp * 1000,
                       'day'
                     );
-
-                    const subscribedAt: string = dayjs(stake.timestamp).format(
-                      'DD-MMM-YY'
+                    const secondsAgo: number = dayjs().diff(
+                      stake.timestamp * 1000,
+                      'second'
                     );
+                    const secondsMax = 60 * 24 * 60 * 60;
+                    const progress = Math.min(secondsAgo / secondsMax, 1);
+
+                    const subscribedAt: string = formatNumber.date(
+                      stake.timestamp * 1000
+                    ); // dayjs(stake.timestamp).format('DD-MMM-YY');
 
                     return (
                       <Box key={i} width='100%'>
                         <Text fontSize='xs' pt={1} pb={2}>
-                          Subscription {i + 1}: {stake.amount} LP (
-                          {subscribedAt})
+                          Subscription {i + 1}:{' '}
+                          {formatNumber.token(stake.amount)} LP ({subscribedAt})
                         </Text>
                         <Progress
-                          value={(daysAgo / 60) * 100}
+                          value={progress * 100}
                           size='xs'
                           colorScheme='purple'
                           backgroundColor='lightgray'
                         />
                         <Text fontSize='xs' pt={1} pb={4}>
-                          {((daysAgo / 60) * 100).toFixed(0)}% Complete (
-                          {daysAgo} of 60 Days to max reward multiplier)
+                          {formatNumber.percent(progress)} Complete ({daysAgo}{' '}
+                          of 60 Days to max reward multiplier)
                         </Text>
                       </Box>
                     );
@@ -142,13 +151,13 @@ const Rewards: FC<Props> = ({ crucible }) => {
                   <Text fontSize='sm'>
                     Subscribed Crucible LP:{' '}
                     <strong>
-                      {Number(crucible.cleanLockedBalance).toFixed(3)}
+                      {formatNumber.token(crucible.lockedBalance)}
                     </strong>
                   </Text>
                   <Text fontSize='sm'>
                     Unsubscribed Crucible LP:{' '}
                     <strong>
-                      {Number(crucible.cleanUnlockedBalance).toFixed(3)}
+                      {formatNumber.token(crucible.unlockedBalance)}
                     </strong>
                   </Text>
                 </HStack>
@@ -170,7 +179,7 @@ const Rewards: FC<Props> = ({ crucible }) => {
                 </Button>
                 <Button
                   width='100%'
-                  disabled={Number(crucible.cleanLockedBalance || '0') === 0}
+                  disabled={crucible.lockedBalance.isZero()}
                   onClick={() => setClaimRewardsModalOpen(true)}
                 >
                   <Text fontSize='md'>Claim rewards and unsubscribe</Text>
@@ -181,12 +190,12 @@ const Rewards: FC<Props> = ({ crucible }) => {
             <VStack justifyContent='center' pt={4}>
               <Button
                 width='100%'
-                disabled={Number(crucible.cleanUnlockedBalance) <= 0}
+                disabled={crucible.unlockedBalance.lte(0)}
                 onClick={() => setWithdrawModalOpen(true)}
               >
                 <Text fontSize='md'>Withdraw unsubscribed LP</Text>
               </Button>
-              {Number(crucible.cleanUnlockedBalance) <= 0 && (
+              {crucible.unlockedBalance.lte(0) && (
                 <Text fontSize='sm' color='gray.400'>
                   To withdraw, first unsubscribe your LP
                 </Text>

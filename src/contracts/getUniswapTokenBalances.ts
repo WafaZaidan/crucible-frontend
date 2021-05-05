@@ -1,16 +1,17 @@
-import { ChainId, Token, TokenAmount, Pair } from '@uniswap/sdk';
+import { ChainId, Pair, Token, TokenAmount } from '@uniswap/sdk';
 import { BigNumber } from 'ethers';
 import { config } from '../config/variables';
+import numberishToBigNumber from '../utils/numberishToBigNumber';
 
 const { lpTokenAddress, mistTokenAddress, wethAddress } = config;
 
 export const getUniswapBalances = (
-  lpBalance: string,
+  lpBalance: BigNumber,
   lpMistBalance: BigNumber,
   lpWethBalance: BigNumber,
   totalLpSupply: BigNumber,
-  wethPrice: number,
-  mistPrice: number,
+  wethPrice: BigNumber,
+  mistPrice: BigNumber,
   chainId: ChainId
 ) => {
   const MIST = new Token(chainId, mistTokenAddress, 18, '⚗', 'Alchemist');
@@ -21,30 +22,28 @@ export const getUniswapBalances = (
     new TokenAmount(WETH, lpWethBalance.toString())
   );
 
-  let mistValue = pair
-    .getLiquidityValue(
-      MIST,
-      new TokenAmount(LP, totalLpSupply.toString()),
-      new TokenAmount(LP, lpBalance.toString()),
-      false
-    )
-    .toSignificant();
-  let wethValue = pair
-    .getLiquidityValue(
-      WETH,
-      new TokenAmount(LP, totalLpSupply.toString()),
-      new TokenAmount(LP, lpBalance.toString()),
-      false
-    )
-    .toSignificant();
+  const currentMistInLp = numberishToBigNumber(
+    pair
+      .getLiquidityValue(
+        MIST,
+        new TokenAmount(LP, totalLpSupply.toString()),
+        new TokenAmount(LP, lpBalance.toString()),
+        false
+      )
+      .toSignificant()
+  );
+  const currentWethInLp = numberishToBigNumber(
+    pair
+      .getLiquidityValue(
+        WETH,
+        new TokenAmount(LP, totalLpSupply.toString()),
+        new TokenAmount(LP, lpBalance.toString()),
+        false
+      )
+      .toSignificant()
+  );
   return {
-    mistValue: Number(mistValue),
-    wethValue: Number(wethValue),
-    ...(wethPrice && {
-      wethValueUsd: (Number(wethValue) * wethPrice).toFixed(2),
-    }),
-    ...(mistPrice && {
-      mistValueUsd: (Number(mistValue) * mistPrice).toFixed(2),
-    }),
+    currentMistInLp,
+    currentWethInLp,
   };
 };

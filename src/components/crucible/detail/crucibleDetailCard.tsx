@@ -1,5 +1,4 @@
-import React, { FC, useMemo } from 'react';
-import dayjs from 'dayjs';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import CrucibleTabs from './crucibleTabs';
 import { Button, IconButton } from '@chakra-ui/button';
 import { truncate } from '../../../utils/address';
@@ -7,12 +6,12 @@ import { useHistory } from 'react-router-dom';
 import { Crucible } from '../../../context/crucibles/crucibles';
 import { FiArrowLeft, FiCopy, FiSend } from 'react-icons/fi';
 import { FaLock } from 'react-icons/fa';
-import { Flex, Box, HStack, Text, Heading, Badge } from '@chakra-ui/layout';
+import { Badge, Box, Flex, Heading, HStack, Text } from '@chakra-ui/layout';
 import { Tooltip } from '@chakra-ui/tooltip';
 import { useClipboard } from '@chakra-ui/hooks';
-import { useEffect, useState } from 'react';
 import { useToast } from '@chakra-ui/toast';
 import TransferModal from '../../modals/transferModal';
+import formatNumber from '../../../utils/formatNumber';
 
 type Props = {
   crucible: Crucible;
@@ -27,12 +26,9 @@ const CrucibleDetailCard: FC<Props> = ({ crucible }) => {
 
   const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
 
-  const subscribeDate = useMemo(() => {
-    if (crucible.stakes.length > 0) {
-      return dayjs(crucible.stakes[0].timestamp).format('MMM-DD YYYY');
-    }
-    return dayjs(crucible.mintTimestamp).format('MMM-DD YYYY');
-  }, [crucible.stakes, crucible.mintTimestamp]);
+  const mintDate = useMemo(() => {
+    return formatNumber.date(crucible.mintTimestamp * 1000);
+  }, [crucible.mintTimestamp]);
 
   useEffect(() => {
     if (hasCopied && !toast.isActive(id)) {
@@ -79,7 +75,7 @@ const CrucibleDetailCard: FC<Props> = ({ crucible }) => {
             <Text fontSize='xl'>ID: {truncate(crucible!.id)}</Text>
             <HStack>
               <Text key={0} fontSize='sm' color='gray.300'>
-                Minted on {subscribeDate}
+                Minted on {mintDate}
               </Text>
             </HStack>
           </Box>
@@ -89,7 +85,7 @@ const CrucibleDetailCard: FC<Props> = ({ crucible }) => {
             <HStack>
               <Box>
                 <Text color='gray.200' fontSize='lg'>
-                  {Number(crucible?.cleanLockedBalance).toFixed(3)} LP
+                  {formatNumber.token(crucible.lockedBalance)} LP
                 </Text>
               </Box>
               <Tooltip

@@ -4,23 +4,16 @@ import { useHistory } from 'react-router-dom';
 import { Button, IconButton } from '@chakra-ui/button';
 import { Collapse } from '@chakra-ui/transition';
 import { Crucible } from '../../context/crucibles/crucibles';
-import {
-  Box,
-  Flex,
-  HStack,
-  Stack,
-  Text,
-  Badge,
-} from '@chakra-ui/layout';
+import { Badge, Box, Flex, HStack, Stack, Text } from '@chakra-ui/layout';
 import { FaLock } from 'react-icons/fa';
 import { useClipboard } from '@chakra-ui/hooks';
 import {
   Stat,
-  StatLabel,
-  StatNumber,
-  StatHelpText,
   StatArrow,
   StatGroup,
+  StatHelpText,
+  StatLabel,
+  StatNumber,
   useToast,
 } from '@chakra-ui/react';
 import { Tooltip } from '@chakra-ui/tooltip';
@@ -28,7 +21,8 @@ import { IoChevronDownCircle } from 'react-icons/io5';
 import { IoMdSettings } from 'react-icons/io';
 import { Skeleton } from '@chakra-ui/skeleton';
 import { FiCopy } from 'react-icons/fi';
-import dayjs from 'dayjs';
+import formatNumber from '../../utils/formatNumber';
+import getMultiplier from '../../utils/getMultiplier';
 
 type Props = {
   crucible: Crucible;
@@ -63,6 +57,20 @@ const CrucibleCard: FC<Props> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasCopied]);
 
+  let mistRewardsUSD;
+  if (crucible.mistRewards && crucible.mistPrice) {
+    mistRewardsUSD = crucible.mistRewards
+      .mul(crucible.mistPrice)
+      .div(getMultiplier());
+  }
+
+  let wethRewardsUSD;
+  if (crucible.wethRewards && crucible.wethPrice) {
+    wethRewardsUSD = crucible.wethRewards
+      .mul(crucible.wethPrice)
+      .div(getMultiplier());
+  }
+
   return (
     <Box p={4} bg='white' color='gray.800' borderRadius='xl'>
       <Flex justifyContent='space-between' alignItems='center'>
@@ -79,12 +87,9 @@ const CrucibleCard: FC<Props> = ({
                 <FiCopy />
               </HStack>
               <Text fontSize='xs' color='gray.400' width='100%'>
-                {!!crucible.stakes?.length &&
-                  `Minted on ${dayjs(
-                    crucible.stakes[0]?.timestamp
-                      ? crucible.stakes[0]?.timestamp
-                      : crucible.mintTimestamp
-                  ).format('MM-DD-YY')}`}
+                {`Minted on ${formatNumber.date(
+                  crucible.mintTimestamp * 1000
+                )}`}
                 <br />
                 {crucible.stakes?.length || 'No'} subscriptions
               </Text>
@@ -95,7 +100,7 @@ const CrucibleCard: FC<Props> = ({
           <HStack>
             <Box>
               <Text color='gray.400'>
-                {Number(crucible?.cleanLockedBalance).toFixed(3)} LP
+                {formatNumber.token(crucible.lockedBalance)} LP
               </Text>
             </Box>
             <Tooltip
@@ -155,15 +160,11 @@ const CrucibleCard: FC<Props> = ({
               <Stat>
                 <StatLabel>Earned MIST Rewards</StatLabel>
                 <StatNumber>
-                  {crucible.tokenRewards
-                    ? crucible.tokenRewards.toFixed(3)
-                    : '0.000'}
+                  {formatNumber.token(crucible.mistRewards || 0)}
                 </StatNumber>
                 <StatHelpText>
-                  <StatArrow type='increase' />$
-                  {crucible.tokenRewards && crucible.mistPrice
-                    ? (crucible.tokenRewards * crucible.mistPrice).toFixed(0)
-                    : '0'}
+                  <StatArrow type='increase' />
+                  {mistRewardsUSD ? formatNumber.currency(mistRewardsUSD) : '-'}
                 </StatHelpText>
               </Stat>
             </Tooltip>
@@ -176,13 +177,11 @@ const CrucibleCard: FC<Props> = ({
               <Stat>
                 <StatLabel>Earned ETH Rewards</StatLabel>
                 <StatNumber>
-                  {crucible.ethRewards?.toFixed(3) || '0.000'}
+                  {formatNumber.token(crucible.wethRewards || 0)}
                 </StatNumber>
                 <StatHelpText>
-                  <StatArrow type='increase' />$
-                  {crucible.ethRewards && crucible.wethPrice
-                    ? (crucible.ethRewards * crucible.wethPrice).toFixed(0)
-                    : '0'}
+                  <StatArrow type='increase' />
+                  {wethRewardsUSD ? formatNumber.currency(wethRewardsUSD) : '-'}
                 </StatHelpText>
               </Stat>
             </Tooltip>

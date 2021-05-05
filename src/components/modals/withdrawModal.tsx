@@ -1,11 +1,11 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import {
   Button,
-  NumberInput,
+  Flex,
   InputRightElement,
+  NumberInput,
   NumberInputField,
   Text,
-  Flex,
 } from '@chakra-ui/react';
 import {
   Modal,
@@ -16,14 +16,19 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/modal';
-import { useState } from 'react';
 import { useWeb3 } from '../../context/web3';
 import { useContract } from '../../hooks/useContract';
 import { Crucible } from '../../context/crucibles/crucibles';
 import { withdraw } from '../../contracts/withdraw';
+import { BigNumber } from 'ethers';
+import formatNumber from '../../utils/formatNumber';
+import numberishToBigNumber from '../../utils/numberishToBigNumber';
+import bigNumberishToNumber from '../../utils/bigNumberishToNumber';
+import getStep from '../../utils/getStep';
+import onNumberInputChange from '../../utils/onNumberInputChange';
 
 type withdrawParams = Parameters<
-  (signer: any, crucibleAddress: string, rawAmount: string) => void
+  (signer: any, crucibleAddress: string, amount: BigNumber) => void
 >;
 
 type Props = {
@@ -33,13 +38,29 @@ type Props = {
 
 const WithdrawStakeModal: FC<Props> = ({ onClose, crucible }) => {
   const { provider } = useWeb3();
+  const [isMax, setIsMax] = useState(false);
   const [amount, setAmount] = useState('0');
+  const amountBigNumber = numberishToBigNumber(amount || 0);
+  const unlockedBalance = crucible?.unlockedBalance || BigNumber.from(0);
+  const unlockedBalanceNumber = bigNumberishToNumber(unlockedBalance);
+  const step = getStep(unlockedBalanceNumber);
 
   const { invokeContract, ui } = useContract(withdraw, () => onClose());
 
   const handleWithdraw = () => {
     const signer = provider?.getSigner();
-    invokeContract<withdrawParams>(signer, crucible.id, amount);
+    invokeContract<withdrawParams>(signer, crucible.id, amountBigNumber);
+  };
+
+  const onChange = (amountNew: number | string) => {
+    onNumberInputChange(
+      amountNew,
+      amount,
+      unlockedBalance,
+      isMax,
+      setAmount,
+      setIsMax
+    );
   };
 
   return (
@@ -63,26 +84,21 @@ const WithdrawStakeModal: FC<Props> = ({ onClose, crucible }) => {
               <Text>Select amount</Text>
               <Text>
                 Balance:{' '}
-                <strong>
-                  {Number(crucible.cleanUnlockedBalance).toFixed(3)} LP
-                </strong>
+                <strong>{formatNumber.token(unlockedBalance)} LP</strong>
               </Text>
             </Flex>
             <NumberInput
-              value={amount}
-              onChange={(val) => setAmount(val)}
-              max={Number(crucible.cleanUnlockedBalance)}
+              value={isMax ? unlockedBalanceNumber.toString() : amount}
+              onChange={onChange}
+              step={step}
+              min={0}
+              max={unlockedBalanceNumber}
               clampValueOnBlur={false}
               size='lg'
             >
               <NumberInputField pr='4.5rem' borderRadius='xl' />
               <InputRightElement width='4.5rem'>
-                <Button
-                  variant='ghost'
-                  onClick={() =>
-                    setAmount(crucible.cleanUnlockedBalance || '0')
-                  }
-                >
+                <Button variant='ghost' onClick={() => setIsMax(true)}>
                   Max
                 </Button>
               </InputRightElement>
@@ -93,9 +109,8 @@ const WithdrawStakeModal: FC<Props> = ({ onClose, crucible }) => {
               isFullWidth
               onClick={handleWithdraw}
               disabled={
-                !amount ||
-                amount === '0' ||
-                Number(amount) > Number(crucible.cleanUnlockedBalance)
+                !isMax &&
+                (amountBigNumber.lte(0) || amountBigNumber.gt(unlockedBalance))
               }
             >
               Withdraw

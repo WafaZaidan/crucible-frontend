@@ -1,13 +1,15 @@
 import React, { FC } from 'react';
-import { Box, HStack, Flex, StatGroup, Spinner } from '@chakra-ui/react';
+import { Box, Flex, HStack, Spinner, StatGroup } from '@chakra-ui/react';
 import { Crucible } from '../../../context/crucibles/crucibles';
 import { config } from '../../../config/variables';
 import dayjs from 'dayjs';
-import { commify } from 'ethers/lib/utils';
 import { useCrucibles } from '../../../context/crucibles';
 import { useLpStats } from '../../../context/lp';
-import { useNetworkStats } from '../../../context/network';
+// import { useNetworkStats } from '../../../context/network';
 import StatCard from '../../shared/StatCard';
+import formatNumber from '../../../utils/formatNumber';
+import numberishToBigNumber from '../../../utils/numberishToBigNumber';
+import getMultiplier from '../../../utils/getMultiplier';
 
 const { inflationStartTimestamp } = config;
 
@@ -23,7 +25,7 @@ type Props = {
 const LpPerformance: FC<Props> = ({ crucible }) => {
   const { tokenBalances } = useCrucibles();
   const { lpStats } = useLpStats();
-  const { networkStats } = useNetworkStats();
+  // const { networkStats } = useNetworkStats();
   // Get ether rewards rate
   // console.log('STARTPLUSDURATION', networkStats.start, networkStats.duration);
   // console.log(
@@ -45,19 +47,28 @@ const LpPerformance: FC<Props> = ({ crucible }) => {
   // console.log('ETH REWARDS RATE', ethRewardsRate);
 
   // Get rewards rate in MIST
+  // TODO this method is flawed because the inflation wasn't originally automatic and was delayed a few days one time
   const daysAgo: number = dayjs().diff(inflationStartTimestamp, 'day');
   const inflationRate = 1.01;
   const inflationPeriodsElapsed: number = Math.floor(daysAgo / 14);
   const initialSupply = 1000000;
   const totalSupply = initialSupply * inflationRate ** inflationPeriodsElapsed;
+  const totalSupplyPreviousInflation =
+    initialSupply * inflationRate ** (inflationPeriodsElapsed - 1);
 
+  // Divide by 2 twice:
+  // once because only half the inflation goes to the reward pool
+  // twice again because this is weekly values, and inflation occurs every two weeks
   const weeklyRewardsRate = (totalSupply - initialSupply) / 2 / 2;
   const rewardsRateIncrease =
-    weeklyRewardsRate -
-    (initialSupply * inflationRate ** (inflationPeriodsElapsed - 1) -
-      initialSupply) /
-      2 /
-      2;
+    (totalSupply - totalSupplyPreviousInflation) / 2 / 2;
+
+  let marketCap;
+  if (tokenBalances?.mistPrice) {
+    marketCap = tokenBalances.mistPrice
+      .mul(numberishToBigNumber(totalSupply))
+      .div(getMultiplier());
+  }
 
   if (!crucible) return <Spinner width={24} height={24} />;
 
@@ -72,21 +83,15 @@ const LpPerformance: FC<Props> = ({ crucible }) => {
           <StatGroup mt={4} alignItems='baseline' width='100%'>
             <StatCard
               title='Market Cap'
-              label={
-                tokenBalances?.mistPrice
-                  ? `$${commify(
-                      (tokenBalances?.mistPrice * totalSupply).toFixed(2)
-                    )}`
-                  : '$ -'
-              }
+              label={marketCap ? formatNumber.currency(marketCap) : '-'}
             />
             <StatCard
               title='Total Volume Locked'
-              label={`$${
+              label={
                 lpStats?.totalVolume
-                  ? commify(lpStats.totalVolume.toFixed(2))
-                  : 0
-              }`}
+                  ? formatNumber.currency(lpStats.totalVolume)
+                  : '-'
+              }
             />
             <StatCard
               title='Inflation Rate'
@@ -100,8 +105,10 @@ const LpPerformance: FC<Props> = ({ crucible }) => {
             <StatCard title='Rewards Programs' label='1' subLabel='MIST, ETH' />
             <StatCard
               title='Rewards Rate'
-              label={`${commify(weeklyRewardsRate.toFixed(0))} MIST / week`}
-              subLabel={`${commify(rewardsRateIncrease.toFixed(0))}`}
+              label={`${formatNumber.tokenWhole(
+                weeklyRewardsRate
+              )} MIST / week`}
+              subLabel={formatNumber.tokenWhole(rewardsRateIncrease)}
               arrowOnSubLabel
             />
             <StatCard title='Reward Scaling Period' label='60 days' />

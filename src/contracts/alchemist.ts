@@ -1,5 +1,5 @@
-import { ethers, Signer, providers } from 'ethers';
-import { parseUnits, randomBytes } from 'ethers/lib/utils';
+import { BigNumber, ethers, providers, Signer } from 'ethers';
+import { randomBytes } from 'ethers/lib/utils';
 import { signPermission, signPermitEIP2612 } from './utils';
 import { aludelAbi } from '../abi/aludelAbi';
 import { transmuterAbi } from '../abi/transmuterAbi';
@@ -14,18 +14,12 @@ const { aludelAddress, crucibleFactoryAddress, transmuterAddress } = config;
 export async function mintAndLock(
   signer: Signer,
   provider: providers.Web3Provider,
-  rawAmount: string,
+  amount: BigNumber,
   callback: (args: CallbackArgs) => void
 ) {
-  const args = {
-    aludel: aludelAddress,
-    crucibleFactory: crucibleFactoryAddress,
-    transmuter: transmuterAddress,
-    amount: rawAmount,
-  };
   const walletAddress = await signer.getAddress();
   // fetch contracts
-  const aludel = new ethers.Contract(args.aludel, aludelAbi, signer);
+  const aludel = new ethers.Contract(aludelAddress, aludelAbi, signer);
   //const aludel = await ethers.getContractAt('Aludel', args.aludel, signer)
   const stakingToken = new ethers.Contract(
     (await aludel.getAludelData()).stakingToken,
@@ -33,18 +27,17 @@ export async function mintAndLock(
     signer
   );
   const crucibleFactory = new ethers.Contract(
-    args.crucibleFactory,
+    crucibleFactoryAddress,
     crucibleFactoryAbi,
     signer
   );
   const transmuter = new ethers.Contract(
-    args.transmuter,
+    transmuterAddress,
     transmuterAbi,
     signer
   );
 
   // declare config
-  const amount = parseUnits(args.amount, await stakingToken.decimals());
   const salt = randomBytes(32);
   const deadline = (await provider.getBlock('latest')).timestamp + 60 * 60 * 24;
 

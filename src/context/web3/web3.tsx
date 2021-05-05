@@ -1,24 +1,24 @@
 import React, {
-  useState,
+  createContext,
+  ReactNode,
+  useContext,
   useEffect,
   useReducer,
-  createContext,
-  useContext,
-  ReactNode,
+  useState,
 } from 'react';
 import Onboard from 'bnc-onboard';
 import {
   API as OnboardApi,
-  Wallet,
   Initialization,
+  Wallet,
 } from 'bnc-onboard/dist/src/interfaces';
-import { providers, ethers, BigNumber, utils } from 'ethers';
-import { BigNumber as BN } from 'bignumber.js';
-import { formatEther } from '@ethersproject/units';
+import { BigNumber, ethers, providers } from 'ethers';
 import { Erc20DetailedFactory } from '../../interfaces/Erc20DetailedFactory';
 import { Erc20Detailed } from '../../interfaces/Erc20Detailed';
 import { TokenInfo, Tokens, tokensReducer } from './tokenReducer';
 import { ChainId } from '@uniswap/sdk';
+import numberishToBigNumber from '../../utils/numberishToBigNumber';
+import getMultiplier from '../../utils/getMultiplier';
 
 export type OnboardConfig = Partial<Omit<Initialization, 'networkId'>>;
 
@@ -51,7 +51,7 @@ type Web3ContextProps = {
 
 type Web3ContextType = {
   address?: string;
-  ethBalance?: number;
+  ethBalance?: BigNumber;
   gasPrice: number;
   isReady: boolean;
   isMobile: boolean;
@@ -86,7 +86,9 @@ const Web3Provider = ({
     undefined
   );
   const [network, setNetwork] = useState<ChainId>(1);
-  const [ethBalance, setEthBalance] = useState<number | undefined>(undefined);
+  const [ethBalance, setEthBalance] = useState<BigNumber | undefined>(
+    undefined
+  );
   const [wallet, setWallet] = useState<Wallet | undefined>(undefined);
   const [onboard, setOnboard] = useState<OnboardApi | undefined>(undefined);
   const [isReady, setIsReady] = useState<boolean>(false);
@@ -145,10 +147,11 @@ const Web3Provider = ({
             },
             balance: (balance) => {
               try {
-                const bal = Number(formatEther(balance));
-                !isNaN(bal) ? setEthBalance(bal) : setEthBalance(0);
+                setEthBalance(
+                  numberishToBigNumber(balance).div(getMultiplier())
+                );
               } catch (error) {
-                setEthBalance(0);
+                setEthBalance(BigNumber.from(0));
               }
               onboardConfig?.subscriptions?.balance &&
                 onboardConfig.subscriptions.balance(balance);
@@ -157,9 +160,9 @@ const Web3Provider = ({
         });
 
         const savedWallet = localStorage.getItem('onboard.selectedWallet');
-        cacheWalletSelection &&
-          savedWallet &&
-          onboard.walletSelect(savedWallet);
+        if (cacheWalletSelection && savedWallet) {
+          onboard.walletSelect(savedWallet).catch(console.error);
+        }
 
         setOnboard(onboard);
       } catch (error) {
@@ -168,7 +171,7 @@ const Web3Provider = ({
       }
     };
 
-    initializeOnboard();
+    initializeOnboard().catch(console.error);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -183,7 +186,7 @@ const Web3Provider = ({
   useEffect(() => {
     let poller: NodeJS.Timeout;
     if (network === 1 && gasPricePollingInterval > 0) {
-      refreshGasPrice();
+      refreshGasPrice().catch(console.error);
       poller = setInterval(refreshGasPrice, gasPricePollingInterval);
     } else {
       setGasPrice(10);
@@ -199,31 +202,17 @@ const Web3Provider = ({
   // Token balance and allowance listener
   // TODO: Allowance check not needed unless target is specificed
   useEffect(() => {
-    const checkBalanceAndAllowance = async (
-      token: Erc20Detailed,
-      decimals: number
-    ) => {
+    const checkBalanceAndAllowance = async (token: Erc20Detailed) => {
       if (address) {
-        const bal = await token.balanceOf(address);
-        const balance = Number(utils.formatUnits(bal, decimals));
-        const balanceBN = new BN(bal.toString()).shiftedBy(-decimals);
-        var spenderAllowance = 0;
-        if (spenderAddress) {
-          spenderAllowance = Number(
-            utils.formatUnits(
-              BigNumber.from(await token.balanceOf(address)),
-              decimals
-            )
-          );
-        }
+        const balance = await token.balanceOf(address);
+        const spenderAllowance = spenderAddress ? balance : BigNumber.from(0);
 
         tokensDispatch({
           type: 'updateTokenBalanceAllowance',
           payload: {
             id: token.address,
-            spenderAllowance: spenderAllowance,
-            balance: balance,
-            balanceBN,
+            spenderAllowance,
+            balance,
           },
         });
       }
@@ -243,12 +232,10 @@ const Web3Provider = ({
 
         const newTokenInfo: TokenInfo = {
           decimals: 0,
-          balance: 0,
-          balanceBN: new BN(0),
           imageUri: token.imageUri,
           name: token.name,
           symbol: token.symbol,
-          spenderAllowance: 0,
+          spenderAllowance: BigNumber.from(0),
           allowance: tokenContract.allowance,
           approve: tokenContract.approve,
           transfer: tokenContract.transfer,
@@ -256,8 +243,7 @@ const Web3Provider = ({
 
         if (!token.name) {
           try {
-            const tokenName = await tokenContract.name();
-            newTokenInfo.name = tokenName;
+            newTokenInfo.name = await tokenContract.name();
           } catch (error) {
             console.log(
               'There was an error getting the token name. Does this contract implement ERC20Detailed?'
@@ -266,8 +252,7 @@ const Web3Provider = ({
         }
         if (!token.symbol) {
           try {
-            const tokenSymbol = await tokenContract.symbol();
-            newTokenInfo.symbol = tokenSymbol;
+            newTokenInfo.symbol = await tokenContract.symbol();
           } catch (error) {
             console.error(
               'There was an error getting the token symbol. Does this contract implement ERC20Detailed?'
@@ -276,8 +261,7 @@ const Web3Provider = ({
         }
 
         try {
-          const tokenDecimals = await tokenContract.decimals();
-          newTokenInfo.decimals = tokenDecimals;
+          newTokenInfo.decimals = await tokenContract.decimals();
         } catch (error) {
           console.error(
             'There was an error getting the token decimals. Does this contract implement ERC20Detailed?'
@@ -288,8 +272,6 @@ const Web3Provider = ({
           type: 'addToken',
           payload: { id: token.address, token: newTokenInfo },
         });
-
-        checkBalanceAndAllowance(tokenContract, newTokenInfo.decimals);
 
         // This filter is intentionally left quite loose.
         const filterTokenApproval = tokenContract.filters.Approval(
@@ -308,16 +290,14 @@ const Web3Provider = ({
           null
         );
 
-        tokenContract.on(filterTokenApproval, () =>
-          checkBalanceAndAllowance(tokenContract, newTokenInfo.decimals)
-        );
-        tokenContract.on(filterTokenTransferFrom, () =>
-          checkBalanceAndAllowance(tokenContract, newTokenInfo.decimals)
-        );
-        tokenContract.on(filterTokenTransferTo, () =>
-          checkBalanceAndAllowance(tokenContract, newTokenInfo.decimals)
-        );
+        const handler = () => {
+          checkBalanceAndAllowance(tokenContract).catch(console.error);
+        };
+        tokenContract.on(filterTokenApproval, handler);
+        tokenContract.on(filterTokenTransferFrom, handler);
+        tokenContract.on(filterTokenTransferTo, handler);
         tokenContracts.push(tokenContract);
+        handler();
       });
     }
     return () => {
@@ -335,7 +315,7 @@ const Web3Provider = ({
   const checkIsReady = async () => {
     const isReady = await onboard?.walletCheck();
     if (!isReady) {
-      setEthBalance(0);
+      setEthBalance(undefined);
     }
     setIsReady(!!isReady);
     return !!isReady;
@@ -391,20 +371,20 @@ const Web3Provider = ({
   return (
     <Web3Context.Provider
       value={{
-        address: address,
+        address,
         provider,
-        network: network,
-        ethBalance: ethBalance,
-        wallet: wallet,
-        onboard: onboard,
-        isReady: isReady,
-        isLoading: isLoading,
+        network,
+        ethBalance,
+        wallet,
+        onboard,
+        isReady,
+        isLoading,
         checkIsReady,
         resetOnboard,
         gasPrice,
         refreshGasPrice,
         isMobile: !!onboardState?.mobileDevice,
-        tokens: tokens,
+        tokens,
         signMessage,
       }}
     >

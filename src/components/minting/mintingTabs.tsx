@@ -12,11 +12,12 @@ const MintingTabs: FC = () => {
     crucibles && crucibles.length > 0 ? 1 : 0
   );
 
+  const crucibleCount = crucibles?.length || 0;
   useEffect(() => {
-    if (crucibles && crucibles.length > 0) {
+    if (crucibleCount > 0) {
       setTabIndex(1);
     }
-  }, [crucibles?.length]);
+  }, [crucibleCount]);
 
   const tabProps = {
     borderRadius: 'lg',

@@ -1,12 +1,12 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import {
   Button,
+  Flex,
+  InputRightElement,
   Link,
   NumberInput,
   NumberInputField,
   Text,
-  InputRightElement,
-  Flex,
 } from '@chakra-ui/react';
 import {
   Modal,
@@ -17,15 +17,20 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/modal';
-import { useState } from 'react';
 import { useWeb3 } from '../../context/web3';
 import { useContract } from '../../hooks/useContract';
 import { Crucible, useCrucibles } from '../../context/crucibles/crucibles';
 import { increaseStake } from '../../contracts/increaseStake';
 import { config } from '../../config/variables';
+import formatNumber from '../../utils/formatNumber';
+import { BigNumber } from 'ethers';
+import bigNumberishToNumber from '../../utils/bigNumberishToNumber';
+import numberishToBigNumber from '../../utils/numberishToBigNumber';
+import getStep from '../../utils/getStep';
+import onNumberInputChange from '../../utils/onNumberInputChange';
 
 type IncreaseStakeParams = Parameters<
-  (signer: any, crucibleAddress: string, rawAmount: string) => void
+  (signer: any, crucibleAddress: string, amount: BigNumber) => void
 >;
 
 type Props = {
@@ -35,14 +40,34 @@ type Props = {
 
 const IncreaseStakeModal: FC<Props> = ({ onClose, crucible }) => {
   const { provider } = useWeb3();
+  const [isMax, setIsMax] = useState(false);
   const [amount, setAmount] = useState('0');
+  const amountBigNumber = numberishToBigNumber(amount || 0);
 
   const { invokeContract, ui } = useContract(increaseStake, () => onClose());
   const { tokenBalances } = useCrucibles();
+  const lpBalance = tokenBalances?.lpBalance || BigNumber.from(0);
+  const lpBalanceNumber = bigNumberishToNumber(lpBalance);
+  const step = getStep(lpBalanceNumber);
 
   const handleIncreaseSubscription = () => {
     const signer = provider?.getSigner();
-    invokeContract<IncreaseStakeParams>(signer, crucible.id, amount);
+    invokeContract<IncreaseStakeParams>(
+      signer,
+      crucible.id,
+      isMax ? lpBalance : amountBigNumber
+    );
+  };
+
+  const onChange = (amountNew: number | string) => {
+    onNumberInputChange(
+      amountNew,
+      amount,
+      lpBalance,
+      isMax,
+      setAmount,
+      setIsMax
+    );
   };
 
   return (
@@ -70,23 +95,21 @@ const IncreaseStakeModal: FC<Props> = ({ onClose, crucible }) => {
             >
               <Text>Select amount</Text>
               <Text>
-                Balance:{' '}
-                <strong>{Number(tokenBalances?.cleanLp).toFixed(3)} LP</strong>
+                Balance: <strong>{formatNumber.token(lpBalance)} LP</strong>
               </Text>
             </Flex>
             <NumberInput
-              value={amount}
-              onChange={(val) => setAmount(val)}
-              max={Number(tokenBalances?.cleanLp)}
-              clampValueOnBlur={false}
+              value={isMax ? lpBalanceNumber.toString() : amount}
+              onChange={onChange}
+              step={step}
+              min={0}
+              max={lpBalanceNumber}
+              clampValueOnBlur={true}
               size='lg'
             >
               <NumberInputField pr='4.5rem' borderRadius='xl' />
               <InputRightElement width='4.5rem'>
-                <Button
-                  variant='ghost'
-                  onClick={() => setAmount(tokenBalances?.cleanLp || '0')}
-                >
+                <Button variant='ghost' onClick={() => setIsMax(true)}>
                   Max
                 </Button>
               </InputRightElement>
@@ -97,9 +120,8 @@ const IncreaseStakeModal: FC<Props> = ({ onClose, crucible }) => {
               isFullWidth
               onClick={handleIncreaseSubscription}
               disabled={
-                !amount ||
-                Number(amount) === 0 ||
-                Number(amount) > Number(tokenBalances?.cleanLp)
+                !isMax &&
+                (amountBigNumber.lte(0) || amountBigNumber.gt(lpBalance))
               }
             >
               Increase subscription
