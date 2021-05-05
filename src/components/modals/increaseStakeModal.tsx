@@ -120,7 +120,7 @@ const IncreaseStakeModal: FC<Props> = ({ onClose, crucible }) => {
               isFullWidth
               onClick={handleIncreaseSubscription}
               disabled={
-                !isMax &&
+                (!isMax || lpBalance.lte(0)) &&
                 (amountBigNumber.lte(0) || amountBigNumber.gt(lpBalance))
               }
             >

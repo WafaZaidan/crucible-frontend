@@ -109,7 +109,7 @@ const WithdrawStakeModal: FC<Props> = ({ onClose, crucible }) => {
               isFullWidth
               onClick={handleWithdraw}
               disabled={
-                !isMax &&
+                (!isMax || unlockedBalance.lte(0)) &&
                 (amountBigNumber.lte(0) || amountBigNumber.gt(unlockedBalance))
               }
             >

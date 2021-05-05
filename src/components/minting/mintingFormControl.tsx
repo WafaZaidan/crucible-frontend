@@ -127,10 +127,9 @@ const MintingFormControl: FC = () => {
         size='lg'
         isFullWidth
         disabled={
-          !isMax &&
-          (!lpBalance ||
-            amountBigNumber.lte(0) ||
-            amountBigNumber.gt(lpBalance))
+          !lpBalance ||
+          ((!isMax || lpBalance.lte(0)) &&
+            (amountBigNumber.lte(0) || amountBigNumber.gt(lpBalance)))
         }
         onClick={handleMintCrucible}
       >

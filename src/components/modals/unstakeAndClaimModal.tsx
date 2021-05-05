@@ -149,7 +149,7 @@ Follow this guide to privately withdraw your stake: https://github.com/Taichi-Ne
               isLoading={isLoading}
               onClick={handleUnstakeAndClaim}
               disabled={
-                !isMax &&
+                (!isMax || lockedBalance.lte(0)) &&
                 (amountBigNumber.lte(0) || amountBigNumber.gt(lockedBalance))
               }
             >
