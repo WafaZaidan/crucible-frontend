@@ -41,7 +41,7 @@ const numberFormatPercentLong = Intl.NumberFormat(navigator.languages.slice(), {
 });
 
 const numberFormatDate = Intl.DateTimeFormat(navigator.languages.slice(), {
-  dateStyle: 'short',
+  dateStyle: 'medium',
 });
 
 export function currency(value: BigNumberish, units?: number | string) {
