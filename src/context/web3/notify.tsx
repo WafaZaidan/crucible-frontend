@@ -1,9 +1,9 @@
 import React, { createContext, useContext, ReactNode } from 'react';
 import { API as NotifyAPI } from 'bnc-notify';
 import { useState, useEffect } from 'react';
+import { useWeb3React } from '@web3-react/core';
 import { initNotify } from '../../config/notify';
 import { networkName } from '../../utils/network';
-import { useWeb3 } from '.';
 
 type Transaction = {
   hash?: string;
@@ -20,7 +20,7 @@ type Web3ContextType = {
 const NotifyContext = createContext<Web3ContextType | undefined>(undefined);
 
 const NotifyProvider = ({ children }: NotifyContextProps) => {
-  const { network } = useWeb3();
+  const { chainId } = useWeb3React();
   const [notify, setNotify] = useState<NotifyAPI | undefined>(undefined);
 
   useEffect(() => {
@@ -29,12 +29,12 @@ const NotifyProvider = ({ children }: NotifyContextProps) => {
   }, []);
 
   async function monitorTx(hash: string, reload: () => void) {
-    if (notify && network) {
+    if (notify && chainId) {
       const { emitter } = notify.hash(hash);
       emitter.on('txPool', (transaction: Transaction) => {
         return {
           message: `Your transaction is pending, click <a href="https://${networkName(
-            network
+            chainId
           ).toLowerCase()}.etherscan.io/tx/${
             transaction.hash
           }" rel="noopener noreferrer" target="_blank">here</a> for more info.`,

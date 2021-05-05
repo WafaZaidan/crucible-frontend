@@ -16,7 +16,6 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/modal';
-import { useWeb3 } from '../../context/web3';
 import { useContract } from '../../hooks/useContract';
 import { Crucible } from '../../context/crucibles/crucibles';
 import { withdraw } from '../../contracts/withdraw';
@@ -26,6 +25,7 @@ import numberishToBigNumber from '../../utils/numberishToBigNumber';
 import bigNumberishToNumber from '../../utils/bigNumberishToNumber';
 import getStep from '../../utils/getStep';
 import onNumberInputChange from '../../utils/onNumberInputChange';
+import { useWeb3React } from '@web3-react/core';
 
 type withdrawParams = Parameters<
   (signer: any, crucibleAddress: string, amount: BigNumber) => void
@@ -37,7 +37,7 @@ type Props = {
 };
 
 const WithdrawStakeModal: FC<Props> = ({ onClose, crucible }) => {
-  const { provider } = useWeb3();
+  const { library } = useWeb3React();
   const [isMax, setIsMax] = useState(false);
   const [amount, setAmount] = useState('0');
   const amountBigNumber = numberishToBigNumber(amount || 0);
@@ -48,7 +48,7 @@ const WithdrawStakeModal: FC<Props> = ({ onClose, crucible }) => {
   const { invokeContract, ui } = useContract(withdraw, () => onClose());
 
   const handleWithdraw = () => {
-    const signer = provider?.getSigner();
+    const signer = library?.getSigner();
     invokeContract<withdrawParams>(signer, crucible.id, amountBigNumber);
   };
 

@@ -7,7 +7,6 @@ import { Signer } from '@ethersproject/abstract-signer';
 import { NumberInput, NumberInputField } from '@chakra-ui/number-input';
 import { useContract } from '../../hooks/useContract';
 import { mintAndLock } from '../../contracts/alchemist';
-import { useWeb3 } from '../../context/web3';
 import {
   Slider,
   SliderFilledTrack,
@@ -21,6 +20,7 @@ import formatNumber from '../../utils/formatNumber';
 import bigNumberishToNumber from '../../utils/bigNumberishToNumber';
 import getStep from '../../utils/getStep';
 import onNumberInputChange from '../../utils/onNumberInputChange';
+import { useWeb3React } from '@web3-react/core';
 
 type MintAndLockParams = Parameters<
   (signer: Signer, provider: providers.Web3Provider, amount: BigNumber) => void
@@ -30,7 +30,7 @@ const MintingFormControl: FC = () => {
   const [isMax, setIsMax] = useState(false);
   const [amount, setAmount] = useState('0');
   const amountBigNumber = numberishToBigNumber(amount || 0);
-  const { provider } = useWeb3();
+  const { library } = useWeb3React();
   const { invokeContract, ui } = useContract(mintAndLock);
   const { lpBalance } = useTokenBalances();
   let lpBalanceNumber = 0;
@@ -52,11 +52,11 @@ const MintingFormControl: FC = () => {
   };
 
   const handleMintCrucible = () => {
-    const signer = provider?.getSigner() as Signer;
+    const signer = library?.getSigner() as Signer;
 
     invokeContract<MintAndLockParams>(
       signer,
-      provider as providers.Web3Provider,
+      library as providers.Web3Provider,
       isMax && lpBalance ? lpBalance : amountBigNumber
     );
   };

@@ -5,7 +5,7 @@ import React, {
   useState,
   useEffect,
 } from 'react';
-import { useWeb3 } from '../web3';
+import { useWeb3React } from '@web3-react/core';
 import { getNetworkStats } from '../../contracts/aludel';
 
 type NetworkStatsProps = {
@@ -21,22 +21,17 @@ const NetworkStats = createContext<NetworkStatsContextType | undefined>(
 );
 
 const NetworkStatsProvider = ({ children }: NetworkStatsProps) => {
-  const { provider, wallet, address, network } = useWeb3();
+  const { library, account, chainId } = useWeb3React();
   const [networkStats, setNetworkStats] = useState<any>(undefined);
 
   useEffect(() => {
-    if (
-      provider &&
-      wallet &&
-      address &&
-      network === process.env.REACT_APP_NETWORK_ID
-    ) {
-      const signer = provider?.getSigner();
+    if (library && account && chainId === process.env.REACT_APP_NETWORK_ID) {
+      const signer = library?.getSigner();
       getNetworkStats(signer).then(setNetworkStats);
     } else {
       setNetworkStats(undefined);
     }
-  }, [provider, wallet, address, network]);
+  }, [library, account, chainId]);
 
   return (
     <NetworkStats.Provider

@@ -17,7 +17,6 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/modal';
-import { useWeb3 } from '../../context/web3';
 import { useContract } from '../../hooks/useContract';
 import { Crucible, useCrucibles } from '../../context/crucibles/crucibles';
 import { increaseStake } from '../../contracts/increaseStake';
@@ -28,6 +27,7 @@ import bigNumberishToNumber from '../../utils/bigNumberishToNumber';
 import numberishToBigNumber from '../../utils/numberishToBigNumber';
 import getStep from '../../utils/getStep';
 import onNumberInputChange from '../../utils/onNumberInputChange';
+import { useWeb3React } from '@web3-react/core';
 
 type IncreaseStakeParams = Parameters<
   (signer: any, crucibleAddress: string, amount: BigNumber) => void
@@ -39,7 +39,7 @@ type Props = {
 };
 
 const IncreaseStakeModal: FC<Props> = ({ onClose, crucible }) => {
-  const { provider } = useWeb3();
+  const { library } = useWeb3React();
   const [isMax, setIsMax] = useState(false);
   const [amount, setAmount] = useState('0');
   const amountBigNumber = numberishToBigNumber(amount || 0);
@@ -59,7 +59,7 @@ const IncreaseStakeModal: FC<Props> = ({ onClose, crucible }) => {
   const step = getStep(lpBalanceNumber);
 
   const handleIncreaseSubscription = () => {
-    const signer = provider?.getSigner();
+    const signer = library?.getSigner();
     invokeContract<IncreaseStakeParams>(
       signer,
       crucible.id,

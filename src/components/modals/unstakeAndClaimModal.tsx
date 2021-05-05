@@ -17,7 +17,6 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/modal';
-import { useWeb3 } from '../../context/web3';
 import { useContract } from '../../hooks/useContract';
 import { Crucible, useCrucibles } from '../../context/crucibles/crucibles';
 import { unstakeAndClaim } from '../../contracts/unstakeAndClaim';
@@ -27,6 +26,7 @@ import numberishToBigNumber from '../../utils/numberishToBigNumber';
 import bigNumberishToNumber from '../../utils/bigNumberishToNumber';
 import getStep from '../../utils/getStep';
 import onNumberInputChange from '../../utils/onNumberInputChange';
+import { useWeb3React } from '@web3-react/core';
 
 type unstakeAndClaimParams = Parameters<
   (signer: any, crucibleAddress: string, amount: BigNumber) => void
@@ -39,7 +39,7 @@ type Props = {
 
 const UnstakeAndClaimModal: FC<Props> = ({ onClose, crucible }) => {
   const { cruciblesOnCurrentNetwork } = useCrucibles();
-  const { provider, network } = useWeb3();
+  const { library, chainId } = useWeb3React();
   const [isLoading, setIsLoading] = useState(false);
   const [isMax, setIsMax] = useState(false);
   const [amount, setAmount] = useState('0');
@@ -55,7 +55,7 @@ const UnstakeAndClaimModal: FC<Props> = ({ onClose, crucible }) => {
   const handleUnstakeAndClaim = async () => {
     setIsLoading(true);
     const crucibles = await cruciblesOnCurrentNetwork();
-    if (crucibles.length !== 0 && network === 1) {
+    if (crucibles.length !== 0 && chainId === 1) {
       alert(
         `You have not changed your network yet.
 
@@ -65,7 +65,7 @@ Follow this guide to privately withdraw your stake: https://github.com/Taichi-Ne
       return;
     }
 
-    const signer = provider?.getSigner();
+    const signer = library?.getSigner();
     invokeContract<unstakeAndClaimParams>(
       signer,
       crucible.id,

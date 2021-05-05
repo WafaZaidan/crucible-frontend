@@ -16,11 +16,11 @@ import {
   ModalOverlay,
 } from '@chakra-ui/modal';
 import { transferCrucible } from '../../contracts/transferCrucible';
-import { useWeb3 } from '../../context/web3';
 import { useState } from 'react';
 import { useContract } from '../../hooks/useContract';
 import { ethers } from 'ethers';
 import { useHistory } from 'react-router';
+import { useWeb3React } from '@web3-react/core';
 
 type SendNFTParams = Parameters<
   (signer: any, id: string, sendAddress: string) => void
@@ -33,7 +33,7 @@ type Props = {
 
 const TransferModal: FC<Props> = ({ onClose, id }) => {
   const history = useHistory();
-  const { provider } = useWeb3();
+  const { library } = useWeb3React();
   const [error, setError] = useState('');
   const [sendAddress, setSendAddress] = useState('');
 
@@ -47,7 +47,7 @@ const TransferModal: FC<Props> = ({ onClose, id }) => {
   const handleTransferCrucible = () => {
     setError('');
     if (ethers.utils.isAddress(sendAddress)) {
-      const signer = provider?.getSigner();
+      const signer = library?.getSigner();
       invokeContract<SendNFTParams>(signer, id, sendAddress);
       setSendAddress('');
     } else {
