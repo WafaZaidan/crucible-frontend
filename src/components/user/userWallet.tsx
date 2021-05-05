@@ -1,31 +1,20 @@
 import React, { FC } from 'react';
 import { Box } from '@chakra-ui/layout';
-import { useWeb3 } from '../../context/web3';
 import { truncate } from '../../utils/address';
 import { Button, IconButton } from '@chakra-ui/react';
 import { TiPower } from 'react-icons/ti';
 import { VscLink } from 'react-icons/vsc';
+import { InjectedConnector } from '@web3-react/injected-connector';
+import { useWeb3React } from '@web3-react/core';
+// @ts-ignore
+const injected = new InjectedConnector({ supportedChainIds: [1, 3, 4, 5, 42] });
 
 const UserWallet: FC = () => {
-  const { address, onboard, isLoading } = useWeb3();
+  const { deactivate, activate, account } = useWeb3React();
 
   const handleConnect = async () => {
-    try {
-      onboard?.walletReset();
-      const wallet = await onboard?.walletSelect();
-      wallet && onboard?.walletCheck();
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  const handleSelect = async () => {
-    await onboard?.walletSelect();
-  };
-
-  const handleReset = () => {
-    localStorage.setItem('onboard.selectedWallet', '');
-    onboard?.walletReset();
+    // TODO open modal here to let user pick wallet
+    activate(injected as any);
   };
 
   const walletButtonProps = {
@@ -34,15 +23,11 @@ const UserWallet: FC = () => {
     variant: 'outline',
   };
 
-  if (isLoading) {
-    return <Button {...walletButtonProps} isLoading />;
-  }
-
-  if (address) {
+  if (account) {
     return (
       <Box position='relative'>
-        <Button {...walletButtonProps} onClick={handleSelect} pr={12}>
-          <Box>{truncate(address)}</Box>
+        <Button {...walletButtonProps} pr={12}>
+          <Box>{truncate(account)}</Box>
         </Button>
         <IconButton
           isRound
@@ -53,7 +38,7 @@ const UserWallet: FC = () => {
           right={0}
           icon={<TiPower />}
           aria-label='disconnect'
-          onClick={handleReset}
+          onClick={deactivate}
           _hover={{
             bg: 'none',
             color: 'cyan.300',

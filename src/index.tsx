@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Web3ReactProvider } from '@web3-react/core';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import onboardConfig from './config/onboard';
-
 import theme from './config/theme';
 import { Web3Provider } from './context/web3';
 import { config } from './config/variables';
@@ -16,10 +16,15 @@ import { ApolloProvider } from '@apollo/client';
 import { GlobalStyles } from './styles/global-styles';
 import { Global } from '@emotion/react';
 import { client } from './config/apollo';
+import { ethers } from 'ethers';
 
 import 'focus-visible/dist/focus-visible';
 
 const { mistTokenAddress, lpTokenAddress, networkId } = config;
+
+function getLibrary(provider: any) {
+  return new ethers.providers.Web3Provider(provider);
+}
 
 ReactDOM.render(
   <React.StrictMode>
@@ -42,20 +47,22 @@ ReactDOM.render(
         ],
       }}
     >
-      <ApolloProvider client={client}>
-        <NotifyProvider>
-          <NetworkStatsProvider>
-            <CruciblesProvider>
-              <LpStatsProvider>
-                <ChakraProvider theme={theme}>
-                  <Global styles={GlobalStyles} />
-                  <App />
-                </ChakraProvider>
-              </LpStatsProvider>
-            </CruciblesProvider>
-          </NetworkStatsProvider>
-        </NotifyProvider>
-      </ApolloProvider>
+      <Web3ReactProvider getLibrary={getLibrary}>
+        <ApolloProvider client={client}>
+          <NotifyProvider>
+            <NetworkStatsProvider>
+              <CruciblesProvider>
+                <LpStatsProvider>
+                  <ChakraProvider theme={theme}>
+                    <Global styles={GlobalStyles} />
+                    <App />
+                  </ChakraProvider>
+                </LpStatsProvider>
+              </CruciblesProvider>
+            </NetworkStatsProvider>
+          </NotifyProvider>
+        </ApolloProvider>
+      </Web3ReactProvider>
     </Web3Provider>
   </React.StrictMode>,
   document.getElementById('root')

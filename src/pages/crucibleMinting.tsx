@@ -1,16 +1,39 @@
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import { Center, Flex, Text, VStack } from '@chakra-ui/layout';
 import { Spinner } from '@chakra-ui/spinner';
-import { useWeb3 } from '../context/web3';
 import { networkName } from '../utils/network';
 import MintingTabs from '../components/minting/mintingTabs';
 import MintingGuide from '../components/minting/mintingGuide';
+import { useWeb3React } from '@web3-react/core';
 
 const CrucibleMinting: FC = () => {
-  const { address, isLoading, network } = useWeb3();
+  const { account, chainId } = useWeb3React();
 
   const supportedNetwork = Number(process.env.REACT_APP_NETWORK_ID);
-  const networkUnsupported = network !== supportedNetwork;
+  const networkUnsupported = chainId !== supportedNetwork;
+
+  const renderContent = useMemo(() => {
+    if (!account) {
+      return <MintingGuide />;
+    }
+    if (networkUnsupported) {
+      return (
+        <Flex justifyContent='center' alignItems='center' flexGrow={1}>
+          <VStack>
+            <Spinner />
+            <Text pt={4}>
+              Unsupported network. Please switch to{' '}
+              <strong>{networkName(supportedNetwork)}</strong>. If you are on
+              the <strong>Taichi</strong> network you need to switch back to{' '}
+              <strong>{networkName(supportedNetwork)}</strong> to view your
+              Crucibles.
+            </Text>
+          </VStack>
+        </Flex>
+      );
+    }
+    return <MintingTabs />;
+  }, [account, networkUnsupported]);
 
   return (
     <Center>
@@ -25,28 +48,7 @@ const CrucibleMinting: FC = () => {
         boxShadow='xl'
         minH='400px'
       >
-        {isLoading ? (
-          <Flex justifyContent='center' alignItems='center' flexGrow={1}>
-            <Spinner />
-          </Flex>
-        ) : address && networkUnsupported ? (
-          <Flex justifyContent='center' alignItems='center' flexGrow={1}>
-            <VStack>
-              <Spinner />
-              <Text pt={4}>
-                Unsupported network. Please switch to{' '}
-                <strong>{networkName(supportedNetwork)}</strong>. If you are on
-                the <strong>Taichi</strong> network you need to switch back to{' '}
-                <strong>{networkName(supportedNetwork)}</strong> to view your
-                Crucibles.
-              </Text>
-            </VStack>
-          </Flex>
-        ) : !address ? (
-          <MintingGuide />
-        ) : (
-          <MintingTabs />
-        )}
+        {renderContent}
       </Flex>
     </Center>
   );

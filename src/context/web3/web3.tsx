@@ -19,6 +19,8 @@ import { TokenInfo, Tokens, tokensReducer } from './tokenReducer';
 import { ChainId } from '@uniswap/sdk';
 import numberishToBigNumber from '../../utils/numberishToBigNumber';
 import getMultiplier from '../../utils/getMultiplier';
+import { useWeb3React } from '@web3-react/core';
+import InjectedConnector from 'web3-react/dist/connectors/injected';
 
 export type OnboardConfig = Partial<Omit<Initialization, 'networkId'>>;
 
