@@ -27,7 +27,7 @@ export const externalLinks = [
     label: 'Uniswap',
     icon: UniswapIcon,
     href:
-      'https://info.uniswap.org/token/0x88acdd2a6425c3faae4bc9650fd7e27e0bebb7ab',
+      'https://info.uniswap.org/token/v2/0x88acdd2a6425c3faae4bc9650fd7e27e0bebb7ab',
   },
   {
     label: 'CoinGecko',
