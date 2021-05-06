@@ -30,9 +30,6 @@ ReactDOM.render(
   <React.StrictMode>
     <Web3ReactProvider getLibrary={getLibrary}>
       <Web3Provider
-        networkIds={[networkId]}
-        onboardConfig={onboardConfig}
-        cacheWalletSelection
         tokensToWatch={{
           [networkId]: [
             {

@@ -6,14 +6,11 @@ import {
   useReducer,
   useState,
 } from 'react';
-import { Initialization } from 'bnc-onboard/dist/src/interfaces';
 import { BigNumber } from 'ethers';
 import { Erc20DetailedFactory } from '../../interfaces/Erc20DetailedFactory';
 import { Erc20Detailed } from '../../interfaces/Erc20Detailed';
 import { TokenInfo, Tokens, tokensReducer } from './tokenReducer';
 import { useWeb3React } from '@web3-react/core';
-
-export type OnboardConfig = Partial<Omit<Initialization, 'networkId'>>;
 
 type TokenConfig = {
   address: string;
@@ -27,13 +24,8 @@ type TokensToWatch = {
 };
 
 type Web3ContextProps = {
-  cacheWalletSelection?: boolean;
-  checkNetwork?: boolean;
   children: ReactNode;
-  networkIds?: number[];
-  onboardConfig?: OnboardConfig;
-  spenderAddress?: string;
-  tokensToWatch?: TokensToWatch; // Network-keyed collection of token addresses to watch
+  tokensToWatch?: TokensToWatch;
 };
 
 type Web3ContextType = {
@@ -43,11 +35,7 @@ type Web3ContextType = {
 
 const Web3Context = createContext<Web3ContextType | undefined>(undefined);
 
-const Web3Provider = ({
-  children,
-  tokensToWatch,
-  spenderAddress,
-}: Web3ContextProps) => {
+const Web3Provider = ({ children, tokensToWatch }: Web3ContextProps) => {
   const { account, chainId, library } = useWeb3React();
   const [ethBalance, setEthBalance] = useState<BigNumber | undefined>(
     undefined
@@ -69,12 +57,11 @@ const Web3Provider = ({
     const checkBalanceAndAllowance = async (token: Erc20Detailed) => {
       if (account) {
         const balance = await token.balanceOf(account);
-        const spenderAllowance = spenderAddress ? balance : BigNumber.from(0);
         tokensDispatch({
           type: 'updateTokenBalanceAllowance',
           payload: {
             id: token.address,
-            spenderAllowance,
+            spenderAllowance: balance,
             balance,
           },
         });
