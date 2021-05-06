@@ -48,7 +48,7 @@ const NotifyProvider = ({ children }: NotifyContextProps) => {
           localStorage.setItem('inFlightSubscriptionHash', '');
         }
         if (reload) {
-          setTimeout(reload, 5000);
+          reload();
         }
       });
       emitter.on('txSpeedUp', console.log);

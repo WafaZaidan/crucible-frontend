@@ -90,6 +90,11 @@ export async function unstakeAndClaim(
       message: 'success',
       txHash: withdrawTx.hash,
     });
+    await unstakeTx.wait(1);
+    await withdrawTx.wait(1);
+    callback({
+      type: EVENT.TX_MINED,
+    });
   } catch (e) {
     // Hack to silence 'Internal JSON-RPC error'
     if (e.code === -32603) {
