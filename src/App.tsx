@@ -14,8 +14,10 @@ import bg from './img/bg.jpg';
 import NoMatch from './pages/noMatch';
 import CrucibleDetail from './pages/crucibleDetail';
 import CrucibleMinting from './pages/crucibleMinting';
+import { useWeb3 } from './context/web3';
 
 const App: FC = () => {
+  useWeb3();
   return (
     <Flex
       minHeight='100vh'

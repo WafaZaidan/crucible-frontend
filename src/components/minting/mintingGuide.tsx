@@ -14,19 +14,17 @@ import { Alert } from '@chakra-ui/alert';
 import { useWeb3 } from '../../context/web3';
 import { config } from '../../config/variables';
 import WelcomeToast from '../shared/welcomeToast';
+import { InjectedConnector } from '@web3-react/injected-connector';
+import { useWeb3React } from '@web3-react/core';
+// @ts-ignore
+const injected = new InjectedConnector({ supportedChainIds: [1, 3, 4, 5, 42] });
 
 const MintingGuide: FC = () => {
-  const { onboard } = useWeb3();
   const { uniswapPoolUrl, getMistUrl } = config;
+  const { activate } = useWeb3React();
 
   const handleConnect = async () => {
-    try {
-      onboard?.walletReset();
-      const wallet = await onboard?.walletSelect();
-      wallet && onboard?.walletCheck();
-    } catch (e) {
-      console.log(e);
-    }
+    activate(injected);
   };
 
   return (

@@ -28,26 +28,26 @@ function getLibrary(provider: any) {
 
 ReactDOM.render(
   <React.StrictMode>
-    <Web3Provider
-      networkIds={[networkId]}
-      onboardConfig={onboardConfig}
-      cacheWalletSelection
-      tokensToWatch={{
-        [networkId]: [
-          {
-            address: mistTokenAddress,
-            name: 'Mist',
-            symbol: '⚗️',
-          },
-          {
-            address: lpTokenAddress,
-            name: 'LP',
-            symbol: '🧙',
-          },
-        ],
-      }}
-    >
-      <Web3ReactProvider getLibrary={getLibrary}>
+    <Web3ReactProvider getLibrary={getLibrary}>
+      <Web3Provider
+        networkIds={[networkId]}
+        onboardConfig={onboardConfig}
+        cacheWalletSelection
+        tokensToWatch={{
+          [networkId]: [
+            {
+              address: mistTokenAddress,
+              name: 'Mist',
+              symbol: '⚗️',
+            },
+            {
+              address: lpTokenAddress,
+              name: 'LP',
+              symbol: '🧙',
+            },
+          ],
+        }}
+      >
         <ApolloProvider client={client}>
           <NotifyProvider>
             <NetworkStatsProvider>
@@ -62,8 +62,8 @@ ReactDOM.render(
             </NetworkStatsProvider>
           </NotifyProvider>
         </ApolloProvider>
-      </Web3ReactProvider>
-    </Web3Provider>
+      </Web3Provider>
+    </Web3ReactProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );
