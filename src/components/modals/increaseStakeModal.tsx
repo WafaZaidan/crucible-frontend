@@ -19,7 +19,7 @@ import {
 } from '@chakra-ui/modal';
 import { useWeb3 } from '../../context/web3';
 import { useContract } from '../../hooks/useContract';
-import { Crucible, useCrucibles } from '../../context/crucibles/crucibles';
+import { Crucible } from '../../context/crucibles/crucibles';
 import { increaseStake } from '../../contracts/increaseStake';
 import { config } from '../../config/variables';
 import formatNumber from '../../utils/formatNumber';
@@ -28,6 +28,7 @@ import bigNumberishToNumber from '../../utils/bigNumberishToNumber';
 import numberishToBigNumber from '../../utils/numberishToBigNumber';
 import getStep from '../../utils/getStep';
 import onNumberInputChange from '../../utils/onNumberInputChange';
+import useTokenBalances from '../../hooks/useTokenBalances';
 
 type IncreaseStakeParams = Parameters<
   (signer: any, crucibleAddress: string, amount: BigNumber) => void
@@ -41,8 +42,8 @@ type Props = {
 const IncreaseStakeModal: FC<Props> = ({ onClose, crucible }) => {
   const { provider } = useWeb3();
   const [isMax, setIsMax] = useState(false);
-  const [amount, setAmount] = useState('0');
-  const amountBigNumber = numberishToBigNumber(amount || 0);
+  const [amountLpToStake, setAmountLpToStake] = useState('0');
+  const amountLpToStakeBN = numberishToBigNumber(amountLpToStake || 0);
 
   const successCallback = (txHash: string) => {
     // Hacky
@@ -53,9 +54,9 @@ const IncreaseStakeModal: FC<Props> = ({ onClose, crucible }) => {
   const { invokeContract, ui } = useContract(increaseStake, (txHash: string) =>
     successCallback(txHash)
   );
-  const { tokenBalances } = useCrucibles();
-  const lpBalance = tokenBalances?.lpBalance || BigNumber.from(0);
-  const lpBalanceNumber = bigNumberishToNumber(lpBalance);
+
+  const { lpBalance: lpBalanceBN } = useTokenBalances();
+  const lpBalanceNumber = bigNumberishToNumber(lpBalanceBN);
   const step = getStep(lpBalanceNumber);
 
   const handleIncreaseSubscription = () => {
@@ -63,17 +64,17 @@ const IncreaseStakeModal: FC<Props> = ({ onClose, crucible }) => {
     invokeContract<IncreaseStakeParams>(
       signer,
       crucible.id,
-      isMax ? lpBalance : amountBigNumber
+      isMax ? lpBalanceBN : amountLpToStakeBN
     );
   };
 
   const onChange = (amountNew: number | string) => {
     onNumberInputChange(
       amountNew,
-      amount,
-      lpBalance,
+      amountLpToStake,
+      lpBalanceBN,
       isMax,
-      setAmount,
+      setAmountLpToStake,
       setIsMax
     );
   };
@@ -103,11 +104,11 @@ const IncreaseStakeModal: FC<Props> = ({ onClose, crucible }) => {
             >
               <Text>Select amount</Text>
               <Text>
-                Balance: <strong>{formatNumber.token(lpBalance)} LP</strong>
+                Balance: <strong>{formatNumber.token(lpBalanceBN)} LP</strong>
               </Text>
             </Flex>
             <NumberInput
-              value={isMax ? lpBalanceNumber.toString() : amount}
+              value={isMax ? lpBalanceNumber.toString() : amountLpToStake}
               onChange={onChange}
               step={step}
               min={0}
@@ -128,8 +129,8 @@ const IncreaseStakeModal: FC<Props> = ({ onClose, crucible }) => {
               isFullWidth
               onClick={handleIncreaseSubscription}
               disabled={
-                (!isMax || lpBalance.lte(0)) &&
-                (amountBigNumber.lte(0) || amountBigNumber.gt(lpBalance))
+                (!isMax || lpBalanceBN.lte(0)) &&
+                (amountLpToStakeBN.lte(0) || amountLpToStakeBN.gt(lpBalanceBN))
               }
             >
               Increase subscription
