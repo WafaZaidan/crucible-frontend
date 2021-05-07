@@ -49,7 +49,11 @@ const WithdrawStakeModal: FC<Props> = ({ onClose, crucible }) => {
 
   const handleWithdraw = () => {
     const signer = provider?.getSigner();
-    invokeContract<withdrawParams>(signer, crucible.id, amountBigNumber);
+    invokeContract<withdrawParams>(
+      signer,
+      crucible.id,
+      isMax ? unlockedBalance : amountBigNumber
+    );
   };
 
   const onChange = (amountNew: number | string) => {
