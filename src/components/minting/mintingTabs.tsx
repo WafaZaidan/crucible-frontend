@@ -1,6 +1,6 @@
-import { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/tabs';
-import { Box, Flex, Heading } from '@chakra-ui/layout';
+import { Box, Flex, Heading, Text, VStack } from '@chakra-ui/layout';
 import { useCrucibles } from '../../context/crucibles';
 import { Spinner } from '@chakra-ui/spinner';
 import CruciblesListView from '../crucible/cruciblesListView';
@@ -28,7 +28,11 @@ const MintingTabs: FC = () => {
   if (isLoading) {
     return (
       <Flex justifyContent='center' alignItems='center' flexGrow={1}>
-        <Spinner />
+        <VStack>
+          <Spinner />
+          <br />
+          <Text>Fetching Crucible information.</Text>
+        </VStack>
       </Flex>
     );
   }
