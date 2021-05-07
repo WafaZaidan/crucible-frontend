@@ -18,18 +18,27 @@ import MobileLayover from './components/modals/MobileLayover';
 
 const App: FC = () => {
   return (
-    <Flex
-      minHeight='100vh'
-      flexDirection='column'
-      background={`url(${bg})`}
-      backgroundRepeat='no-repeat'
-      backgroundAttachment='fixed'
-      backgroundSize='cover'
-    >
-      <Box display={['block', 'none']}>
+    <>
+      <Flex
+        display={['flex', 'flex', 'none']}
+        minHeight='100vh'
+        flexDirection='column'
+        background={`url(${bg})`}
+        backgroundRepeat='no-repeat'
+        backgroundAttachment='fixed'
+        backgroundSize='cover'
+      >
         <MobileLayover />
-      </Box>
-      <Box display={['none', 'block']}>
+      </Flex>
+      <Flex
+        display={['none', 'none', 'flex']}
+        minHeight='100vh'
+        flexDirection='column'
+        background={`url(${bg})`}
+        backgroundRepeat='no-repeat'
+        backgroundAttachment='fixed'
+        backgroundSize='cover'
+      >
         <Router>
           <Header />
           <Box flexGrow={1} px={4}>
@@ -58,8 +67,8 @@ const App: FC = () => {
           </Box>
           <Footer />
         </Router>
-      </Box>
-    </Flex>
+      </Flex>
+    </>
   );
 };
 
