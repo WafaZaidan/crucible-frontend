@@ -111,9 +111,11 @@ const Rewards: FC<Props> = ({ crucible }) => {
 
             <VStack width='100%' align='stretch' mt={6}>
               <Box>
-                <Text fontSize='sm' pb={1}>
-                  Reward Scaling Period
-                </Text>
+                {crucible!.stakes.length > 0 && (
+                  <Text fontSize='sm' pb={1}>
+                    Reward Scaling Period
+                  </Text>
+                )}
                 <VStack>
                   {crucible!.stakes.map((stake, i) => {
                     const daysAgo: number = dayjs().diff(
