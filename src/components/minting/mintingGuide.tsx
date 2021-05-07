@@ -77,7 +77,7 @@ const MintingGuide: FC = () => {
                   href={uniswapPoolUrl}
                   isExternal
                 >
-                  Uniswap pool
+                  Uniswap V2 pool
                 </Link>
                 . If you don't have any MIST tokens, you can purchase them{' '}
                 <Link color='blue.400' href={getMistUrl} isExternal>
@@ -108,10 +108,10 @@ const MintingGuide: FC = () => {
           </h2>
           <AccordionPanel pb={4} textAlign='left' px={0}>
             <Alert borderRadius='xl' fontSize='sm'>
-              Mint a Crucible NFT using your MIST-ETH LP to subscribe to the
-              Aludel rewards program. Your Crucible will accrue MIST token
-              rewards proportional to your subscribed LP and the duration of the
-              stake.
+              Mint a Crucible NFT using your MIST-ETH LP (Uniswap V2) to
+              subscribe to the Aludel rewards program. Your Crucible will accrue
+              MIST token rewards proportional to your subscribed LP and the
+              duration of the stake.
             </Alert>
           </AccordionPanel>
         </AccordionItem>
