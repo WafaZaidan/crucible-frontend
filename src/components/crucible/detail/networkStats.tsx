@@ -87,7 +87,7 @@ const LpPerformance: FC<Props> = ({ crucible }) => {
               label={marketCap ? formatNumber.currency(marketCap) : '-'}
             />
             <StatCard
-              title='Total Volume Locked'
+              title='Total Value Locked'
               label={
                 lpStats?.totalVolume
                   ? formatNumber.currency(lpStats.totalVolume)
