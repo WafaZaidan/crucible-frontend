@@ -18,6 +18,10 @@ const Rewards: FC<Props> = ({ crucible }) => {
   const [claimRewardsModalOpen, setClaimRewardsModalOpen] = useState(false);
   const [increaseStakeModalOpen, setIncreaseStakeModalOpen] = useState(false);
   const [withdrawModalOpen, setWithdrawModalOpen] = useState(false);
+  const [
+    hasIncreasedStakeThisPageLoad,
+    setHasIncreasedStakeThisPageLoad,
+  ] = useState(false);
 
   let mistRewardsUsd;
   let wethRewardsUsd;
@@ -178,9 +182,12 @@ const Rewards: FC<Props> = ({ crucible }) => {
               >
                 <Button
                   width='100%'
-                  disabled={isInFlight()}
+                  disabled={hasIncreasedStakeThisPageLoad && isInFlight()}
                   marginRight='4px'
-                  onClick={() => setIncreaseStakeModalOpen(true)}
+                  onClick={() => {
+                    setHasIncreasedStakeThisPageLoad(true);
+                    setIncreaseStakeModalOpen(true);
+                  }}
                 >
                   <Text fontSize='md'>Increase LP subscription</Text>
                 </Button>
