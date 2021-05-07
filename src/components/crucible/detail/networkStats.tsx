@@ -117,10 +117,12 @@ const LpPerformance: FC<Props> = ({ crucible }) => {
               label='Rewards multiplier increases from x1 to x10 over this period.'
               bg='gray.800'
               color='white'
-              placement='bottom-end'
+              placement='top'
               offset={[0, 16]}
             >
-              <StatCard title='Reward Scaling Period' label='60 days' />
+              <Flex style={{ alignSelf: 'stretch' }}>
+                <StatCard title='Reward Scaling Period' label='60 days' />
+              </Flex>
             </Tooltip>
           </StatGroup>
         </HStack>
