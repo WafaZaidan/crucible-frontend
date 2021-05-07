@@ -71,6 +71,13 @@ const CrucibleCard: FC<Props> = ({
       .div(getMultiplier());
   }
 
+  const subscriptionText =
+    crucible.stakes?.length === 0
+      ? 'No subscriptions'
+      : crucible.stakes?.length === 1
+      ? '1 subscription'
+      : `${crucible.stakes?.length} subscriptions`;
+
   return (
     <Box p={4} bg='white' color='gray.800' borderRadius='xl'>
       <Flex justifyContent='space-between' alignItems='center'>
@@ -91,7 +98,7 @@ const CrucibleCard: FC<Props> = ({
                   crucible.mintTimestamp * 1000
                 )}`}
                 <br />
-                {crucible.stakes?.length || 'No'} subscriptions
+                {subscriptionText}
               </Text>
             </Box>
           </HStack>
