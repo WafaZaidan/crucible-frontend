@@ -14,6 +14,7 @@ import bg from './img/bg.jpg';
 import NoMatch from './pages/noMatch';
 import CrucibleDetail from './pages/crucibleDetail';
 import CrucibleMinting from './pages/crucibleMinting';
+import MobileLayover from './components/modals/MobileLayover';
 
 const App: FC = () => {
   return (
@@ -25,34 +26,39 @@ const App: FC = () => {
       backgroundAttachment='fixed'
       backgroundSize='cover'
     >
-      <Router>
-        <Header />
-        <Box flexGrow={1} px={4}>
-          <Switch>
-            {/* <Route exact path={process.env.PUBLIC_URL + '/'}>
+      <Box display={['block', 'none']}>
+        <MobileLayover />
+      </Box>
+      <Box display={['none', 'block']}>
+        <Router>
+          <Header />
+          <Box flexGrow={1} px={4}>
+            <Switch>
+              {/* <Route exact path={process.env.PUBLIC_URL + '/'}>
                 <Landing />
               </Route> */}
-            <Route
-              exact
-              path={process.env.PUBLIC_URL + '/'}
-              component={CrucibleMinting}
-            />
-            <Route
-              path={process.env.PUBLIC_URL + '/crucible/:crucibleId'}
-              component={CrucibleDetail}
-            />
-            <Redirect from='/crucible/' to='/' />
+              <Route
+                exact
+                path={process.env.PUBLIC_URL + '/'}
+                component={CrucibleMinting}
+              />
+              <Route
+                path={process.env.PUBLIC_URL + '/crucible/:crucibleId'}
+                component={CrucibleDetail}
+              />
+              <Redirect from='/crucible/' to='/' />
 
-            {/* <Route exact path={process.env.PUBLIC_URL + '/faqs'}>
+              {/* <Route exact path={process.env.PUBLIC_URL + '/faqs'}>
               <Faqs />
             </Route> */}
-            <Route path='*'>
-              <NoMatch />
-            </Route>
-          </Switch>
-        </Box>
-        <Footer />
-      </Router>
+              <Route path='*'>
+                <NoMatch />
+              </Route>
+            </Switch>
+          </Box>
+          <Footer />
+        </Router>
+      </Box>
     </Flex>
   );
 };
