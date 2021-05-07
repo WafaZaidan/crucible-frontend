@@ -102,22 +102,40 @@ const CrucibleDetailCard: FC<Props> = ({ crucible }) => {
               </Tooltip>
             </HStack>
           </Badge>
-          <IconButton
-            aria-label='copy'
-            fontSize='2xl'
-            color='cyan.400'
-            variant='ghost'
-            icon={<FiCopy />}
-            onClick={onCopy}
-          />
-          <IconButton
-            aria-label='transfer'
-            fontSize='2xl'
-            color='cyan.400'
-            variant='ghost'
-            icon={<FiSend />}
-            onClick={() => setIsTransferModalOpen(true)}
-          />
+          <Tooltip
+            hasArrow
+            label='Copy Crucible address'
+            bg='gray.800'
+            color='white'
+            placement='top'
+          >
+            <div>
+              <IconButton
+                aria-label='copy'
+                fontSize='2xl'
+                color='cyan.400'
+                variant='ghost'
+                icon={<FiCopy />}
+                onClick={onCopy}
+              />
+            </div>
+          </Tooltip>
+          <Tooltip
+            hasArrow
+            label='Transfer Crucible'
+            bg='gray.800'
+            color='white'
+            placement='top'
+          >
+            <IconButton
+              aria-label='transfer'
+              fontSize='2xl'
+              color='cyan.400'
+              variant='ghost'
+              icon={<FiSend />}
+              onClick={() => setIsTransferModalOpen(true)}
+            />
+          </Tooltip>
         </HStack>
       </Flex>
       <Box paddingTop='20px'>
