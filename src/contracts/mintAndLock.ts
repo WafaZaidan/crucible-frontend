@@ -5,13 +5,13 @@ import { aludelAbi } from '../abi/aludelAbi';
 import { transmuterAbi } from '../abi/transmuterAbi';
 import { crucibleFactoryAbi } from '../abi/crucibleFactoryAbi';
 import { crucibleAbi } from '../abi/crucibleAbi';
-import { config } from '../config/variables';
 import IUniswapV2ERC20 from '@uniswap/v2-core/build/IUniswapV2ERC20.json';
 import { CallbackArgs, EVENT } from '../hooks/useContract';
 
-const { aludelAddress, crucibleFactoryAddress, transmuterAddress } = config;
-
-export async function mintAndLock(
+async function mintAndLock(
+  aludelAddress: string,
+  crucibleFactoryAddress: string,
+  transmuterAddress: string,
   signer: Signer,
   provider: providers.Web3Provider,
   amount: BigNumber,
@@ -130,3 +130,5 @@ export async function mintAndLock(
     console.log(e);
   }
 }
+
+export default mintAndLock;

@@ -6,13 +6,10 @@ import React, {
   useState,
 } from 'react';
 import { BigNumber } from 'ethers';
-import { getTokenBalances } from '../../contracts/getTokenBalances';
-import { getOwnedCrucibles } from '../../contracts/getOwnedCrucibles';
-import { getUniswapBalances } from '../../contracts/getUniswapTokenBalances';
-import { getUserRewards } from '../../contracts/aludel';
+import useContracts from '../../contracts/useContracts';
 import { GET_PAIR_HISTORY } from '../../queries/uniswap';
 import { useLazyQuery } from '@apollo/client';
-import { config } from '../../config/variables';
+import useConfigVariables from '../../hooks/useConfigVariables';
 import numberishToBigNumber from '../../utils/numberishToBigNumber';
 import { useWeb3React } from '@web3-react/core';
 
@@ -76,7 +73,13 @@ const CruciblesProvider = ({ children }: CruciblesProps) => {
   const [tokenBalances, setTokenBalances] = useState<TokenBalances | undefined>(
     undefined
   );
-  const { pairAddress, networkId } = config;
+  const { pairAddress } = useConfigVariables();
+  const {
+    getUserRewards,
+    getOwnedCrucibles,
+    getUniswapBalances,
+    getTokenBalances,
+  } = useContracts();
 
   const [loadPairs, { data: pairData }] = useLazyQuery(
     GET_PAIR_HISTORY(
@@ -95,111 +98,111 @@ const CruciblesProvider = ({ children }: CruciblesProps) => {
     setRefreshBalances(true);
   };
 
-  useEffect(() => {
-    if (pairData) {
-      setCrucibles((crucibles) => {
-        return crucibles!.map((crucible, i) => {
-          // TODO This whole thing breaks down with multiple LP subscriptions in a single crucible
-          const { totalSupply, reserve0, reserve1 } = pairData[
-            `pairDay${i}`
-          ][0];
-          const initialMistInLP = crucible.balance
-            .mul(numberishToBigNumber(reserve0))
-            .div(numberishToBigNumber(totalSupply));
-          const initialEthInLP = crucible.balance
-            .mul(numberishToBigNumber(reserve1))
-            .div(numberishToBigNumber(totalSupply));
-          return {
-            ...crucible,
-            initialMistInLP,
-            initialEthInLP,
-            // ratio:
-            //   pairData[`pairHour${i}`][0].reserve0 /
-            //   pairData[`pairHour${i}`][0].reserve1
-          };
-        });
-      });
-    }
-  }, [pairData]);
+  // useEffect(() => {
+  //   if (pairData) {
+  //     setCrucibles((crucibles) => {
+  //       return crucibles!.map((crucible, i) => {
+  //         // TODO This whole thing breaks down with multiple LP subscriptions in a single crucible
+  //         const { totalSupply, reserve0, reserve1 } = pairData[
+  //           `pairDay${i}`
+  //         ][0];
+  //         const initialMistInLP = crucible.balance
+  //           .mul(numberishToBigNumber(reserve0))
+  //           .div(numberishToBigNumber(totalSupply));
+  //         const initialEthInLP = crucible.balance
+  //           .mul(numberishToBigNumber(reserve1))
+  //           .div(numberishToBigNumber(totalSupply));
+  //         return {
+  //           ...crucible,
+  //           initialMistInLP,
+  //           initialEthInLP,
+  //           // ratio:
+  //           //   pairData[`pairHour${i}`][0].reserve0 /
+  //           //   pairData[`pairHour${i}`][0].reserve1
+  //         };
+  //       });
+  //     });
+  //   }
+  // }, [pairData]);
 
-  useEffect(() => {
-    setIsLoading(true);
-    setIsRewardsLoading(true);
-    if (library && account && chainId && chainId === Number(networkId)) {
-      const signer = library?.getSigner();
-      getTokenBalances(signer, account as string, chainId).then(
-        (balances: TokenBalances) => {
-          setTokenBalances(balances);
-        }
-      );
-    }
-  }, [library, , chainId, networkId, account, refreshBalances]);
+  // useEffect(() => {
+  //   setIsLoading(true);
+  //   setIsRewardsLoading(true);
+  //   if (library && account && chainId) {
+  //     const signer = library?.getSigner();
+  //     getTokenBalances(signer, account as string, chainId).then(
+  //       (balances: TokenBalances) => {
+  //         setTokenBalances(balances);
+  //       }
+  //     );
+  //   }
+  // }, [library, chainId, account, refreshBalances]);
 
-  useEffect(
-    () => {
-      let updatedCrucibles: Crucible[] = [];
-      if (tokenBalances && library && chainId) {
-        // process.env.REACT_APP_NETWORK_ID
-
-        const signer = library.getSigner();
-        setIsRewardsLoading(true);
-        getOwnedCrucibles(signer, library)
-          .then((ownedCrucibles: Crucible[]) => {
-            const { mistPrice, totalLpSupply, wethPrice } = tokenBalances;
-            updatedCrucibles = ownedCrucibles.map((crucible) => ({
-              ...crucible,
-              mistPrice,
-              totalLpSupply,
-              wethPrice,
-              ...getUniswapBalances(
-                crucible.balance,
-                tokenBalances!.lpMistBalance,
-                tokenBalances!.lpWethBalance,
-                tokenBalances!.totalLpSupply,
-                tokenBalances!.wethPrice,
-                tokenBalances!.mistPrice,
-                chainId
-              ),
-            }));
-            setCrucibles(updatedCrucibles);
-            return getUserRewards(signer, ownedCrucibles);
-          })
-          .then((rewards) => {
-            setIsLoading(false);
-            if (updatedCrucibles && updatedCrucibles.length && chainId === 1) {
-              loadPairs();
-            }
-
-            if (rewards?.length) {
-              const cruciblesWithRewards = updatedCrucibles?.map(
-                (crucible, i) => {
-                  const { mistRewards, wethRewards } = rewards[i];
-                  return {
-                    ...crucible,
-                    mistRewards,
-                    wethRewards,
-                  };
-                }
-              );
-              if (cruciblesWithRewards) {
-                setCrucibles(cruciblesWithRewards);
-              }
-            } else {
-              setIsLoading(false);
-            }
-            setIsRewardsLoading(false);
-          })
-          .catch((e) => {
-            console.error(e);
-            setIsLoading(false);
-            setIsRewardsLoading(false);
-          });
-        setRefreshCrucibles(false);
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [library, account, chainId, refreshCrucibles, tokenBalances, loadPairs]
-  );
+  // useEffect(
+  //   () => {
+  //     let updatedCrucibles: Crucible[] = [];
+  //     if (tokenBalances && library && chainId) {
+  //       // process.env.REACT_APP_NETWORK_ID
+  //
+  //       const signer = library.getSigner();
+  //       setIsRewardsLoading(true);
+  //       getOwnedCrucibles(signer, library)
+  //         .then((ownedCrucibles: Crucible[]) => {
+  //           const { mistPrice, totalLpSupply, wethPrice } = tokenBalances;
+  //           updatedCrucibles = ownedCrucibles.map((crucible) => ({
+  //             ...crucible,
+  //             mistPrice,
+  //             totalLpSupply,
+  //             wethPrice,
+  //             ...getUniswapBalances(
+  //               crucible.balance,
+  //               tokenBalances!.lpMistBalance,
+  //               tokenBalances!.lpWethBalance,
+  //               tokenBalances!.totalLpSupply,
+  //               tokenBalances!.wethPrice,
+  //               tokenBalances!.mistPrice,
+  //               chainId
+  //             ),
+  //           }));
+  //           setCrucibles(updatedCrucibles);
+  //           return getUserRewards(signer, ownedCrucibles);
+  //         })
+  //         .then((rewards) => {
+  //           setIsLoading(false);
+  //           if (updatedCrucibles && updatedCrucibles.length && chainId === 1) {
+  //             loadPairs();
+  //           }
+  //
+  //           if (rewards?.length) {
+  //             const cruciblesWithRewards = updatedCrucibles?.map(
+  //               (crucible, i) => {
+  //                 const { mistRewards, wethRewards } = rewards[i];
+  //                 return {
+  //                   ...crucible,
+  //                   mistRewards,
+  //                   wethRewards,
+  //                 };
+  //               }
+  //             );
+  //             if (cruciblesWithRewards) {
+  //               setCrucibles(cruciblesWithRewards);
+  //             }
+  //           } else {
+  //             setIsLoading(false);
+  //           }
+  //           setIsRewardsLoading(false);
+  //         })
+  //         .catch((e) => {
+  //           console.error(e);
+  //           setIsLoading(false);
+  //           setIsRewardsLoading(false);
+  //         });
+  //       setRefreshCrucibles(false);
+  //     }
+  //   },
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  //   [library, account, chainId, refreshCrucibles, tokenBalances, loadPairs]
+  // );
 
   const cruciblesOnCurrentNetwork = () => {
     const signer = library?.getSigner();

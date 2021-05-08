@@ -6,11 +6,12 @@ import { TiPower } from 'react-icons/ti';
 import { VscLink } from 'react-icons/vsc';
 import { InjectedConnector } from '@web3-react/injected-connector';
 import { useWeb3React } from '@web3-react/core';
+import { convertChainIdToNetworkName } from '../../utils/convertChainIdToNetworkName';
 // @ts-ignore
 const injected = new InjectedConnector({ supportedChainIds: [1, 3, 4, 5, 42] });
 
 const UserWallet: FC = () => {
-  const { deactivate, activate, account } = useWeb3React();
+  const { deactivate, activate, account, chainId } = useWeb3React();
 
   const handleConnect = async () => {
     // TODO open modal here to let user pick wallet
@@ -26,6 +27,24 @@ const UserWallet: FC = () => {
   if (account) {
     return (
       <Box position='relative'>
+        <Box
+          mr={5}
+          as='button'
+          height='24px'
+          lineHeight='1.2'
+          transition='all 0.2s cubic-bezier(.08,.52,.52,1)'
+          border='1px'
+          px='8px'
+          borderRadius='2px'
+          fontSize='14px'
+          fontWeight='semibold'
+          bg='#f5f6f7'
+          borderColor='#ccd0d5'
+          color='#4b4f56'
+          _hover={{ cursor: 'inherit' }}
+        >
+          {convertChainIdToNetworkName(chainId)}
+        </Box>
         <Button {...walletButtonProps} pr={12}>
           <Box>{truncate(account)}</Box>
         </Button>

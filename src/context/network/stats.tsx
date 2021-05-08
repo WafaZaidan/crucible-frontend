@@ -6,7 +6,7 @@ import React, {
   useEffect,
 } from 'react';
 import { useWeb3React } from '@web3-react/core';
-import { getNetworkStats } from '../../contracts/aludel';
+import useContracts from '../../contracts/useContracts';
 
 type NetworkStatsProps = {
   children: ReactNode;
@@ -23,6 +23,7 @@ const NetworkStats = createContext<NetworkStatsContextType | undefined>(
 const NetworkStatsProvider = ({ children }: NetworkStatsProps) => {
   const { library, account, chainId } = useWeb3React();
   const [networkStats, setNetworkStats] = useState<any>(undefined);
+  const { getNetworkStats } = useContracts();
 
   useEffect(() => {
     if (library && account && chainId === process.env.REACT_APP_NETWORK_ID) {

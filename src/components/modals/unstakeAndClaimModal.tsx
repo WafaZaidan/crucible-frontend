@@ -19,7 +19,6 @@ import {
 } from '@chakra-ui/modal';
 import { useContract } from '../../hooks/useContract';
 import { Crucible, useCrucibles } from '../../context/crucibles/crucibles';
-import { unstakeAndClaim } from '../../contracts/unstakeAndClaim';
 import formatNumber from '../../utils/formatNumber';
 import { BigNumber } from 'ethers';
 import numberishToBigNumber from '../../utils/numberishToBigNumber';
@@ -27,6 +26,7 @@ import bigNumberishToNumber from '../../utils/bigNumberishToNumber';
 import getStep from '../../utils/getStep';
 import onNumberInputChange from '../../utils/onNumberInputChange';
 import { useWeb3React } from '@web3-react/core';
+import useContracts from '../../contracts/useContracts';
 
 type unstakeAndClaimParams = Parameters<
   (signer: any, crucibleAddress: string, amount: BigNumber) => void
@@ -47,6 +47,7 @@ const UnstakeAndClaimModal: FC<Props> = ({ onClose, crucible }) => {
   const lockedBalance = crucible?.lockedBalance || BigNumber.from(0);
   const lockedBalanceNumber = bigNumberishToNumber(lockedBalance);
   const step = getStep(lockedBalanceNumber);
+  const { unstakeAndClaim } = useContracts();
 
   const { invokeContract, ui } = useContract(unstakeAndClaim, () => {
     onClose();

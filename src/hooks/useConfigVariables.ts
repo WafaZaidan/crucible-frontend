@@ -1,14 +1,36 @@
-import { Network } from '../utils/network';
+import { useWeb3React } from '@web3-react/core';
+import config from '../config';
 
-export const config =
-  process.env.REACT_APP_NETWORK_ID === '1'
+interface Config {
+  supportedNetworks: string;
+  appUrl: string;
+  contactEmail: string;
+  inflationStartTimestamp: number;
+  pairAddress: string;
+  mistTokenAddress: string;
+  lpTokenAddress: string;
+  aludelAddress: string;
+  wethAddress: string;
+  crucibleFactoryAddress: string;
+  transmuterAddress: string;
+  daiAddress: string;
+  rewardPool: string;
+  rpcUrl: string;
+  infuraApiKey: string;
+  dappId: string;
+  uniswapSubgraphUrl: string;
+  uniswapPoolUrl: string;
+  getMistUrl: string;
+}
+
+const useConfigVariables = (): Config => {
+  const { chainId } = useWeb3React();
+
+  return chainId === 1 || !chainId
     ? {
-        networkId: Network.MAINNET,
-        appUrl: 'https://alchemist.wtf',
-        contactEmail: 'foo@gmail.com',
+        ...config,
         pairAddress: '0xcd6bcca48069f8588780dfa274960f15685aee0e',
         mistTokenAddress: '0x88ACDd2a6425c3FaAE4Bc9650Fd7E27e0Bebb7aB',
-        inflationStartTimestamp: 1612661126000,
         lpTokenAddress: '0xCD6bcca48069f8588780dFA274960F15685aEe0e',
         aludelAddress: '0xf0D415189949d913264A454F57f4279ad66cB24d',
         wethAddress: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
@@ -19,20 +41,10 @@ export const config =
         rpcUrl: 'https://mainnet.infura.io/v3/00a5b13ef0cf467698571093487743e6',
         infuraApiKey: '00a5b13ef0cf467698571093487743e6',
         dappId: 'ad454b00-3218-4403-95e9-22c3c7d3adc0',
-        uniswapSubgraphUrl:
-          'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2',
-        uniswapPoolUrl:
-          'https://app.uniswap.org/#/add/v2/0x88ACDd2a6425c3FaAE4Bc9650Fd7E27e0Bebb7aB/ETH',
-        getMistUrl:
-          'https://app.uniswap.org/#/swap?outputCurrency=0x88acdd2a6425c3faae4bc9650fd7e27e0bebb7ab&use=V2', // V2
-        // 'https://app.uniswap.org/#/swap?outputCurrency=0x88acdd2a6425c3faae4bc9650fd7e27e0bebb7ab', // will point to v3
       }
     : {
-        networkId: Network.RINKEBY,
-        appUrl: 'https://alchemist.wtf',
-        contactEmail: 'foo@gmail.com',
+        ...config,
         pairAddress: '0xcd6bcca48069f8588780dfa274960f15685aee0e',
-        inflationStartTimestamp: 1617299925000,
         mistTokenAddress: '0xF6c1210Aca158bBD453A12604A03AeD2659ac0ef',
         lpTokenAddress: '0xe55687682fdf08265d1672ea0c91fa884ccd8955',
         aludelAddress: '0xE2dD7930d8cA478d9aA38Ae0F5483B8A3B331C40',
@@ -44,10 +56,7 @@ export const config =
         rpcUrl: 'https://rinkeby.infura.io/v3/00a5b13ef0cf467698571093487743e6',
         infuraApiKey: '00a5b13ef0cf467698571093487743e6',
         dappId: 'ad454b00-3218-4403-95e9-22c3c7d3adc0',
-        uniswapSubgraphUrl:
-          'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2',
-        uniswapPoolUrl:
-          'https://app.uniswap.org/#/add/v2/0xF6c1210Aca158bBD453A12604A03AeD2659ac0ef/ETH',
-        getMistUrl:
-          'https://app.uniswap.org/#/swap?outputCurrency=0xF6c1210Aca158bBD453A12604A03AeD2659ac0ef',
       };
+};
+
+export default useConfigVariables;

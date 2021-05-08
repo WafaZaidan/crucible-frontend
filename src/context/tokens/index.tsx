@@ -1,8 +1,9 @@
-import {
+import React, {
   createContext,
   ReactNode,
   useContext,
   useEffect,
+  useMemo,
   useReducer,
   useState,
 } from 'react';
@@ -11,6 +12,7 @@ import { Erc20DetailedFactory } from '../../interfaces/Erc20DetailedFactory';
 import { Erc20Detailed } from '../../interfaces/Erc20Detailed';
 import { TokenInfo, Tokens, tokensReducer } from './tokenReducer';
 import { useWeb3React } from '@web3-react/core';
+import useConfigVariables from '../../hooks/useConfigVariables';
 
 type TokenConfig = {
   address: string;
@@ -35,12 +37,31 @@ type TokenContextType = {
 
 const TokenContext = createContext<TokenContextType | undefined>(undefined);
 
-const TokenProvider = ({ children, tokensToWatch }: TokenContextProps) => {
+const TokenProvider = ({ children }: TokenContextProps) => {
   const { account, chainId, library } = useWeb3React();
   const [ethBalance, setEthBalance] = useState<BigNumber | undefined>(
     undefined
   );
   const [tokens, tokensDispatch] = useReducer(tokensReducer, {});
+  const { mistTokenAddress, lpTokenAddress } = useConfigVariables();
+
+  const tokensToWatch = useMemo(
+    () => ({
+      [chainId || 1]: [
+        {
+          address: mistTokenAddress,
+          name: 'Mist',
+          symbol: '⚗️',
+        },
+        {
+          address: lpTokenAddress,
+          name: 'LP',
+          symbol: '🧙',
+        },
+      ],
+    }),
+    [chainId]
+  );
 
   // get ETH balance
   useEffect(() => {
@@ -82,7 +103,6 @@ const TokenProvider = ({ children, tokensToWatch }: TokenContextProps) => {
 
         const newTokenInfo: TokenInfo = {
           decimals: 0,
-          imageUri: token.imageUri,
           name: token.name,
           symbol: token.symbol,
           spenderAllowance: BigNumber.from(0),
@@ -177,7 +197,7 @@ const TokenProvider = ({ children, tokensToWatch }: TokenContextProps) => {
 const useTokens = () => {
   const context = useContext(TokenContext);
   if (context === undefined) {
-    throw new Error('useOnboard must be used within a OnboardProvider');
+    throw new Error('useTokens must be used within the TokenProvider');
   }
   return context;
 };

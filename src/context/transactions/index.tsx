@@ -3,6 +3,7 @@ import { API as NotifyAPI } from 'bnc-notify';
 import { useState, useEffect } from 'react';
 import { useWeb3React } from '@web3-react/core';
 import { initNotify } from '../../config/notify';
+import useConfigVariables from '../../hooks/useConfigVariables';
 
 type Transaction = {
   hash?: string;
@@ -22,12 +23,13 @@ const TransactionContext = createContext<Web3ContextType | undefined>(
 
 const TransactionProvider = ({ children }: TransactionContextProps) => {
   const { chainId } = useWeb3React();
+  const { dappId } = useConfigVariables();
   const [notify, setNotify] = useState<NotifyAPI | undefined>(undefined);
 
   useEffect(() => {
-    const notify = initNotify();
+    const notify = initNotify(dappId, chainId);
     setNotify(notify);
-  }, []);
+  }, [chainId]);
 
   async function monitorTx(hash: string, reload: () => void) {
     const etherscanLink = (txHash = '') =>

@@ -1,10 +1,10 @@
 import React, { FC, useMemo } from 'react';
 import { Center, Flex, Text, VStack } from '@chakra-ui/layout';
 import { Spinner } from '@chakra-ui/spinner';
-import { networkName } from '../utils/network';
+import { useWeb3React } from '@web3-react/core';
 import MintingTabs from '../components/minting/mintingTabs';
 import MintingGuide from '../components/minting/mintingGuide';
-import { useWeb3React } from '@web3-react/core';
+import { convertChainIdToNetworkName } from '../utils/convertChainIdToNetworkName';
 
 const CrucibleMinting: FC = () => {
   const { account, chainId } = useWeb3React();
@@ -23,10 +23,11 @@ const CrucibleMinting: FC = () => {
             <Spinner />
             <Text pt={4}>
               Unsupported network. Please switch to{' '}
-              <strong>{networkName(supportedNetwork)}</strong>. If you are on
-              the <strong>Taichi</strong> network you need to switch back to{' '}
-              <strong>{networkName(supportedNetwork)}</strong> to view your
-              Crucibles.
+              <strong>{convertChainIdToNetworkName(supportedNetwork)}</strong>.
+              If you are on the <strong>Taichi</strong> network you need to
+              switch back to{' '}
+              <strong>{convertChainIdToNetworkName(supportedNetwork)}</strong>{' '}
+              to view your Crucibles.
             </Text>
           </VStack>
         </Flex>

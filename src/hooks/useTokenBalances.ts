@@ -1,10 +1,10 @@
 import { useTokens } from '../context/tokens';
-import { config } from '../config/variables';
+import useConfigVariables from './useConfigVariables';
 import { BigNumber } from 'ethers';
 
 const useTokenBalances = () => {
   const { tokens, ethBalance } = useTokens();
-  const { lpTokenAddress, mistTokenAddress } = config;
+  const { lpTokenAddress, mistTokenAddress } = useConfigVariables();
 
   return {
     lpBalance: tokens[lpTokenAddress]?.balance || BigNumber.from(0),

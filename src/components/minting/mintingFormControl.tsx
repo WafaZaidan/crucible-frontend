@@ -6,7 +6,7 @@ import { Box, Flex, Text } from '@chakra-ui/layout';
 import { Signer } from '@ethersproject/abstract-signer';
 import { NumberInput, NumberInputField } from '@chakra-ui/number-input';
 import { useContract } from '../../hooks/useContract';
-import { mintAndLock } from '../../contracts/alchemist';
+import useContracts from '../../contracts/useContracts';
 import {
   Slider,
   SliderFilledTrack,
@@ -31,6 +31,7 @@ const MintingFormControl: FC = () => {
   const [amount, setAmount] = useState('0');
   const amountBigNumber = numberishToBigNumber(amount || 0);
   const { library } = useWeb3React();
+  const { mintAndLock } = useContracts();
   const { invokeContract, ui } = useContract(mintAndLock);
   const { lpBalance } = useTokenBalances();
   let lpBalanceNumber = 0;

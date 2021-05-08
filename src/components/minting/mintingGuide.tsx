@@ -11,8 +11,7 @@ import {
   AccordionPanel,
 } from '@chakra-ui/accordion';
 import { Alert } from '@chakra-ui/alert';
-import { useTokens } from '../../context/tokens';
-import { config } from '../../config/variables';
+import useConfigVariables from '../../hooks/useConfigVariables';
 import WelcomeToast from '../shared/welcomeToast';
 import { InjectedConnector } from '@web3-react/injected-connector';
 import { useWeb3React } from '@web3-react/core';
@@ -20,7 +19,7 @@ import { useWeb3React } from '@web3-react/core';
 const injected = new InjectedConnector({ supportedChainIds: [1, 3, 4, 5, 42] });
 
 const MintingGuide: FC = () => {
-  const { uniswapPoolUrl, getMistUrl } = config;
+  const { uniswapPoolUrl, getMistUrl } = useConfigVariables();
   const { activate } = useWeb3React();
 
   const handleConnect = async () => {

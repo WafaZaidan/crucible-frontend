@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import {
   Button,
   FormControl,
@@ -15,8 +15,7 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/modal';
-import { transferCrucible } from '../../contracts/transferCrucible';
-import { useState } from 'react';
+import useContracts from '../../contracts/useContracts';
 import { useContract } from '../../hooks/useContract';
 import { ethers } from 'ethers';
 import { useHistory } from 'react-router';
@@ -36,6 +35,7 @@ const TransferModal: FC<Props> = ({ onClose, id }) => {
   const { library } = useWeb3React();
   const [error, setError] = useState('');
   const [sendAddress, setSendAddress] = useState('');
+  const { transferCrucible } = useContracts();
 
   const successCallback = () => {
     // TODO: Add indicator to crucible list view to show it's being transferred

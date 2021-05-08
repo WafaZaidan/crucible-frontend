@@ -1,11 +1,8 @@
 import { BigNumber, ethers, Signer } from 'ethers';
 import { formatEther, formatUnits } from 'ethers/lib/utils';
-import { config } from '../config/variables';
 import { aludelAbi } from '../abi/aludelAbi';
 import { _abi } from '../interfaces/Erc20DetailedFactory';
 import { Crucible } from '../context/crucibles/crucibles';
-
-const { aludelAddress, mistTokenAddress, wethAddress, rewardPool } = config;
 
 export interface EtherRewards {
   currStakeRewards: BigNumber;
@@ -16,7 +13,7 @@ export interface EtherRewards {
   wethRewards: BigNumber;
 }
 
-export async function getNetworkStats(signer: Signer) {
+export async function getNetworkStats(aludelAddress: string, signer: Signer) {
   const aludel = new ethers.Contract(aludelAddress, aludelAbi, signer);
   const [
     ,
@@ -54,6 +51,10 @@ export async function getNetworkStats(signer: Signer) {
 
 // Returns array with vault rewards (current and projected)
 export async function getUserRewards(
+  aludelAddress: string,
+  wethAddress: string,
+  mistTokenAddress: string,
+  rewardPool: string,
   signer: any,
   crucibles: Crucible[]
 ): Promise<EtherRewards[]> {

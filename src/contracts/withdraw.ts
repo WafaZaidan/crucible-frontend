@@ -1,12 +1,10 @@
 import { BigNumber, ethers } from 'ethers';
-import { config } from '../config/variables';
 import { crucibleAbi } from '../abi/crucibleAbi';
 import IUniswapV2ERC20 from '@uniswap/v2-core/build/IUniswapV2ERC20.json';
 import { CallbackArgs, EVENT } from '../hooks/useContract';
 
-const { lpTokenAddress } = config;
-
-export async function withdraw(
+async function withdraw(
+  lpTokenAddress: string,
   signer: any,
   crucibleAddress: string,
   amount: BigNumber,
@@ -60,3 +58,5 @@ export async function withdraw(
     console.log(e);
   }
 }
+
+export default withdraw;

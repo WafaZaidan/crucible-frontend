@@ -18,7 +18,6 @@ import {
 } from '@chakra-ui/modal';
 import { useContract } from '../../hooks/useContract';
 import { Crucible } from '../../context/crucibles/crucibles';
-import { withdraw } from '../../contracts/withdraw';
 import { BigNumber } from 'ethers';
 import formatNumber from '../../utils/formatNumber';
 import numberishToBigNumber from '../../utils/numberishToBigNumber';
@@ -26,6 +25,7 @@ import bigNumberishToNumber from '../../utils/bigNumberishToNumber';
 import getStep from '../../utils/getStep';
 import onNumberInputChange from '../../utils/onNumberInputChange';
 import { useWeb3React } from '@web3-react/core';
+import useContracts from '../../contracts/useContracts';
 
 type withdrawParams = Parameters<
   (signer: any, crucibleAddress: string, amount: BigNumber) => void
@@ -44,6 +44,7 @@ const WithdrawStakeModal: FC<Props> = ({ onClose, crucible }) => {
   const unlockedBalance = crucible?.unlockedBalance || BigNumber.from(0);
   const unlockedBalanceNumber = bigNumberishToNumber(unlockedBalance);
   const step = getStep(unlockedBalanceNumber);
+  const { withdraw } = useContracts();
 
   const { invokeContract, ui } = useContract(withdraw, () => onClose());
 

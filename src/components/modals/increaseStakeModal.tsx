@@ -21,8 +21,8 @@ import { BigNumber } from 'ethers';
 import { useWeb3React } from '@web3-react/core';
 import { useContract } from '../../hooks/useContract';
 import { Crucible } from '../../context/crucibles/crucibles';
-import { increaseStake } from '../../contracts/increaseStake';
-import { config } from '../../config/variables';
+import useContracts from '../../contracts/useContracts';
+import useConfigVariables from '../../hooks/useConfigVariables';
 import formatNumber from '../../utils/formatNumber';
 import bigNumberishToNumber from '../../utils/bigNumberishToNumber';
 import numberishToBigNumber from '../../utils/numberishToBigNumber';
@@ -44,6 +44,8 @@ const IncreaseStakeModal: FC<Props> = ({ onClose, crucible }) => {
   const [isMax, setIsMax] = useState(false);
   const [amountLpToStake, setAmountLpToStake] = useState('0');
   const amountLpToStakeBN = numberishToBigNumber(amountLpToStake || 0);
+  const config = useConfigVariables();
+  const { increaseStake } = useContracts();
 
   const successCallback = (txHash: string) => {
     // Hacky

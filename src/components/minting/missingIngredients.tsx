@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
 import { Image } from '@chakra-ui/image';
 import { Box, Heading, Link, Text } from '@chakra-ui/layout';
-import { config } from '../../config/variables';
+import useConfigVariables from '../../hooks/useConfigVariables';
 import pot from '../../img/pot.png';
 
 const MissingIngredients: FC = () => {
-  const { uniswapPoolUrl, getMistUrl } = config;
+  const { uniswapPoolUrl, getMistUrl } = useConfigVariables();
   return (
     <Box textAlign='center'>
       <Image src={pot} height='220px' htmlHeight='220px' mx='auto' my={8} />
