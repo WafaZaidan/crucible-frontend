@@ -6,6 +6,7 @@ import { transmuterAbi } from '../abi/transmuterAbi';
 import { config } from '../config/variables';
 import { CallbackArgs, EVENT } from '../hooks/useContract';
 import IUniswapV2ERC20 from '@uniswap/v2-core/build/IUniswapV2ERC20.json';
+import { wait } from '../utils/wait';
 
 const { aludelAddress, transmuterAddress } = config;
 
@@ -58,6 +59,8 @@ export async function increaseStake(
       amount,
       deadline
     );
+
+    await wait(300);
 
     callback({
       type: EVENT.PENDING_SIGNATURE,
