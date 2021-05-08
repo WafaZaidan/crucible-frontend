@@ -1,9 +1,9 @@
-import { useWeb3 } from '../context/web3';
+import { useTokens } from '../context/tokens';
 import { config } from '../config/variables';
 import { BigNumber } from 'ethers';
 
 const useTokenBalances = () => {
-  const { tokens, ethBalance } = useWeb3();
+  const { tokens, ethBalance } = useTokens();
   const { lpTokenAddress, mistTokenAddress } = config;
 
   return {

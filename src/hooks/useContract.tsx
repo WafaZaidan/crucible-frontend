@@ -3,7 +3,7 @@ import TxErrorModal from '../components/modals/tx/txErrorModal';
 import TxConfirmedModal from '../components/modals/tx/txConfirmedModal';
 import TxPendingSignatureModal from '../components/modals/tx/txPendingSignatureModal';
 import TxPendingApprovalModal from '../components/modals/tx/txPendingApprovalModal';
-import { useNotify } from '../context/web3';
+import { useNotify } from '../context/transactions';
 import { useCrucibles } from '../context/crucibles';
 import { useWeb3React } from '@web3-react/core';
 

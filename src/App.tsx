@@ -14,11 +14,11 @@ import bg from './img/bg.jpg';
 import NoMatch from './pages/noMatch';
 import CrucibleDetail from './pages/crucibleDetail';
 import CrucibleMinting from './pages/crucibleMinting';
-import { useWeb3 } from './context/web3';
+import { useTokens } from './context/tokens';
 import MobileLayover from './components/modals/MobileLayover';
 
 const App: FC = () => {
-  useWeb3();
+  useTokens();
   return (
     <>
       <Flex

@@ -8,7 +8,7 @@ type Transaction = {
   hash?: string;
 };
 
-type NotifyContextProps = {
+type TransactionContextProps = {
   children: ReactNode;
 };
 
@@ -16,9 +16,11 @@ type Web3ContextType = {
   monitorTx(hash: string, reload: () => void): Promise<void>;
 };
 
-const NotifyContext = createContext<Web3ContextType | undefined>(undefined);
+const TransactionContext = createContext<Web3ContextType | undefined>(
+  undefined
+);
 
-const NotifyProvider = ({ children }: NotifyContextProps) => {
+const TransactionProvider = ({ children }: TransactionContextProps) => {
   const { chainId } = useWeb3React();
   const [notify, setNotify] = useState<NotifyAPI | undefined>(undefined);
 
@@ -62,22 +64,22 @@ const NotifyProvider = ({ children }: NotifyContextProps) => {
   }
 
   return (
-    <NotifyContext.Provider
+    <TransactionContext.Provider
       value={{
         monitorTx,
       }}
     >
       {children}
-    </NotifyContext.Provider>
+    </TransactionContext.Provider>
   );
 };
 
 const useNotify = () => {
-  const context = useContext(NotifyContext);
+  const context = useContext(TransactionContext);
   if (context === undefined) {
-    throw new Error('useNotify must be used within a NotifyProvider');
+    throw new Error('useNotify must be used within a TransactionProvider');
   }
   return context;
 };
 
-export { NotifyProvider, useNotify };
+export { TransactionProvider, useNotify };

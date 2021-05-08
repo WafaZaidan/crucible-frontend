@@ -11,7 +11,7 @@ import {
   AccordionPanel,
 } from '@chakra-ui/accordion';
 import { Alert } from '@chakra-ui/alert';
-import { useWeb3 } from '../../context/web3';
+import { useTokens } from '../../context/tokens';
 import { config } from '../../config/variables';
 import WelcomeToast from '../shared/welcomeToast';
 import { InjectedConnector } from '@web3-react/injected-connector';

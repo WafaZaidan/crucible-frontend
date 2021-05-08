@@ -23,19 +23,19 @@ type TokensToWatch = {
   [networkId: number]: TokenConfig[];
 };
 
-type Web3ContextProps = {
+type TokenContextProps = {
   children: ReactNode;
   tokensToWatch?: TokensToWatch;
 };
 
-type Web3ContextType = {
+type TokenContextType = {
   ethBalance?: BigNumber;
   tokens: Tokens;
 };
 
-const Web3Context = createContext<Web3ContextType | undefined>(undefined);
+const TokenContext = createContext<TokenContextType | undefined>(undefined);
 
-const Web3Provider = ({ children, tokensToWatch }: Web3ContextProps) => {
+const TokenProvider = ({ children, tokensToWatch }: TokenContextProps) => {
   const { account, chainId, library } = useWeb3React();
   const [ethBalance, setEthBalance] = useState<BigNumber | undefined>(
     undefined
@@ -163,23 +163,23 @@ const Web3Provider = ({ children, tokensToWatch }: Web3ContextProps) => {
   }, [chainId, library, account]);
 
   return (
-    <Web3Context.Provider
+    <TokenContext.Provider
       value={{
         ethBalance,
         tokens,
       }}
     >
       {children}
-    </Web3Context.Provider>
+    </TokenContext.Provider>
   );
 };
 
-const useWeb3 = () => {
-  const context = useContext(Web3Context);
+const useTokens = () => {
+  const context = useContext(TokenContext);
   if (context === undefined) {
     throw new Error('useOnboard must be used within a OnboardProvider');
   }
   return context;
 };
 
-export { Web3Provider, useWeb3 };
+export { TokenProvider, useTokens };

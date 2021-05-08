@@ -3,11 +3,10 @@ import ReactDOM from 'react-dom';
 import { Web3ReactProvider } from '@web3-react/core';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import onboardConfig from './config/onboard';
 import theme from './config/theme';
-import { Web3Provider } from './context/web3';
+import { TokenProvider } from './context/tokens';
 import { config } from './config/variables';
-import { NotifyProvider } from './context/web3/notify';
+import { TransactionProvider } from './context/transactions';
 import { NetworkStatsProvider } from './context/network';
 import { CruciblesProvider } from './context/crucibles';
 import { LpStatsProvider } from './context/lp';
@@ -29,7 +28,7 @@ function getLibrary(provider: any) {
 ReactDOM.render(
   <React.StrictMode>
     <Web3ReactProvider getLibrary={getLibrary}>
-      <Web3Provider
+      <TokenProvider
         tokensToWatch={{
           [networkId]: [
             {
@@ -46,7 +45,7 @@ ReactDOM.render(
         }}
       >
         <ApolloProvider client={client}>
-          <NotifyProvider>
+          <TransactionProvider>
             <NetworkStatsProvider>
               <CruciblesProvider>
                 <LpStatsProvider>
@@ -57,9 +56,9 @@ ReactDOM.render(
                 </LpStatsProvider>
               </CruciblesProvider>
             </NetworkStatsProvider>
-          </NotifyProvider>
+          </TransactionProvider>
         </ApolloProvider>
-      </Web3Provider>
+      </TokenProvider>
     </Web3ReactProvider>
   </React.StrictMode>,
   document.getElementById('root')
