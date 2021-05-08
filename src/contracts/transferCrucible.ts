@@ -33,6 +33,11 @@ export async function transferCrucible(
       message: 'success',
       txHash: tx.hash,
     });
+
+    await tx.wait(1);
+    callback({
+      type: EVENT.TX_MINED,
+    });
   } catch (e) {
     console.log(e);
     callback({

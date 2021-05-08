@@ -114,6 +114,12 @@ export async function mintAndLock(
       txHash: tx.hash,
     });
 
+    await tx.wait(1);
+
+    callback({
+      type: EVENT.TX_MINED,
+    });
+
     console.log('  in', tx.hash);
   } catch (e) {
     callback({

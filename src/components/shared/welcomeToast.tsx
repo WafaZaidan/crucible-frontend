@@ -28,6 +28,7 @@ const WelcomeToast: FC = () => {
           <Box
             m={4}
             p={6}
+            display={['none', 'none', 'block']}
             bg='gray.700'
             position='relative'
             borderRadius='3xl'

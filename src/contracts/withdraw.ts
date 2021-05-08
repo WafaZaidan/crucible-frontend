@@ -48,6 +48,9 @@ export async function withdraw(
       txHash: withdrawTx.hash,
     });
     console.log('  in', withdrawTx.hash);
+
+    await withdrawTx.wait(1);
+    callback({ type: EVENT.TX_MINED });
   } catch (e) {
     callback({
       type: EVENT.TX_ERROR,

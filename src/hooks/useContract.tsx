@@ -11,6 +11,7 @@ export enum EVENT {
   PENDING_APPROVAL = 'PENDING_APPROVAL',
   PENDING_SIGNATURE = 'PENDING_SIGNATURE',
   TX_CONFIRMED = 'TX_CONFIRMED',
+  TX_MINED = 'TX_MINED',
   TX_ERROR = 'TX_ERROR',
 }
 
@@ -34,30 +35,36 @@ export type CallbackArgs =
       type: EVENT.TX_ERROR;
       message?: string;
       code?: number;
+    }
+  | {
+      type: EVENT.TX_MINED;
+      txHash?: string;
     };
 
 export function useContract(
   contractCall: Function,
   successCallback?: Function
 ) {
-  const { reloadBalances } = useCrucibles();
   const { account } = useWeb3React();
+  const { reloadBalances, reloadCrucibles } = useCrucibles();
   const { monitorTx } = useNotify();
   const [ui, setUI] = useState<ReactElement | null>(null);
 
-  const callback = (event: CallbackArgs) => {
+  const callback = async (event: CallbackArgs) => {
     switch (event.type) {
+      case EVENT.TX_MINED:
+        await reloadBalances();
+        await reloadCrucibles();
+        if (successCallback) {
+          successCallback(event.txHash);
+        }
+        break;
       case EVENT.TX_CONFIRMED:
         setUI(
           <TxConfirmedModal
             message={event.message}
             hash={event.txHash}
-            onClose={() => {
-              setUI(null);
-              if (successCallback) {
-                successCallback(event.txHash);
-              }
-            }}
+            onClose={() => setUI(null)}
           />
         );
         monitorTx(event.txHash, reloadBalances);

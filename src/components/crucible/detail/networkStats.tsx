@@ -7,6 +7,7 @@ import { useCrucibles } from '../../../context/crucibles';
 import { useLpStats } from '../../../context/lp';
 // import { useNetworkStats } from '../../../context/network';
 import StatCard from '../../shared/StatCard';
+import { Tooltip } from '@chakra-ui/tooltip';
 import formatNumber from '../../../utils/formatNumber';
 import numberishToBigNumber from '../../../utils/numberishToBigNumber';
 import getMultiplier from '../../../utils/getMultiplier';
@@ -86,7 +87,7 @@ const LpPerformance: FC<Props> = ({ crucible }) => {
               label={marketCap ? formatNumber.currency(marketCap) : '-'}
             />
             <StatCard
-              title='Total Volume Locked'
+              title='Total Value Locked'
               label={
                 lpStats?.totalVolume
                   ? formatNumber.currency(lpStats.totalVolume)
@@ -111,7 +112,18 @@ const LpPerformance: FC<Props> = ({ crucible }) => {
               subLabel={formatNumber.tokenWhole(rewardsRateIncrease)}
               arrowOnSubLabel
             />
-            <StatCard title='Reward Scaling Period' label='60 days' />
+            <Tooltip
+              hasArrow
+              label='Rewards multiplier increases from x1 to x10 over this period.'
+              bg='gray.800'
+              color='white'
+              placement='top'
+              offset={[0, 16]}
+            >
+              <Flex style={{ alignSelf: 'stretch' }}>
+                <StatCard title='Reward Scaling Period' label='60 days' />
+              </Flex>
+            </Tooltip>
           </StatGroup>
         </HStack>
       </Flex>

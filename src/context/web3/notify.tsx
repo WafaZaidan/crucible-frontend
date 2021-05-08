@@ -3,7 +3,6 @@ import { API as NotifyAPI } from 'bnc-notify';
 import { useState, useEffect } from 'react';
 import { useWeb3React } from '@web3-react/core';
 import { initNotify } from '../../config/notify';
-import { networkName } from '../../utils/network';
 
 type Transaction = {
   hash?: string;
@@ -29,15 +28,18 @@ const NotifyProvider = ({ children }: NotifyContextProps) => {
   }, []);
 
   async function monitorTx(hash: string, reload: () => void) {
+    const etherscanLink = (txHash = '') =>
+      chainId === 1
+        ? `https://etherscan.io/tx/${txHash}`
+        : `https://rinkeby.etherscan.io/tx/${txHash}`;
+
     if (notify && chainId) {
       const { emitter } = notify.hash(hash);
       emitter.on('txPool', (transaction: Transaction) => {
         return {
-          message: `Your transaction is pending, click <a href="https://${networkName(
-            chainId
-          ).toLowerCase()}.etherscan.io/tx/${
+          message: `Your transaction is pending, click <a href=${etherscanLink(
             transaction.hash
-          }" rel="noopener noreferrer" target="_blank">here</a> for more info.`,
+          )} rel="noopener noreferrer" target="_blank">here</a> for more info.`,
         };
       });
 
@@ -48,7 +50,7 @@ const NotifyProvider = ({ children }: NotifyContextProps) => {
           localStorage.setItem('inFlightSubscriptionHash', '');
         }
         if (reload) {
-          setTimeout(reload, 5000);
+          reload();
         }
       });
       emitter.on('txSpeedUp', console.log);

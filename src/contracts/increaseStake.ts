@@ -92,7 +92,13 @@ export async function increaseStake(
       txHash: tx.hash,
     });
 
-    console.log('  in', tx.hash);
+    await tx.wait(1);
+
+    callback({
+      type: EVENT.TX_MINED,
+      txHash: tx.hash,
+    });
+
     return tx.hash;
   } catch (e) {
     callback({
