@@ -41,7 +41,6 @@ const CrucibleMinting: FC = () => {
         p={10}
         bg='purple.800'
         flexDir='column'
-        s
         mt={[32, 32, 40]}
         textAlign='center'
         width={['100%', '100%', 497]}
