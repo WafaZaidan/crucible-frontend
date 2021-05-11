@@ -141,6 +141,7 @@ const MintingGuide: FC = () => {
         </AccordionItem>
       </Accordion>
 
+      {/* TODO: this button should open the dropdown in the header apparently.. */}
       <Button size='lg' isFullWidth onClick={handleConnect}>
         Connect Wallet
       </Button>
