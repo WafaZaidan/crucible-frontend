@@ -20,7 +20,7 @@ import {
 import { BigNumber } from 'ethers';
 import { useWeb3React } from '@web3-react/core';
 import { useContract } from '../../hooks/useContract';
-import { Crucible } from '../../context/crucibles/crucibles';
+import { Crucible } from '../../context/crucibles';
 import useContracts from '../../contracts/useContracts';
 import useConfigVariables from '../../hooks/useConfigVariables';
 import formatNumber from '../../utils/formatNumber';

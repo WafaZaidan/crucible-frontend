@@ -3,7 +3,7 @@ import CrucibleTabs from './crucibleTabs';
 import { Button, IconButton } from '@chakra-ui/button';
 import { truncate } from '../../../utils/address';
 import { useHistory } from 'react-router-dom';
-import { Crucible } from '../../../context/crucibles/crucibles';
+import { Crucible } from '../../../context/crucibles';
 import { FiArrowLeft, FiCopy, FiSend } from 'react-icons/fi';
 import { FaLock } from 'react-icons/fa';
 import { Badge, Box, Flex, Heading, HStack, Text } from '@chakra-ui/layout';

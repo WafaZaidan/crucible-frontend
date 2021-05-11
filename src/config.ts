@@ -1,5 +1,5 @@
 const config = {
-  supportedNetworks: '1,4',
+  supportedNetworks: [1, 4],
   appUrl: 'https://alchemist.wtf',
   contactEmail: 'foo@gmail.com',
   inflationStartTimestamp: 1612661126000,

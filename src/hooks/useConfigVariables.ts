@@ -2,7 +2,7 @@ import { useWeb3React } from '@web3-react/core';
 import config from '../config';
 
 interface Config {
-  supportedNetworks: string;
+  supportedNetworks: number[];
   appUrl: string;
   contactEmail: string;
   inflationStartTimestamp: number;

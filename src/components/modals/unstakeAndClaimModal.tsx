@@ -18,7 +18,7 @@ import {
   ModalOverlay,
 } from '@chakra-ui/modal';
 import { useContract } from '../../hooks/useContract';
-import { Crucible, useCrucibles } from '../../context/crucibles/crucibles';
+import { Crucible, useCrucibles } from '../../context/crucibles';
 import formatNumber from '../../utils/formatNumber';
 import { BigNumber } from 'ethers';
 import numberishToBigNumber from '../../utils/numberishToBigNumber';

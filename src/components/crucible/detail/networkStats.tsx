@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { Box, Flex, HStack, Spinner, StatGroup } from '@chakra-ui/react';
-import { Crucible } from '../../../context/crucibles/crucibles';
+import { Crucible } from '../../../context/crucibles';
 import useConfigVariables from '../../../hooks/useConfigVariables';
 import dayjs from 'dayjs';
 import { useCrucibles } from '../../../context/crucibles';

@@ -2,7 +2,7 @@ import { BigNumber, ethers, Signer } from 'ethers';
 import { formatEther, formatUnits } from 'ethers/lib/utils';
 import { aludelAbi } from '../abi/aludelAbi';
 import { _abi } from '../interfaces/Erc20DetailedFactory';
-import { Crucible } from '../context/crucibles/crucibles';
+import { Crucible } from '../context/crucibles';
 
 export interface EtherRewards {
   currStakeRewards: BigNumber;

@@ -1,7 +1,7 @@
 import React, { FC, useMemo } from 'react';
 import { Center, Flex } from '@chakra-ui/layout';
 import { useParams, Redirect } from 'react-router';
-import { Crucible, useCrucibles } from '../context/crucibles/crucibles';
+import { Crucible, useCrucibles } from '../context/crucibles';
 import CrucibleDetailCard from '../components/crucible/detail/crucibleDetailCard';
 import { Spinner } from '@chakra-ui/react';
 import { useWeb3React } from '@web3-react/core';

@@ -14,7 +14,7 @@ import _withdraw from './withdraw';
 import _getTokenBalances from './getTokenBalances';
 import _getUniswapBalances from './getUniswapTokenBalances';
 
-import { Crucible } from '../context/crucibles/crucibles';
+import { Crucible } from '../context/crucibles';
 import { ChainId } from '@uniswap/sdk';
 
 const useContracts = () => {

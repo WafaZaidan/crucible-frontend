@@ -5,12 +5,12 @@ import { useWeb3React } from '@web3-react/core';
 import MintingTabs from '../components/minting/mintingTabs';
 import MintingGuide from '../components/minting/mintingGuide';
 import { convertChainIdToNetworkName } from '../utils/convertChainIdToNetworkName';
+import config from '../config';
 
 const CrucibleMinting: FC = () => {
   const { account, chainId } = useWeb3React();
-
-  const supportedNetwork = Number(process.env.REACT_APP_NETWORK_ID);
-  const networkUnsupported = chainId !== supportedNetwork;
+  const { supportedNetworks } = config;
+  const networkUnsupported = !supportedNetworks.includes(chainId as number);
 
   const renderContent = useMemo(() => {
     if (!account) {
@@ -23,18 +23,17 @@ const CrucibleMinting: FC = () => {
             <Spinner />
             <Text pt={4}>
               Unsupported network. Please switch to{' '}
-              <strong>{convertChainIdToNetworkName(supportedNetwork)}</strong>.
-              If you are on the <strong>Taichi</strong> network you need to
-              switch back to{' '}
-              <strong>{convertChainIdToNetworkName(supportedNetwork)}</strong>{' '}
-              to view your Crucibles.
+              <strong>{convertChainIdToNetworkName(1)}</strong>. If you are on
+              the <strong>Taichi</strong> network you need to switch back to{' '}
+              <strong>{convertChainIdToNetworkName(1)}</strong> to view your
+              Crucibles.
             </Text>
           </VStack>
         </Flex>
       );
     }
     return <MintingTabs />;
-  }, [account, networkUnsupported]);
+  }, [account, networkUnsupported, chainId]);
 
   return (
     <Center>
@@ -42,6 +41,7 @@ const CrucibleMinting: FC = () => {
         p={10}
         bg='purple.800'
         flexDir='column'
+        s
         mt={[32, 32, 40]}
         textAlign='center'
         width={['100%', '100%', 497]}
