@@ -29,6 +29,13 @@ import numberishToBigNumber from '../../utils/numberishToBigNumber';
 import bigNumberishToNumber from '../../utils/bigNumberishToNumber';
 import getStep from '../../utils/getStep';
 import onNumberInputChange from '../../utils/onNumberInputChange';
+import { Box } from '@chakra-ui/layout';
+import {
+  Slider,
+  SliderFilledTrack,
+  SliderThumb,
+  SliderTrack,
+} from '@chakra-ui/slider';
 
 type unstakeAndClaimParams = Parameters<
   (signer: any, crucibleAddress: string, amount: BigNumber) => void
@@ -150,6 +157,20 @@ Follow this guide to privately withdraw your stake: https://github.com/Taichi-Ne
                 </Button>
               </InputRightElement>
             </NumberInput>
+            <Box my={4} mx={4}>
+              <Slider
+                step={step}
+                min={0}
+                max={lockedBalanceNumber}
+                value={isMax ? lockedBalanceNumber : +amount || 0}
+                onChange={onChange}
+              >
+                <SliderTrack>
+                  <SliderFilledTrack bg='purple.500' />
+                </SliderTrack>
+                <SliderThumb fontSize='sm' boxSize='18px' bg='purple.500' />
+              </Slider>
+            </Box>
           </ModalBody>
           <ModalFooter>
             <Button

@@ -26,6 +26,13 @@ import numberishToBigNumber from '../../utils/numberishToBigNumber';
 import bigNumberishToNumber from '../../utils/bigNumberishToNumber';
 import getStep from '../../utils/getStep';
 import onNumberInputChange from '../../utils/onNumberInputChange';
+import {
+  Slider,
+  SliderFilledTrack,
+  SliderThumb,
+  SliderTrack,
+} from '@chakra-ui/slider';
+import { Box } from '@chakra-ui/layout';
 
 type withdrawParams = Parameters<
   (signer: any, crucibleAddress: string, amount: BigNumber) => void
@@ -107,6 +114,20 @@ const WithdrawStakeModal: FC<Props> = ({ onClose, crucible }) => {
                 </Button>
               </InputRightElement>
             </NumberInput>
+            <Box my={4} mx={4}>
+              <Slider
+                step={step}
+                min={0}
+                max={unlockedBalanceNumber}
+                value={isMax ? unlockedBalanceNumber : +amount || 0}
+                onChange={onChange}
+              >
+                <SliderTrack>
+                  <SliderFilledTrack bg='purple.500' />
+                </SliderTrack>
+                <SliderThumb fontSize='sm' boxSize='18px' bg='purple.500' />
+              </Slider>
+            </Box>
           </ModalBody>
           <ModalFooter>
             <Button

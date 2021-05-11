@@ -18,7 +18,7 @@ export default function onNumberInputChange(
     const amountNewBigNumber = numberishToBigNumber(amountNew || 0);
     if (amountMax) {
       // Need a threshold check so that if slider's maxValue is greater than lpBalance due to rounding then maxing the slider sets isMax to true
-      isMaxNew = amountMax.sub(amountNewBigNumber).abs().lt(10);
+      isMaxNew = amountMax.sub(amountNewBigNumber).abs().lt(1000);
     }
     setAmount(amountNew);
   } catch (err) {
