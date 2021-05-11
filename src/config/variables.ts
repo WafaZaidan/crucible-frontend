@@ -25,7 +25,13 @@ export const config =
           'https://app.uniswap.org/#/add/v2/0x88ACDd2a6425c3FaAE4Bc9650Fd7E27e0Bebb7aB/ETH',
         getMistUrl:
           'https://app.uniswap.org/#/swap?outputCurrency=0x88acdd2a6425c3faae4bc9650fd7e27e0bebb7ab&use=V2', // V2
-        // 'https://app.uniswap.org/#/swap?outputCurrency=0x88acdd2a6425c3faae4bc9650fd7e27e0bebb7ab', // will point to v3
+        // 'https://app.uniswap.org/#/swap?outputCurrency=0x88acdd2a6425c3faae4bc9650fd7e27e0bebb7ab', // will point to v3,
+        mintCrucibleDoc:
+          'https://docs.alchemist.wtf/mist/crucible/guides-crucible.alchemist.wtf/how-do-i-mint-a-crucible',
+        lpTokensDoc:
+          'https://docs.alchemist.wtf/mist/acquiring-and-subscribing#2-subscribing-usdmist-to-receive-lp-tokens',
+        aludelRewardsDoc:
+          'https://docs.alchemist.wtf/mist/crucible/teach-me-about-crucibles',
       }
     : {
         networkId: Network.RINKEBY,
@@ -50,4 +56,10 @@ export const config =
           'https://app.uniswap.org/#/add/v2/0xF6c1210Aca158bBD453A12604A03AeD2659ac0ef/ETH',
         getMistUrl:
           'https://app.uniswap.org/#/swap?outputCurrency=0xF6c1210Aca158bBD453A12604A03AeD2659ac0ef&use=V2',
+        mintCrucibleDoc:
+          'https://docs.alchemist.wtf/mist/crucible/guides-crucible.alchemist.wtf/how-do-i-mint-a-crucible',
+        lpTokensDoc:
+          'https://docs.alchemist.wtf/mist/acquiring-and-subscribing#2-subscribing-usdmist-to-receive-lp-tokens',
+        aludelRewardsDoc:
+          'https://docs.alchemist.wtf/mist/crucible/teach-me-about-crucibles',
       };

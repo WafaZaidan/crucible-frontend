@@ -47,7 +47,7 @@ const WelcomeToast: FC = () => {
                 borderColor='cyan.400'
                 isExternal
                 isFullWidth
-                href='https://hackmd.io/@alchemistcoin/HyJXT7tL_/%2FrJSJU5PIu#AludelCrucible-FAQ'
+                href='https://docs.alchemist.wtf/mist/crucible/getting-started'
                 _hover={{
                   textDecor: 'none',
                 }}

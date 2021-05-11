@@ -37,7 +37,7 @@ const Footer: FC = () => {
       <Box py={2}>
         <HStack spacing={4}>
           <ChakraLink
-            href='https://hackmd.io/@alchemistcoin/HyJXT7tL_/%2FrJSJU5PIu#AludelCrucible-FAQ'
+            href='https://docs.alchemist.wtf/mist/crucible/getting-started'
             target='_blank'
           >
             FAQs
