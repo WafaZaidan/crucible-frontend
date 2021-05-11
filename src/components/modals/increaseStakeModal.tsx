@@ -135,7 +135,7 @@ const IncreaseStakeModal: FC<Props> = ({ onClose, crucible }) => {
                 step={step}
                 min={0}
                 max={lpBalanceNumber}
-                value={isMax ? lpBalanceNumber : +amount || 0}
+                value={isMax ? lpBalanceNumber : +amountLpToStake || 0}
                 onChange={onChange}
               >
                 <SliderTrack>
