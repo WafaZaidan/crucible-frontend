@@ -150,8 +150,11 @@ const Rewards: FC<Props> = ({ crucible }) => {
                           backgroundColor='lightgray'
                         />
                         <Text fontSize='xs' pt={1} pb={4}>
-                          {formatNumber.percent(progress)} Complete ({daysAgo}{' '}
-                          of 60 Days to max reward multiplier)
+                          {progress === 1
+                            ? formatNumber.percentShort(progress)
+                            : formatNumber.percent(progress)}{' '}
+                          Complete ({daysAgo} of 60 Days to max reward
+                          multiplier)
                         </Text>
                       </Box>
                     );

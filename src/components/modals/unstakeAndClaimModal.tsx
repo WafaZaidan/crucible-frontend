@@ -4,9 +4,11 @@ import {
   Flex,
   InputRightElement,
   Link,
+  ListItem,
   NumberInput,
   NumberInputField,
   Text,
+  UnorderedList,
 } from '@chakra-ui/react';
 import {
   Modal,
@@ -94,10 +96,16 @@ Follow this guide to privately withdraw your stake: https://github.com/Taichi-Ne
           <ModalHeader>Claim Aludel rewards and unsubscribe</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Text mb={4}>
-              You are claiming{' '}
-              {formatNumber.tokenFull(crucible.mistRewards || 0)} MIST and{' '}
-              {formatNumber.tokenFull(crucible.wethRewards || 0)} Ether rewards.
+            <Text mb={4}>You are claiming the following rewards:</Text>
+            <UnorderedList mb={4}>
+              <ListItem>
+                {formatNumber.tokenFull(crucible.mistRewards || 0)} MIST
+              </ListItem>
+              <ListItem>
+                {formatNumber.tokenFull(crucible.wethRewards || 0)} ETH
+              </ListItem>
+            </UnorderedList>
+            <Text>
               By claiming rewards, you are unsubscribing your MIST-ETH LP tokens
               from the Aludel Rewards program and resetting your rewards
               multiplier.

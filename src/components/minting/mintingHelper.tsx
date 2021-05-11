@@ -7,7 +7,15 @@ import {
   AccordionPanel,
 } from '@chakra-ui/accordion';
 import { Alert } from '@chakra-ui/alert';
-import { Box } from '@chakra-ui/layout';
+import { Box, Link, Text } from '@chakra-ui/layout';
+import config from '../../config';
+
+const { mintCrucibleDoc, lpTokensDoc, aludelRewardsDoc } = config;
+
+const linkProps = {
+  isExternal: true,
+  color: 'blue.400',
+};
 
 const MintingHelper: FC = () => {
   return (
@@ -23,12 +31,24 @@ const MintingHelper: FC = () => {
         </h2>
         <AccordionPanel pb={4} textAlign='left' px={0}>
           <Alert borderRadius='xl' fontSize='sm'>
-            Mint a Crucible with your LP tokens to subscribe to the Aludel
-            Rewards program and earn MIST. A Crucible is an NFT that acts like a
-            universal vault, capable of storing your LP tokens and subscribing
-            them to participating rewards programs. Your rewards rate increases
-            with the duration of your subscription and you can increase the
-            quantity of subscribed LP at any time.
+            <Text>
+              <Link {...linkProps} href={mintCrucibleDoc}>
+                Mint a Crucible
+              </Link>{' '}
+              with your{' '}
+              <Link {...linkProps} href={lpTokensDoc}>
+                LP tokens
+              </Link>{' '}
+              to subscribe to the{' '}
+              <Link {...linkProps} href={aludelRewardsDoc}>
+                Aludel Rewards program
+              </Link>{' '}
+              and earn MIST. A Crucible is an NFT that acts like a universal
+              vault, capable of storing your LP tokens and subscribing them to
+              participating rewards programs. Your rewards rate increases with
+              the duration of your subscription and you can increase the
+              quantity of subscribed LP at any time.
+            </Text>
           </Alert>
         </AccordionPanel>
       </AccordionItem>

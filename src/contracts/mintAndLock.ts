@@ -7,6 +7,7 @@ import { crucibleFactoryAbi } from '../abi/crucibleFactoryAbi';
 import { crucibleAbi } from '../abi/crucibleAbi';
 import IUniswapV2ERC20 from '@uniswap/v2-core/build/IUniswapV2ERC20.json';
 import { CallbackArgs, EVENT } from '../hooks/useContract';
+import { wait } from '../utils/wait';
 
 async function mintAndLock(
   aludelAddress: string,
@@ -74,6 +75,8 @@ async function mintAndLock(
       amount,
       deadline
     );
+
+    await wait(300);
 
     callback({
       type: EVENT.PENDING_SIGNATURE,

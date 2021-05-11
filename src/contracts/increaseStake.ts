@@ -5,6 +5,7 @@ import { crucibleAbi } from '../abi/crucibleAbi';
 import { transmuterAbi } from '../abi/transmuterAbi';
 import { CallbackArgs, EVENT } from '../hooks/useContract';
 import IUniswapV2ERC20 from '@uniswap/v2-core/build/IUniswapV2ERC20.json';
+import { wait } from '../utils/wait';
 
 async function increaseStake(
   aludelAddress: string,
@@ -57,6 +58,8 @@ async function increaseStake(
       amount,
       deadline
     );
+
+    await wait(300);
 
     callback({
       type: EVENT.PENDING_SIGNATURE,

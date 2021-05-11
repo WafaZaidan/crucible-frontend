@@ -34,6 +34,15 @@ const numberFormatPercent = Intl.NumberFormat(navigator.languages.slice(), {
   maximumFractionDigits: 1,
 });
 
+const numberFormatPercentShort = Intl.NumberFormat(
+  navigator.languages.slice(),
+  {
+    style: 'percent',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }
+);
+
 const numberFormatPercentLong = Intl.NumberFormat(navigator.languages.slice(), {
   style: 'percent',
   minimumFractionDigits: 4,
@@ -69,6 +78,10 @@ export function percent(value: BigNumberish, units?: number | string) {
   return numberFormatPercent.format(bigNumberishToNumber(value, units));
 }
 
+export function percentShort(value: BigNumberish, units?: number | string) {
+  return numberFormatPercentShort.format(bigNumberishToNumber(value, units));
+}
+
 export function percentLong(value: BigNumberish, units?: number | string) {
   return numberFormatPercentLong.format(bigNumberishToNumber(value, units));
 }
@@ -83,6 +96,7 @@ const formatNumber = {
   tokenWhole,
   tokenFull,
   percent,
+  percentShort,
   percentLong,
   date,
 };
