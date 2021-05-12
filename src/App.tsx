@@ -19,9 +19,12 @@ import MobileLayover from './components/modals/MobileLayover';
 import ReduxModal from './components/modals/ReduxModal';
 import { Provider } from 'react-redux';
 import { store } from './store/store';
+import { useCustomRPCNetworkListener } from './hooks/useWeb3ReactHelper';
 
 const App: FC = () => {
   useTokens();
+  useCustomRPCNetworkListener();
+
   return (
     <>
       <Provider store={store}>
