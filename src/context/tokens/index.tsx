@@ -38,7 +38,7 @@ type TokenContextType = {
 const TokenContext = createContext<TokenContextType | undefined>(undefined);
 
 const TokenProvider = ({ children }: TokenContextProps) => {
-  const { account, chainId, library } = useWeb3React();
+  const { account, chainId, library, active } = useWeb3React();
   const [ethBalance, setEthBalance] = useState<BigNumber | undefined>(
     undefined
   );
@@ -68,10 +68,12 @@ const TokenProvider = ({ children }: TokenContextProps) => {
     const fetchEthBalance = async () => {
       if (library && account) {
         setEthBalance(await library.getBalance(account));
+      } else {
+        setEthBalance(BigNumber.from(0));
       }
     };
     fetchEthBalance();
-  }, [library, account]);
+  }, [library, account, active]);
 
   // get other token balances
   useEffect(() => {

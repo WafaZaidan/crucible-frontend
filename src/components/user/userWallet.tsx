@@ -1,46 +1,21 @@
 import React, { FC } from 'react';
 import { Box } from '@chakra-ui/layout';
 import { truncate } from '../../utils/address';
-import {
-  Button,
-  IconButton,
-  Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverCloseButton,
-  PopoverContent,
-  PopoverHeader,
-  PopoverTrigger,
-} from '@chakra-ui/react';
+import { Button, IconButton } from '@chakra-ui/react';
 import { TiPower } from 'react-icons/ti';
 import { VscLink } from 'react-icons/vsc';
-import { InjectedConnector } from '@web3-react/injected-connector';
-import { WalletConnectConnector } from '@web3-react/walletconnect-connector';
 import { useWeb3React } from '@web3-react/core';
 import { convertChainIdToNetworkName } from '../../utils/convertChainIdToNetworkName';
-import MMLogo from '../../img/metamask-logo.png';
-import WalletConnectLogo from '../../img/walletconnect-logo.svg';
-import styled from '@emotion/styled';
-
-// @ts-ignore
-const injected = new InjectedConnector({ supportedChainIds: [1, 4] });
-
-const walletconnect = new WalletConnectConnector({
-  rpc: {
-    1: 'https://mainnet.infura.io/v3/00a5b13ef0cf467698571093487743e6',
-    4: 'https://rinkeby.infura.io/v3/00a5b13ef0cf467698571093487743e6',
-  },
-  bridge: 'https://bridge.walletconnect.org',
-  qrcode: true,
-  pollingInterval: 12000,
-});
-
-const WalletProviderLogo = styled.img`
-  width: 40px;
-`;
+import { useModal } from '../../store/modals';
+import { ModalType } from '../modals/types';
 
 const UserWallet: FC = () => {
-  const { deactivate, activate, account, chainId } = useWeb3React();
+  const { deactivate, account, chainId } = useWeb3React();
+  const { openModal } = useModal();
+
+  const openWalletConnectionModal = () => {
+    openModal(ModalType.connectWallet);
+  };
 
   const buttonStyles = {
     borderColor: 'cyan.400',
@@ -77,39 +52,13 @@ const UserWallet: FC = () => {
   }
 
   return (
-    <Popover placement='bottom'>
-      <PopoverTrigger>
-        <Button {...buttonStyles} rightIcon={<VscLink />}>
-          Connect Wallet
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent color='white' bg='blue.800' borderColor='blue.800'>
-        <PopoverHeader pt={4} fontWeight='bold' border='0'>
-          Select your wallet provider
-        </PopoverHeader>
-        <PopoverArrow />
-        <PopoverCloseButton />
-        <PopoverBody>
-          <Button
-            onClick={() => activate(injected)}
-            width='100%'
-            {...buttonStyles}
-            leftIcon={<WalletProviderLogo src={MMLogo} />}
-            mb={5}
-          >
-            Metamask
-          </Button>
-          <Button
-            onClick={() => activate(walletconnect)}
-            width='100%'
-            {...buttonStyles}
-            leftIcon={<WalletProviderLogo src={WalletConnectLogo} />}
-          >
-            WalletConnect
-          </Button>
-        </PopoverBody>
-      </PopoverContent>
-    </Popover>
+    <Button
+      {...buttonStyles}
+      rightIcon={<VscLink />}
+      onClick={openWalletConnectionModal}
+    >
+      Connect Wallet
+    </Button>
   );
 };
 

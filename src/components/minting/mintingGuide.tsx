@@ -14,14 +14,14 @@ import { Alert } from '@chakra-ui/alert';
 import useConfigVariables from '../../hooks/useConfigVariables';
 import WelcomeToast from '../shared/welcomeToast';
 import { useModal } from '../../store/modals';
-import ConnectWallet from '../modals/ConnectWallet';
+import { ModalType } from '../modals/types';
 
 const MintingGuide: FC = () => {
   const { uniswapPoolUrl, getMistUrl } = useConfigVariables();
   const { openModal } = useModal();
 
   const openWalletConnectionModal = () => {
-    openModal(<ConnectWallet />);
+    openModal(ModalType.connectWallet);
   };
 
   return (
