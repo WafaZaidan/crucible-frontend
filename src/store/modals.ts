@@ -1,19 +1,23 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { RootState } from './store';
+import { useAppDispatch, useAppSelector } from './hooks';
+import { ReactNode } from 'react';
 
 interface ModalState {
   isOpen: boolean;
+  component: ReactNode;
 }
 
 const initialState: ModalState = {
   isOpen: true,
+  component: null,
 };
 
 export const modalsSlice = createSlice({
   name: 'modals',
   initialState,
   reducers: {
-    openModal: (state) => {
+    openModal: (state, action) => {
+      state.component = action.payload.component;
       state.isOpen = true;
     },
     closeModal: (state) => {
@@ -22,8 +26,14 @@ export const modalsSlice = createSlice({
   },
 });
 
-export const { openModal, closeModal } = modalsSlice.actions;
-
-export const isModalOpen = (state: RootState) => state.modals.isOpen;
+export const useModal = () => {
+  const dispatch = useAppDispatch();
+  const isOpen = useAppSelector((state) => state.modals.isOpen);
+  const component = useAppSelector((state) => state.modals.component);
+  const openModal = (component: ReactNode) =>
+    dispatch(modalsSlice.actions.openModal({ component }));
+  const closeModal = () => dispatch(modalsSlice.actions.closeModal());
+  return { isOpen, openModal, closeModal, component };
+};
 
 export default modalsSlice.reducer;

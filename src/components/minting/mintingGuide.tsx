@@ -13,11 +13,16 @@ import {
 import { Alert } from '@chakra-ui/alert';
 import useConfigVariables from '../../hooks/useConfigVariables';
 import WelcomeToast from '../shared/welcomeToast';
-import { useModal } from '../../store/store';
+import { useModal } from '../../store/modals';
+import ConnectWallet from '../modals/ConnectWallet';
 
 const MintingGuide: FC = () => {
   const { uniswapPoolUrl, getMistUrl } = useConfigVariables();
   const { openModal } = useModal();
+
+  const openWalletConnectionModal = () => {
+    openModal(<ConnectWallet />);
+  };
 
   return (
     <Box position='relative'>
@@ -133,9 +138,7 @@ const MintingGuide: FC = () => {
           </AccordionPanel>
         </AccordionItem>
       </Accordion>
-
-      {/* TODO: this button should open the dropdown in the header apparently.. */}
-      <Button size='lg' isFullWidth onClick={openModal}>
+      <Button size='lg' isFullWidth onClick={openWalletConnectionModal}>
         Connect Wallet
       </Button>
       <WelcomeToast />
