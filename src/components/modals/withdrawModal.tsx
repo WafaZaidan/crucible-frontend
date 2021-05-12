@@ -1,4 +1,5 @@
 import React, { FC, useState } from 'react';
+import { useWeb3React } from '@web3-react/core';
 import {
   Button,
   Flex,
@@ -16,6 +17,13 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/modal';
+import {
+  Slider,
+  SliderFilledTrack,
+  SliderThumb,
+  SliderTrack,
+} from '@chakra-ui/slider';
+import { Box } from '@chakra-ui/layout';
 import { useContract } from '../../hooks/useContract';
 import { Crucible } from '../../context/crucibles';
 import { BigNumber } from 'ethers';
@@ -24,7 +32,6 @@ import numberishToBigNumber from '../../utils/numberishToBigNumber';
 import bigNumberishToNumber from '../../utils/bigNumberishToNumber';
 import getStep from '../../utils/getStep';
 import onNumberInputChange from '../../utils/onNumberInputChange';
-import { useWeb3React } from '@web3-react/core';
 import useContracts from '../../contracts/useContracts';
 
 type withdrawParams = Parameters<
@@ -108,6 +115,20 @@ const WithdrawStakeModal: FC<Props> = ({ onClose, crucible }) => {
                 </Button>
               </InputRightElement>
             </NumberInput>
+            <Box my={4} mx={4}>
+              <Slider
+                step={step}
+                min={0}
+                max={unlockedBalanceNumber}
+                value={isMax ? unlockedBalanceNumber : +amount || 0}
+                onChange={onChange}
+              >
+                <SliderTrack>
+                  <SliderFilledTrack bg='purple.500' />
+                </SliderTrack>
+                <SliderThumb fontSize='sm' boxSize='18px' bg='purple.500' />
+              </Slider>
+            </Box>
           </ModalBody>
           <ModalFooter>
             <Button

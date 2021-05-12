@@ -1,4 +1,6 @@
 import React, { FC, useState } from 'react';
+import { useWeb3React } from '@web3-react/core';
+import { BigNumber } from 'ethers';
 import {
   Button,
   Flex,
@@ -19,15 +21,20 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/modal';
+import { Box } from '@chakra-ui/layout';
+import {
+  Slider,
+  SliderFilledTrack,
+  SliderThumb,
+  SliderTrack,
+} from '@chakra-ui/slider';
 import { useContract } from '../../hooks/useContract';
 import { Crucible, useCrucibles } from '../../context/crucibles';
 import formatNumber from '../../utils/formatNumber';
-import { BigNumber } from 'ethers';
 import numberishToBigNumber from '../../utils/numberishToBigNumber';
 import bigNumberishToNumber from '../../utils/bigNumberishToNumber';
 import getStep from '../../utils/getStep';
 import onNumberInputChange from '../../utils/onNumberInputChange';
-import { useWeb3React } from '@web3-react/core';
 import useContracts from '../../contracts/useContracts';
 
 type unstakeAndClaimParams = Parameters<
@@ -151,6 +158,20 @@ Follow this guide to privately withdraw your stake: https://github.com/Taichi-Ne
                 </Button>
               </InputRightElement>
             </NumberInput>
+            <Box my={4} mx={4}>
+              <Slider
+                step={step}
+                min={0}
+                max={lockedBalanceNumber}
+                value={isMax ? lockedBalanceNumber : +amount || 0}
+                onChange={onChange}
+              >
+                <SliderTrack>
+                  <SliderFilledTrack bg='purple.500' />
+                </SliderTrack>
+                <SliderThumb fontSize='sm' boxSize='18px' bg='purple.500' />
+              </Slider>
+            </Box>
           </ModalBody>
           <ModalFooter>
             <Button

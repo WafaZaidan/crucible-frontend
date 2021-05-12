@@ -17,6 +17,13 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/modal';
+import {
+  Slider,
+  SliderFilledTrack,
+  SliderThumb,
+  SliderTrack,
+} from '@chakra-ui/slider';
+import { Box } from '@chakra-ui/layout';
 import { BigNumber } from 'ethers';
 import { useWeb3React } from '@web3-react/core';
 import { useContract } from '../../hooks/useContract';
@@ -125,6 +132,20 @@ const IncreaseStakeModal: FC<Props> = ({ onClose, crucible }) => {
                 </Button>
               </InputRightElement>
             </NumberInput>
+            <Box my={4} mx={4}>
+              <Slider
+                step={step}
+                min={0}
+                max={lpBalanceNumber}
+                value={isMax ? lpBalanceNumber : +amountLpToStake || 0}
+                onChange={onChange}
+              >
+                <SliderTrack>
+                  <SliderFilledTrack bg='purple.500' />
+                </SliderTrack>
+                <SliderThumb fontSize='sm' boxSize='18px' bg='purple.500' />
+              </Slider>
+            </Box>
           </ModalBody>
           <ModalFooter>
             <Button

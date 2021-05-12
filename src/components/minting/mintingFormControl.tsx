@@ -113,7 +113,6 @@ const MintingFormControl: FC = () => {
                 max={lpBalanceNumber}
                 value={isMax ? lpBalanceNumber : parseFloat(amount)}
                 onChange={onChange}
-                focusThumbOnChange={false}
               >
                 <SliderTrack>
                   <SliderFilledTrack bg='purple.500' />
