@@ -122,9 +122,9 @@ const Rewards: FC<Props> = ({ crucible }) => {
                 )}
                 <VStack>
                   {crucible!.stakes.map((stake, i) => {
-                    const daysAgo: number = dayjs().diff(
-                      stake.timestamp * 1000,
-                      'day'
+                    const daysAgo: number = Math.min(
+                      dayjs().diff(stake.timestamp * 1000, 'day'),
+                      60
                     );
                     const secondsAgo: number = dayjs().diff(
                       stake.timestamp * 1000,
