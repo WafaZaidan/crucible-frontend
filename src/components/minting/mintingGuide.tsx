@@ -13,18 +13,11 @@ import {
 import { Alert } from '@chakra-ui/alert';
 import useConfigVariables from '../../hooks/useConfigVariables';
 import WelcomeToast from '../shared/welcomeToast';
-import { InjectedConnector } from '@web3-react/injected-connector';
-import { useWeb3React } from '@web3-react/core';
-// @ts-ignore
-const injected = new InjectedConnector({ supportedChainIds: [1, 3, 4, 5, 42] });
+import { useModal } from '../../store/store';
 
 const MintingGuide: FC = () => {
   const { uniswapPoolUrl, getMistUrl } = useConfigVariables();
-  const { activate } = useWeb3React();
-
-  const handleConnect = async () => {
-    activate(injected);
-  };
+  const { openModal } = useModal();
 
   return (
     <Box position='relative'>
@@ -142,7 +135,7 @@ const MintingGuide: FC = () => {
       </Accordion>
 
       {/* TODO: this button should open the dropdown in the header apparently.. */}
-      <Button size='lg' isFullWidth onClick={handleConnect}>
+      <Button size='lg' isFullWidth onClick={openModal}>
         Connect Wallet
       </Button>
       <WelcomeToast />
