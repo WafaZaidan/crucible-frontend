@@ -9,30 +9,14 @@ import {
   ModalOverlay,
 } from '@chakra-ui/modal';
 import { useModal } from '../../store/modals';
-import { InjectedConnector } from '@web3-react/injected-connector';
 import { WalletConnectConnector } from '@web3-react/walletconnect-connector';
 import MMLogo from '../../img/metamask-logo.png';
 import WalletConnectLogo from '../../img/walletconnect-logo.svg';
 import { useWeb3React } from '@web3-react/core';
 import { Text, Button, Image, Link, Flex } from '@chakra-ui/react';
-import config from '../../config';
+import { injectedConnector, walletconnectConnector } from '../../config';
 
-// @ts-ignore
-const injected = new InjectedConnector({
-  supportedChainIds: config.supportedNetworks,
-});
-
-const walletconnect = new WalletConnectConnector({
-  rpc: {
-    1: 'https://mainnet.infura.io/v3/00a5b13ef0cf467698571093487743e6',
-    4: 'https://rinkeby.infura.io/v3/00a5b13ef0cf467698571093487743e6',
-  },
-  bridge: 'https://bridge.walletconnect.org',
-  qrcode: true,
-  pollingInterval: 12000,
-});
-
-const ConnectWallet: FC = () => {
+const ConnectWalletModal: FC = () => {
   const { closeModal, isOpen } = useModal();
   const { activate, active } = useWeb3React();
 
@@ -63,7 +47,7 @@ const ConnectWallet: FC = () => {
           <ModalCloseButton />
           <ModalBody pb={10}>
             <Button
-              onClick={() => attemptActivation(injected)}
+              onClick={() => attemptActivation(injectedConnector)}
               width='100%'
               leftIcon={<Image w='30px' src={MMLogo} />}
               mb={5}
@@ -71,7 +55,7 @@ const ConnectWallet: FC = () => {
               Metamask
             </Button>
             <Button
-              onClick={() => attemptActivation(walletconnect)}
+              onClick={() => attemptActivation(walletconnectConnector)}
               width='100%'
               leftIcon={<Image w='30px' src={WalletConnectLogo} />}
             >
@@ -96,4 +80,4 @@ const ConnectWallet: FC = () => {
   );
 };
 
-export default ConnectWallet;
+export default ConnectWalletModal;

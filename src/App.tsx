@@ -19,11 +19,13 @@ import MobileLayover from './components/modals/MobileLayover';
 import ReduxModal from './components/modals/ReduxModal';
 import { Provider } from 'react-redux';
 import { store } from './store/store';
-import { useCustomRPCNetworkListener } from './hooks/useWeb3ReactHelper';
+import { useCustomRPCNetworkListener } from './hooks/useCustomRPCNetworkListener';
+import { useEagerConnect } from './hooks/useMetamaskEagerConnect';
 
 const App: FC = () => {
   useTokens();
   useCustomRPCNetworkListener();
+  useEagerConnect();
 
   return (
     <>

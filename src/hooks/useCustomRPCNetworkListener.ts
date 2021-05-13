@@ -1,15 +1,10 @@
 import { useWeb3React } from '@web3-react/core';
 import { useEffect } from 'react';
-import { InjectedConnector } from '@web3-react/injected-connector';
-import config from '../config';
-
-// @ts-ignore
-const injected = new InjectedConnector({
-  supportedChainIds: config.supportedNetworks,
-});
+import { injectedConnector } from '../config';
 
 export function useCustomRPCNetworkListener() {
-  const { active, error, activate } = useWeb3React();
+  const web3React = useWeb3React();
+  const { active, error, activate } = web3React;
 
   useEffect(() => {
     // @ts-ignore
@@ -19,7 +14,7 @@ export function useCustomRPCNetworkListener() {
       // @ts-ignore
       const handleRPCisReady = (connectInfo) => {
         if (connectInfo?.chainId === '0x1') {
-          activate(injected);
+          activate(injectedConnector);
         }
       };
 

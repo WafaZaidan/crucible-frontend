@@ -8,13 +8,20 @@ import { useWeb3React } from '@web3-react/core';
 import { convertChainIdToNetworkName } from '../../utils/convertChainIdToNetworkName';
 import { useModal } from '../../store/modals';
 import { ModalType } from '../modals/types';
+import { injectedConnector } from '../../config';
 
 const UserWallet: FC = () => {
-  const { deactivate, account, chainId } = useWeb3React();
+  const { deactivate, account, chainId, connector } = useWeb3React();
   const { openModal } = useModal();
+
+  const isWalletMetamask = connector === injectedConnector;
 
   const openWalletConnectionModal = () => {
     openModal(ModalType.connectWallet);
+  };
+
+  const openWalletInfoModal = () => {
+    openModal(ModalType.walletInfo);
   };
 
   const buttonStyles = {
@@ -26,27 +33,44 @@ const UserWallet: FC = () => {
   if (account) {
     return (
       <Box position='relative'>
-        <Button {...buttonStyles} mr={5}>
+        <Button
+          {...buttonStyles}
+          mr={5}
+          _hover={{
+            ...buttonStyles,
+            cursor: 'initial',
+          }}
+          _active={{
+            ...buttonStyles,
+          }}
+        >
           {convertChainIdToNetworkName(chainId)}
         </Button>
-        <Button {...buttonStyles} pr={12}>
+        <Button
+          {...buttonStyles}
+          pr={isWalletMetamask ? 5 : 12}
+          onClick={openWalletInfoModal}
+        >
           {truncate(account)}
         </Button>
-        <IconButton
-          isRound
-          size='lg'
-          height='44px'
-          variant='ghost'
-          position='absolute'
-          right={0}
-          icon={<TiPower />}
-          aria-label='disconnect'
-          onClick={deactivate}
-          _hover={{
-            bg: 'none',
-            color: 'cyan.300',
-          }}
-        />
+
+        {!isWalletMetamask && (
+          <IconButton
+            isRound
+            size='lg'
+            height='44px'
+            variant='ghost'
+            position='absolute'
+            right={0}
+            icon={<TiPower />}
+            aria-label='disconnect'
+            onClick={deactivate}
+            _hover={{
+              bg: 'none',
+              color: 'cyan.300',
+            }}
+          />
+        )}
       </Box>
     );
   }
