@@ -123,7 +123,7 @@ Follow this guide to privately withdraw your stake: https://github.com/Taichi-Ne
                 (Taichi) to your wallet following{' '}
                 <Link
                   color='blue.400'
-                  href='https://hackmd.io/@alchemistcoin/HyJXT7tL_/%2FSJibHzPUu'
+                  href='https://docs.alchemist.wtf/mist/crucible/guides-crucible.alchemist.wtf/claiming-rewards-and-unsubscribing-your-lp'
                   isExternal
                 >
                   this guide.
