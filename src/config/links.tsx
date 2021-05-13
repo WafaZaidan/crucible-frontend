@@ -26,8 +26,7 @@ export const externalLinks = [
   {
     label: 'Uniswap',
     icon: UniswapIcon,
-    href:
-      'https://app.uniswap.org/#/add/v2/0x88ACDd2a6425c3FaAE4Bc9650Fd7E27e0Bebb7aB/ETH', // using v2 add liquidity link for now
+    href: 'http://uniswap.alchemist.wtf/', // using v2 add liquidity link for now
     // 'https://info.uniswap.org/token/v2/0x88acdd2a6425c3faae4bc9650fd7e27e0bebb7ab', // v3
   },
   {
