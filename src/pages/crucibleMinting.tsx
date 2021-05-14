@@ -15,7 +15,7 @@ const CrucibleMinting: FC = () => {
   return (
     <Center>
       <Flex
-        p={10}
+        p={[8, 10]}
         bg='purple.800'
         flexDir='column'
         mt={[32, 32, 40]}

@@ -33,13 +33,17 @@ const MintingGuide: FC = () => {
     <Box position='relative'>
       <Image
         src={pot}
-        height='240px'
-        htmlHeight='240px'
+        height={['180px', '240px']}
         position='absolute'
         right='0px'
-        top='-124px'
+        top={['-80px', '-124px']}
       />
-      <Heading textAlign='left' fontSize='2.5rem' py={4} maxW='240px'>
+      <Heading
+        textAlign='left'
+        fontSize={['2rem', '2.5rem']}
+        py={4}
+        maxW='240px'
+      >
         Aludel Rewards
       </Heading>
 
