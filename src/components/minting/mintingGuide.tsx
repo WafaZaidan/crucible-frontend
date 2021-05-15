@@ -33,9 +33,9 @@ const MintingGuide: FC = () => {
     <Box position='relative'>
       <Image
         src={pot}
-        height={['180px', '240px']}
+        height={['172px', '240px']}
         position='absolute'
-        right='0px'
+        right={['-16px', '0px']}
         top={['-80px', '-124px']}
       />
       <Heading

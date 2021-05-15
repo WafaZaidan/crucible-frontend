@@ -28,13 +28,12 @@ const WelcomeToast: FC = () => {
           <Box
             m={4}
             p={6}
-            display={['none', 'none', 'block']}
             bg='gray.700'
             position='relative'
             borderRadius='3xl'
             width='330px'
           >
-            <Box ml={28}>
+            <Box ml={[24, 28]}>
               <Text fontWeight='bold' mb={2}>
                 First time minting a crucible?
               </Text>
@@ -72,8 +71,7 @@ const WelcomeToast: FC = () => {
               src={pot3d}
               top={-10}
               left={0}
-              height='186px'
-              htmlHeight='186px'
+              height={['160px', '186px']}
               position='absolute'
             />
           </Box>
