@@ -1,5 +1,15 @@
 import React, { FC, useState } from 'react';
-import { Box, Flex, HStack, Text, VStack } from '@chakra-ui/layout';
+import {
+  Box,
+  Flex,
+  Grid,
+  GridItem,
+  HStack,
+  SimpleGrid,
+  Stack,
+  Text,
+  VStack,
+} from '@chakra-ui/layout';
 import { Progress, StatGroup } from '@chakra-ui/react';
 import { Crucible } from '../../../context/crucibles/crucibles';
 import { Button } from '@chakra-ui/button';
@@ -65,162 +75,150 @@ const Rewards: FC<Props> = ({ crucible }) => {
   };
 
   return (
-    <Box p={4} bg='white' color='gray.800' borderRadius='xl'>
-      <Flex justifyContent='space-between' alignItems='start'>
-        <HStack width='100%'>
-          <Box flexGrow={1} textAlign='left'>
-            <HStack justifyContent='start' direction='row'>
-              <HStack justifyContent='center' pt={4}>
-                <Text>Total Value</Text>
-                <Text fontWeight='bold' mr={4} fontSize='lg'>
-                  {totalUsd ? formatNumber.currency(totalUsd) : '-'}
-                </Text>
-              </HStack>
-              <HStack justifyContent='center' pt={4}>
-                <Text>LP Value</Text>
-                <Text fontWeight='bold' mr={4} fontSize='lg'>
-                  {lpUsd ? formatNumber.currency(lpUsd) : '-'}
-                </Text>
-              </HStack>
-              <HStack justifyContent='center' pt={4}>
-                <Text>Rewards</Text>
-                <Text fontWeight='bold' mr={4} fontSize='lg'>
-                  {aggregateRewardsUsd
-                    ? formatNumber.currency(aggregateRewardsUsd)
-                    : '-'}
-                </Text>
-              </HStack>
-            </HStack>
-
-            <HStack>
-              <StatGroup mt={5} alignItems='baseline' width='100%'>
-                <StatCard
-                  title='Earned MIST Rewards'
-                  label={mistRewards ? formatNumber.token(mistRewards) : '-'}
-                  subLabel={
-                    mistRewardsUsd ? formatNumber.currency(mistRewardsUsd) : '-'
-                  }
-                  arrowOnSubLabel
-                />
-                <StatCard
-                  title='Earned ETH Rewards'
-                  label={wethRewards ? formatNumber.token(wethRewards) : '-'}
-                  subLabel={
-                    wethRewardsUsd ? formatNumber.currency(wethRewardsUsd) : '-'
-                  }
-                  arrowOnSubLabel
-                />
-              </StatGroup>
-            </HStack>
-
-            <VStack width='100%' align='stretch' mt={6}>
-              <Box>
-                {crucible!.stakes.length > 0 && (
-                  <Text fontSize='sm' pb={1}>
-                    Reward Scaling Period
-                  </Text>
-                )}
-                <VStack>
-                  {crucible!.stakes.map((stake, i) => {
-                    const daysAgo: number = Math.min(
-                      dayjs().diff(stake.timestamp * 1000, 'day'),
-                      60
-                    );
-                    const secondsAgo: number = dayjs().diff(
-                      stake.timestamp * 1000,
-                      'second'
-                    );
-                    const secondsMax = 60 * 24 * 60 * 60;
-                    const progress = Math.min(secondsAgo / secondsMax, 1);
-
-                    const subscribedAt: string = formatNumber.date(
-                      stake.timestamp * 1000
-                    ); // dayjs(stake.timestamp).format('DD-MMM-YY');
-
-                    return (
-                      <Box key={i} width='100%'>
-                        <Text fontSize='xs' pt={1} pb={2}>
-                          Subscription {i + 1}:{' '}
-                          {formatNumber.token(stake.amount)} LP ({subscribedAt})
-                        </Text>
-                        <Progress
-                          value={progress * 100}
-                          size='xs'
-                          colorScheme='purple'
-                          backgroundColor='lightgray'
-                        />
-                        <Text fontSize='xs' pt={1} pb={4}>
-                          {progress === 1
-                            ? formatNumber.percentShort(progress)
-                            : formatNumber.percent(progress)}{' '}
-                          Complete ({daysAgo} of 60 Days to max reward
-                          multiplier)
-                        </Text>
-                      </Box>
-                    );
-                  })}
-                </VStack>
-                <HStack>
-                  <Text fontSize='sm'>
-                    Subscribed Crucible LP:{' '}
-                    <strong>
-                      {formatNumber.token(crucible.lockedBalance)}
-                    </strong>
-                  </Text>
-                  <Text fontSize='sm'>
-                    Unsubscribed Crucible LP:{' '}
-                    <strong>
-                      {formatNumber.token(crucible.unlockedBalance)}
-                    </strong>
-                  </Text>
-                </HStack>
-              </Box>
-            </VStack>
-
-            <HStack width='100%' justifyContent='space-between' pt={6}>
-              <Flex
-                justifyContent='space-between'
-                alignItems='center'
-                width='100%'
-              >
-                <Button
-                  width='100%'
-                  disabled={hasIncreasedStakeThisPageLoad && isInFlight()}
-                  marginRight='4px'
-                  onClick={() => {
-                    setHasIncreasedStakeThisPageLoad(true);
-                    setIncreaseStakeModalOpen(true);
-                  }}
-                >
-                  <Text fontSize='md'>Increase LP subscription</Text>
-                </Button>
-                <Button
-                  width='100%'
-                  disabled={crucible.lockedBalance.isZero()}
-                  onClick={() => setClaimRewardsModalOpen(true)}
-                >
-                  <Text fontSize='md'>Claim rewards and unsubscribe</Text>
-                </Button>
-              </Flex>
-            </HStack>
-
-            <VStack justifyContent='center' pt={4}>
-              <Button
-                width='100%'
-                disabled={crucible.unlockedBalance.lte(0)}
-                onClick={() => setWithdrawModalOpen(true)}
-              >
-                <Text fontSize='md'>Withdraw unsubscribed LP</Text>
-              </Button>
-              {crucible.unlockedBalance.lte(0) && (
-                <Text fontSize='sm' color='gray.400'>
-                  To withdraw, first unsubscribe your LP
-                </Text>
-              )}
-            </VStack>
-          </Box>
+    <Box p={[4, 8]} bg='white' color='gray.800' borderRadius='xl'>
+      <Stack direction={['column', 'row']} mb={2}>
+        <HStack fontSize={['sm', 'md']}>
+          <Text>Total Value</Text>
+          <Text fontWeight='bold' mr={4} fontSize='lg'>
+            {totalUsd ? formatNumber.currency(totalUsd) : '-'}
+          </Text>
         </HStack>
-      </Flex>
+        <HStack fontSize={['sm', 'md']}>
+          <Text>LP Value</Text>
+          <Text fontWeight='bold' mr={4} fontSize='lg'>
+            {lpUsd ? formatNumber.currency(lpUsd) : '-'}
+          </Text>
+        </HStack>
+        <HStack fontSize={['sm', 'md']}>
+          <Text>Rewards</Text>
+          <Text fontWeight='bold' mr={4} fontSize='lg'>
+            {aggregateRewardsUsd
+              ? formatNumber.currency(aggregateRewardsUsd)
+              : '-'}
+          </Text>
+        </HStack>
+      </Stack>
+
+      <SimpleGrid columns={[1, 2]} gap={[2, 4]}>
+        <StatCard
+          title='MIST Rewards'
+          label={mistRewards ? formatNumber.token(mistRewards) : '-'}
+          subLabel={
+            mistRewardsUsd ? formatNumber.currency(mistRewardsUsd) : '-'
+          }
+          arrowOnSubLabel
+        />
+        <StatCard
+          title='ETH Rewards'
+          label={wethRewards ? formatNumber.token(wethRewards) : '-'}
+          subLabel={
+            wethRewardsUsd ? formatNumber.currency(wethRewardsUsd) : '-'
+          }
+          arrowOnSubLabel
+        />
+      </SimpleGrid>
+
+      <VStack width='100%' align='stretch' my={6} textAlign='left'>
+        <Box>
+          {crucible!.stakes.length > 0 && (
+            <Text fontSize='sm' pb={1}>
+              Reward Scaling Period
+            </Text>
+          )}
+          <VStack>
+            {crucible!.stakes.map((stake, i) => {
+              const daysAgo: number = Math.min(
+                dayjs().diff(stake.timestamp * 1000, 'day'),
+                60
+              );
+              const secondsAgo: number = dayjs().diff(
+                stake.timestamp * 1000,
+                'second'
+              );
+              const secondsMax = 60 * 24 * 60 * 60;
+              const progress = Math.min(secondsAgo / secondsMax, 1);
+
+              const subscribedAt: string = formatNumber.date(
+                stake.timestamp * 1000
+              ); // dayjs(stake.timestamp).format('DD-MMM-YY');
+
+              return (
+                <Box key={i} width='100%'>
+                  <Text fontSize='xs' pt={1} pb={2}>
+                    Subscription {i + 1}: {formatNumber.token(stake.amount)} LP
+                    ({subscribedAt})
+                  </Text>
+                  <Progress
+                    value={progress * 100}
+                    size='xs'
+                    colorScheme='purple'
+                    backgroundColor='lightgray'
+                  />
+                  <Text fontSize='xs' pt={1} pb={4}>
+                    {progress === 1
+                      ? formatNumber.percentShort(progress)
+                      : formatNumber.percent(progress)}{' '}
+                    Complete ({daysAgo} of 60 Days to max reward multiplier)
+                  </Text>
+                </Box>
+              );
+            })}
+          </VStack>
+          <HStack>
+            <Text fontSize='sm'>
+              Subscribed Crucible LP:{' '}
+              <strong>{formatNumber.token(crucible.lockedBalance)}</strong>
+            </Text>
+            <Text fontSize='sm'>
+              Unsubscribed Crucible LP:{' '}
+              <strong>{formatNumber.token(crucible.unlockedBalance)}</strong>
+            </Text>
+          </HStack>
+        </Box>
+      </VStack>
+
+      <Grid
+        templateRows='repeat(2, 1fr)'
+        templateColumns='repeat(2, 1fr)'
+        gap={4}
+      >
+        <GridItem colSpan={[2, 2, 1]}>
+          <Button
+            isFullWidth
+            disabled={hasIncreasedStakeThisPageLoad && isInFlight()}
+            onClick={() => {
+              setHasIncreasedStakeThisPageLoad(true);
+              setIncreaseStakeModalOpen(true);
+            }}
+          >
+            <Text fontSize='sm'>Increase LP subscription</Text>
+          </Button>
+        </GridItem>
+        <GridItem colSpan={[2, 2, 1]}>
+          <Button
+            isFullWidth
+            disabled={crucible.lockedBalance.isZero()}
+            onClick={() => setClaimRewardsModalOpen(true)}
+          >
+            <Text fontSize='sm'>Claim rewards and unsubscribe</Text>
+          </Button>
+        </GridItem>
+        <GridItem colSpan={[2]}>
+          <Button
+            isFullWidth
+            disabled={crucible.unlockedBalance.lte(0)}
+            onClick={() => setWithdrawModalOpen(true)}
+          >
+            <Text fontSize='sm'>Withdraw unsubscribed LP</Text>
+          </Button>
+        </GridItem>
+      </Grid>
+
+      {crucible.unlockedBalance.lte(0) && (
+        <Text fontSize='sm' color='gray.400'>
+          To withdraw, first unsubscribe your LP
+        </Text>
+      )}
       {claimRewardsModalOpen && (
         <UnstakeAndClaimModal
           crucible={crucible}
