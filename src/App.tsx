@@ -22,6 +22,7 @@ const App: FC = () => {
       flexDirection='column'
       background={`url(${bg})`}
       backgroundRepeat='no-repeat'
+      bacgroundPosition='center'
       backgroundAttachment='fixed'
       backgroundSize='cover'
     >
