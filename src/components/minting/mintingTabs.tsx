@@ -22,6 +22,7 @@ const MintingTabs: FC = () => {
   const tabProps = {
     borderRadius: 'lg',
     fontWeight: 'bold',
+    fontSize: ['14px', '16px'],
     _selected: { color: 'purple.800', bg: 'cyan.400' },
   };
 
@@ -39,7 +40,7 @@ const MintingTabs: FC = () => {
 
   return (
     <Box position='relative'>
-      <Heading top='-120px' position='absolute' width='100%'>
+      <Heading top={['-80px', '-120px']} position='absolute' width='100%'>
         {tabIndex === 0 ? 'Mint a Crucible' : 'Crucibles Collection'}
       </Heading>
       <Tabs

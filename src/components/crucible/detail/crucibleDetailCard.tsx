@@ -44,7 +44,7 @@ const CrucibleDetailCard: FC<Props> = ({ crucible }) => {
 
   return (
     <Box position='relative'>
-      <Heading top='-120px' position='absolute' width='100%'>
+      <Heading top={['-80px', '-120px']} position='absolute' width='100%'>
         Manage Crucible
       </Heading>
       <Flex alignItems='center'>
