@@ -41,7 +41,7 @@ const MintingTabs: FC = () => {
   return (
     <Box position='relative'>
       <Heading top={['-80px', '-120px']} position='absolute' width='100%'>
-        {tabIndex === 0 ? 'Mint a Crucible' : 'Crucibles Collection'}
+        {tabIndex === 0 ? 'Mint a Crucible' : 'Crucible Collection'}
       </Heading>
       <Tabs
         isFitted
