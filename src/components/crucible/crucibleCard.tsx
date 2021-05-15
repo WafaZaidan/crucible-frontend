@@ -80,31 +80,41 @@ const CrucibleCard: FC<Props> = ({
 
   return (
     <Box p={4} bg='white' color='gray.800' borderRadius='xl'>
-      <Flex justifyContent='space-between' alignItems='center'>
+      <Flex justifyContent='space-between' alignItems='center' flexDir='row'>
         <Box flexGrow={1}>
-          <HStack>
+          <Stack direction={['column', 'row']}>
             <Box
+              display={['none', 'block']}
               boxSize='48px'
               bgGradient='linear(to-tr, cyan.200, purple.100)'
               borderRadius='md'
             />
             <Box textAlign='left'>
-              <HStack cursor='pointer' onClick={onCopy}>
+              <Stack direction='row' cursor='pointer' onClick={onCopy}>
                 <Text onClick={onCopy}>ID: {truncate(crucible.id)}</Text>
                 <FiCopy />
-              </HStack>
+              </Stack>
               <Text fontSize='xs' color='gray.400' width='100%'>
                 {`Minted on ${formatNumber.date(
                   crucible.mintTimestamp * 1000
                 )}`}
                 <br />
+                <Text color='gray.400' display={['block', 'none']}>
+                  {formatNumber.token(crucible.lockedBalance)} LP subscribed
+                </Text>
                 {subscriptionText}
               </Text>
             </Box>
-          </HStack>
+          </Stack>
         </Box>
-        <Badge py={1} px={2} borderRadius='xl' fontSize='.7em'>
-          <HStack>
+        <Badge
+          py={1}
+          px={2}
+          borderRadius='xl'
+          fontSize='.7em'
+          display={['none', 'block']}
+        >
+          <Stack direction={['row', 'row']}>
             <Box>
               <Text color='gray.400'>
                 {formatNumber.token(crucible.lockedBalance)} LP
@@ -122,7 +132,7 @@ const CrucibleCard: FC<Props> = ({
                 <FaLock />
               </div>
             </Tooltip>
-          </HStack>
+          </Stack>
         </Badge>
         <Box>
           <IconButton
@@ -152,7 +162,7 @@ const CrucibleCard: FC<Props> = ({
 
       <Collapse in={showDetails}>
         {isRewardsLoading ? (
-          <Stack my={4}>
+          <Stack direction={['column', 'row']} my={4}>
             <Skeleton startColor='gray.50' endColor='gray.100' height='20px' />
             <Skeleton startColor='gray.50' endColor='gray.100' height='20px' />
             <Skeleton startColor='gray.50' endColor='gray.100' height='20px' />
@@ -165,7 +175,7 @@ const CrucibleCard: FC<Props> = ({
               hasArrow={true}
             >
               <Stat>
-                <StatLabel>Earned MIST Rewards</StatLabel>
+                <StatLabel>MIST Rewards</StatLabel>
                 <StatNumber>
                   {formatNumber.token(crucible.mistRewards || 0)}
                 </StatNumber>
@@ -182,7 +192,7 @@ const CrucibleCard: FC<Props> = ({
               hasArrow={true}
             >
               <Stat>
-                <StatLabel>Earned ETH Rewards</StatLabel>
+                <StatLabel>ETH Rewards</StatLabel>
                 <StatNumber>
                   {formatNumber.token(crucible.wethRewards || 0)}
                 </StatNumber>

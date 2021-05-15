@@ -15,7 +15,6 @@ import NoMatch from './pages/noMatch';
 import CrucibleDetail from './pages/crucibleDetail';
 import CrucibleMinting from './pages/crucibleMinting';
 import { useTokens } from './context/tokens';
-import MobileLayover from './components/modals/MobileLayover';
 import ModalRoot from './components/modals/ModalRoot';
 import { Provider } from 'react-redux';
 import { store } from './store/store';
@@ -32,23 +31,12 @@ const App: FC = () => {
       <Provider store={store}>
         <ModalRoot />
         <Flex
-          display={['flex', 'flex', 'none']}
           minHeight='100vh'
           flexDirection='column'
           background={`url(${bg})`}
           backgroundRepeat='no-repeat'
           backgroundAttachment='fixed'
-          backgroundSize='cover'
-        >
-          <MobileLayover />
-        </Flex>
-        <Flex
-          display={['none', 'none', 'flex']}
-          minHeight='100vh'
-          flexDirection='column'
-          background={`url(${bg})`}
-          backgroundRepeat='no-repeat'
-          backgroundAttachment='fixed'
+          bacgroundPosition='center'
           backgroundSize='cover'
         >
           <Router>

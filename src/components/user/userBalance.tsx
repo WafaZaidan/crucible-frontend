@@ -31,7 +31,7 @@ const UserBalance: FC = () => {
       width={497}
       height={12}
       bg='gray.900'
-      borderRadius='xl'
+      borderRadius={[0, 'xl']}
       boxShadow='xl'
     >
       <SimpleGrid columns={3} spacing={2} fontSize='sm' height='100%'>

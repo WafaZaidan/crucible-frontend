@@ -28,20 +28,24 @@ const MintingGuide: FC = () => {
     <Box position='relative'>
       <Image
         src={pot}
-        height='240px'
-        htmlHeight='240px'
+        height={['172px', '240px']}
         position='absolute'
-        right='0px'
-        top='-124px'
+        right={['-16px', '0px']}
+        top={['-80px', '-124px']}
       />
-      <Heading textAlign='left' fontSize='2.5rem' py={4} maxW='240px'>
+      <Heading
+        textAlign='left'
+        fontSize={['2rem', '2.5rem']}
+        py={4}
+        maxW='240px'
+      >
         Aludel Rewards
       </Heading>
 
       <Accordion allowMultiple mt={2} mb={8}>
         <AccordionItem border='none'>
           <h2>
-            <AccordionButton px={0} fontSize='lg'>
+            <AccordionButton px={0} fontSize={['md', 'lg']}>
               <Box flex='1' textAlign='left'>
                 <HStack alignItems='top'>
                   <Text>1.</Text>
@@ -55,7 +59,7 @@ const MintingGuide: FC = () => {
               </Box>
               <AccordionIcon
                 bg='blue.600'
-                fontSize='18px'
+                fontSize={['16px', '18px']}
                 color='purple.800'
                 borderRadius='100%'
               />
@@ -86,7 +90,7 @@ const MintingGuide: FC = () => {
 
         <AccordionItem border='none'>
           <h2>
-            <AccordionButton px={0} fontSize='lg'>
+            <AccordionButton px={0} fontSize={['md', 'lg']}>
               <Box flex='1' textAlign='left'>
                 <HStack alignItems='top'>
                   <Text>2.</Text>
@@ -95,7 +99,7 @@ const MintingGuide: FC = () => {
               </Box>
               <AccordionIcon
                 bg='blue.600'
-                fontSize='18px'
+                fontSize={['16px', '18px']}
                 color='purple.800'
                 borderRadius='100%'
               />
@@ -113,7 +117,7 @@ const MintingGuide: FC = () => {
 
         <AccordionItem border='none'>
           <h2>
-            <AccordionButton px={0} fontSize='lg'>
+            <AccordionButton px={0} fontSize={['md', 'lg']}>
               <Box flex='1' textAlign='left'>
                 <HStack alignItems='top'>
                   <Text>3.</Text>
@@ -122,7 +126,7 @@ const MintingGuide: FC = () => {
               </Box>
               <AccordionIcon
                 bg='blue.600'
-                fontSize='18px'
+                fontSize={['16px', '18px']}
                 color='purple.800'
                 borderRadius='100%'
               />
