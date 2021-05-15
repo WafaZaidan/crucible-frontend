@@ -4,7 +4,7 @@ import { ModalType } from './types';
 import ConnectWalletModal from './ConnectWalletModal';
 import WalletInfoModal from './WalletInfoModal';
 
-const ReduxModal: FC = () => {
+const ModalRoot: FC = () => {
   const { modalType } = useModal();
 
   switch (modalType) {
@@ -17,4 +17,4 @@ const ReduxModal: FC = () => {
   return null;
 };
 
-export default ReduxModal;
+export default ModalRoot;

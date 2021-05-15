@@ -12,7 +12,7 @@ const MintingForm: FC = () => {
 
   return (
     <Box>
-      {!tokens[lpTokenAddress]?.balance ? (
+      {tokens[lpTokenAddress]?.balance?.lte(0) ? (
         <MissingIngredients />
       ) : (
         <Box>

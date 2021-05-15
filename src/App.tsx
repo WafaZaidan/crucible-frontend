@@ -16,7 +16,7 @@ import CrucibleDetail from './pages/crucibleDetail';
 import CrucibleMinting from './pages/crucibleMinting';
 import { useTokens } from './context/tokens';
 import MobileLayover from './components/modals/MobileLayover';
-import ReduxModal from './components/modals/ReduxModal';
+import ModalRoot from './components/modals/ModalRoot';
 import { Provider } from 'react-redux';
 import { store } from './store/store';
 import { useCustomRPCNetworkListener } from './hooks/useCustomRPCNetworkListener';
@@ -30,7 +30,7 @@ const App: FC = () => {
   return (
     <>
       <Provider store={store}>
-        <ReduxModal />
+        <ModalRoot />
         <Flex
           display={['flex', 'flex', 'none']}
           minHeight='100vh'
