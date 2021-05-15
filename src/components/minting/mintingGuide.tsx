@@ -50,7 +50,7 @@ const MintingGuide: FC = () => {
       <Accordion allowMultiple mt={2} mb={8}>
         <AccordionItem border='none'>
           <h2>
-            <AccordionButton px={0} fontSize='lg'>
+            <AccordionButton px={0} fontSize={['md', 'lg']}>
               <Box flex='1' textAlign='left'>
                 <HStack alignItems='top'>
                   <Text>1.</Text>
@@ -64,7 +64,7 @@ const MintingGuide: FC = () => {
               </Box>
               <AccordionIcon
                 bg='blue.600'
-                fontSize='18px'
+                fontSize={['16px', '18px']}
                 color='purple.800'
                 borderRadius='100%'
               />
@@ -95,7 +95,7 @@ const MintingGuide: FC = () => {
 
         <AccordionItem border='none'>
           <h2>
-            <AccordionButton px={0} fontSize='lg'>
+            <AccordionButton px={0} fontSize={['md', 'lg']}>
               <Box flex='1' textAlign='left'>
                 <HStack alignItems='top'>
                   <Text>2.</Text>
@@ -104,7 +104,7 @@ const MintingGuide: FC = () => {
               </Box>
               <AccordionIcon
                 bg='blue.600'
-                fontSize='18px'
+                fontSize={['16px', '18px']}
                 color='purple.800'
                 borderRadius='100%'
               />
@@ -122,7 +122,7 @@ const MintingGuide: FC = () => {
 
         <AccordionItem border='none'>
           <h2>
-            <AccordionButton px={0} fontSize='lg'>
+            <AccordionButton px={0} fontSize={['md', 'lg']}>
               <Box flex='1' textAlign='left'>
                 <HStack alignItems='top'>
                   <Text>3.</Text>
@@ -131,7 +131,7 @@ const MintingGuide: FC = () => {
               </Box>
               <AccordionIcon
                 bg='blue.600'
-                fontSize='18px'
+                fontSize={['16px', '18px']}
                 color='purple.800'
                 borderRadius='100%'
               />
