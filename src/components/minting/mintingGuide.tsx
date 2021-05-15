@@ -11,22 +11,17 @@ import {
   AccordionPanel,
 } from '@chakra-ui/accordion';
 import { Alert } from '@chakra-ui/alert';
-import { useWeb3 } from '../../context/web3';
-import { config } from '../../config/variables';
+import useConfigVariables from '../../hooks/useConfigVariables';
 import WelcomeToast from '../shared/welcomeToast';
+import { useModal } from '../../store/modals';
+import { ModalType } from '../modals/types';
 
 const MintingGuide: FC = () => {
-  const { onboard } = useWeb3();
-  const { uniswapPoolUrl, getMistUrl } = config;
+  const { uniswapPoolUrl, getMistUrl } = useConfigVariables();
+  const { openModal } = useModal();
 
-  const handleConnect = async () => {
-    try {
-      onboard?.walletReset();
-      const wallet = await onboard?.walletSelect();
-      wallet && onboard?.walletCheck();
-    } catch (e) {
-      console.log(e);
-    }
+  const openWalletConnectionModal = () => {
+    openModal(ModalType.connectWallet);
   };
 
   return (
@@ -143,8 +138,7 @@ const MintingGuide: FC = () => {
           </AccordionPanel>
         </AccordionItem>
       </Accordion>
-
-      <Button size='lg' isFullWidth onClick={handleConnect}>
+      <Button size='lg' isFullWidth onClick={openWalletConnectionModal}>
         Connect Wallet
       </Button>
       <WelcomeToast />

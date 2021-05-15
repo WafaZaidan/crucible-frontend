@@ -3,7 +3,7 @@ import Rewards from './rewards';
 import LpPerformance from './lpPerf';
 import NetworkStats from './networkStats';
 import { Box } from '@chakra-ui/layout';
-import { Crucible } from '../../../context/crucibles/crucibles';
+import { Crucible } from '../../../context/crucibles';
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/tabs';
 
 type Props = {

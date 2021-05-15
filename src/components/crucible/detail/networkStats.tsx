@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { Box, Flex, HStack, Spinner, StatGroup } from '@chakra-ui/react';
-import { Crucible } from '../../../context/crucibles/crucibles';
-import { config } from '../../../config/variables';
+import { Crucible } from '../../../context/crucibles';
+import useConfigVariables from '../../../hooks/useConfigVariables';
 import dayjs from 'dayjs';
 import { useCrucibles } from '../../../context/crucibles';
 import { useLpStats } from '../../../context/lp';
@@ -11,8 +11,6 @@ import { Tooltip } from '@chakra-ui/tooltip';
 import formatNumber from '../../../utils/formatNumber';
 import numberishToBigNumber from '../../../utils/numberishToBigNumber';
 import getMultiplier from '../../../utils/getMultiplier';
-
-const { inflationStartTimestamp } = config;
 
 type Props = {
   crucible: Crucible;
@@ -26,6 +24,7 @@ type Props = {
 const LpPerformance: FC<Props> = ({ crucible }) => {
   const { tokenBalances } = useCrucibles();
   const { lpStats } = useLpStats();
+  const { inflationStartTimestamp } = useConfigVariables();
   // const { networkStats } = useNetworkStats();
   // Get ether rewards rate
   // console.log('STARTPLUSDURATION', networkStats.start, networkStats.duration);

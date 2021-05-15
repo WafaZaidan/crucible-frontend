@@ -1,10 +1,10 @@
-import { useWeb3 } from '../context/web3';
-import { config } from '../config/variables';
+import { useTokens } from '../context/tokens';
+import useConfigVariables from './useConfigVariables';
 import { BigNumber } from 'ethers';
 
 const useTokenBalances = () => {
-  const { tokens, ethBalance } = useWeb3();
-  const { lpTokenAddress, mistTokenAddress } = config;
+  const { tokens, ethBalance } = useTokens();
+  const { lpTokenAddress, mistTokenAddress } = useConfigVariables();
 
   return {
     lpBalance: tokens[lpTokenAddress]?.balance || BigNumber.from(0),

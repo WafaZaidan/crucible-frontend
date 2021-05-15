@@ -3,14 +3,13 @@ import { signPermission, signPermitEIP2612 } from './utils';
 import { aludelAbi } from '../abi/aludelAbi';
 import { crucibleAbi } from '../abi/crucibleAbi';
 import { transmuterAbi } from '../abi/transmuterAbi';
-import { config } from '../config/variables';
 import { CallbackArgs, EVENT } from '../hooks/useContract';
 import IUniswapV2ERC20 from '@uniswap/v2-core/build/IUniswapV2ERC20.json';
 import { wait } from '../utils/wait';
 
-const { aludelAddress, transmuterAddress } = config;
-
-export async function increaseStake(
+async function increaseStake(
+  aludelAddress: string,
+  transmuterAddress: string,
   signer: any,
   crucibleAddress: string,
   amount: BigNumber,
@@ -112,3 +111,5 @@ export async function increaseStake(
     console.log(e);
   }
 }
+
+export default increaseStake;

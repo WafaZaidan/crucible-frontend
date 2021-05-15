@@ -10,7 +10,7 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/modal';
-import { useWeb3 } from '../../../context/web3';
+import { useWeb3React } from '@web3-react/core';
 
 type Props = {
   onClose: () => void;
@@ -19,10 +19,10 @@ type Props = {
 };
 
 const TxConfirmedModal: FC<Props> = ({ onClose, hash }) => {
-  const { network } = useWeb3();
+  const { chainId } = useWeb3React();
 
   const etherscanLink =
-    network === 1
+    chainId === 1
       ? `https://etherscan.io/tx/${hash}`
       : `https://rinkeby.etherscan.io/tx/${hash}`;
 

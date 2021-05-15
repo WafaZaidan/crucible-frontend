@@ -1,11 +1,11 @@
 import { ChainId, Pair, Token, TokenAmount } from '@uniswap/sdk';
 import { BigNumber } from 'ethers';
-import { config } from '../config/variables';
 import numberishToBigNumber from '../utils/numberishToBigNumber';
 
-const { lpTokenAddress, mistTokenAddress, wethAddress } = config;
-
-export const getUniswapBalances = (
+const getUniswapBalances = (
+  lpTokenAddress: string,
+  mistTokenAddress: string,
+  wethAddress: string,
   lpBalance: BigNumber,
   lpMistBalance: BigNumber,
   lpWethBalance: BigNumber,
@@ -47,3 +47,5 @@ export const getUniswapBalances = (
     currentWethInLp,
   };
 };
+
+export default getUniswapBalances;

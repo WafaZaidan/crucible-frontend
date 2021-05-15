@@ -7,7 +7,9 @@ export enum Network {
   xDAI = 100,
 }
 
-export function networkName(networkId: Network) {
+export function convertChainIdToNetworkName(networkId?: Network) {
+  if (!networkId) return 'Mainnet';
+
   switch (Number(networkId)) {
     case 1:
       return 'Mainnet';

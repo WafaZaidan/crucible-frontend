@@ -1,10 +1,11 @@
-import React, { useState, ReactElement } from 'react';
+import { useState, ReactElement } from 'react';
 import TxErrorModal from '../components/modals/tx/txErrorModal';
 import TxConfirmedModal from '../components/modals/tx/txConfirmedModal';
 import TxPendingSignatureModal from '../components/modals/tx/txPendingSignatureModal';
 import TxPendingApprovalModal from '../components/modals/tx/txPendingApprovalModal';
-import { useNotify, useWeb3 } from '../context/web3';
+import { useNotify } from '../context/transactions';
 import { useCrucibles } from '../context/crucibles';
+import { useWeb3React } from '@web3-react/core';
 
 export enum EVENT {
   PENDING_APPROVAL = 'PENDING_APPROVAL',
@@ -44,7 +45,7 @@ export function useContract(
   contractCall: Function,
   successCallback?: Function
 ) {
-  const { checkIsReady } = useWeb3();
+  const { account } = useWeb3React();
   const { reloadBalances, reloadCrucibles } = useCrucibles();
   const { monitorTx } = useNotify();
   const [ui, setUI] = useState<ReactElement | null>(null);
@@ -93,8 +94,7 @@ export function useContract(
   };
 
   const invokeContract = async <T extends any[]>(...args: T) => {
-    const isReady = await checkIsReady();
-    if (isReady) {
+    if (account) {
       contractCall(...args, callback, monitorTx);
     }
   };

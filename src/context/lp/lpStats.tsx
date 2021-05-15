@@ -1,9 +1,8 @@
-import React, { ReactNode } from 'react';
-import { useWeb3 } from '../web3';
+import React, { ReactNode, useState, createContext, useContext } from 'react';
 import { useQuery } from '@apollo/client';
-import { useState, createContext, useContext } from 'react';
+import { useWeb3React } from '@web3-react/core';
 import { GET_UNISWAP_MINTS, GET_TOTAL_VOLUME } from '../../queries/uniswap';
-import { config } from '../../config/variables';
+import useConfigVariables from '../../hooks/useConfigVariables';
 
 type LpStatsType = {
   deposits: [any];
@@ -27,14 +26,14 @@ type LpStatsProviderProps = {
 const LpStats = createContext<LpStatsContextType | undefined>(undefined);
 
 const LpStatsProvider = ({ children }: LpStatsProviderProps) => {
-  const { address } = useWeb3();
+  const { account } = useWeb3React();
   const [isLpStatsLoading, setIsLpStatsLoading] = useState<boolean>(true);
   const [lpStats, setLpStats] = useState<LpStatsType | undefined>(undefined);
-  const { pairAddress } = config;
+  const { pairAddress } = useConfigVariables();
 
   const { error, data } = useQuery(GET_UNISWAP_MINTS, {
-    variables: { userAddress: address },
-    skip: !address, // Must have address to query uniswap LP's
+    variables: { userAddress: account },
+    skip: !account, // Must have account to query uniswap LP's
   });
   const {
     loading: volumeLoading,
@@ -42,7 +41,7 @@ const LpStatsProvider = ({ children }: LpStatsProviderProps) => {
     data: volumeData,
   } = useQuery(GET_TOTAL_VOLUME, {
     variables: { pairAddress: pairAddress },
-    skip: !!lpStats?.totalVolume, // Must have address to query uniswap LP's
+    skip: !!lpStats?.totalVolume, // Must have account to query uniswap LP's
   });
 
   // Query price at time of first Uniswap LP deposit

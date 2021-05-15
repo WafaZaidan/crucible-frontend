@@ -1,4 +1,5 @@
 import React, { FC, useState } from 'react';
+import { useWeb3React } from '@web3-react/core';
 import {
   Button,
   Flex,
@@ -16,16 +17,6 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/modal';
-import { useWeb3 } from '../../context/web3';
-import { useContract } from '../../hooks/useContract';
-import { Crucible } from '../../context/crucibles/crucibles';
-import { withdraw } from '../../contracts/withdraw';
-import { BigNumber } from 'ethers';
-import formatNumber from '../../utils/formatNumber';
-import numberishToBigNumber from '../../utils/numberishToBigNumber';
-import bigNumberishToNumber from '../../utils/bigNumberishToNumber';
-import getStep from '../../utils/getStep';
-import onNumberInputChange from '../../utils/onNumberInputChange';
 import {
   Slider,
   SliderFilledTrack,
@@ -33,6 +24,15 @@ import {
   SliderTrack,
 } from '@chakra-ui/slider';
 import { Box } from '@chakra-ui/layout';
+import { useContract } from '../../hooks/useContract';
+import { Crucible } from '../../context/crucibles';
+import { BigNumber } from 'ethers';
+import formatNumber from '../../utils/formatNumber';
+import numberishToBigNumber from '../../utils/numberishToBigNumber';
+import bigNumberishToNumber from '../../utils/bigNumberishToNumber';
+import getStep from '../../utils/getStep';
+import onNumberInputChange from '../../utils/onNumberInputChange';
+import useContracts from '../../contracts/useContracts';
 
 type withdrawParams = Parameters<
   (signer: any, crucibleAddress: string, amount: BigNumber) => void
@@ -44,18 +44,19 @@ type Props = {
 };
 
 const WithdrawStakeModal: FC<Props> = ({ onClose, crucible }) => {
-  const { provider } = useWeb3();
+  const { library } = useWeb3React();
   const [isMax, setIsMax] = useState(false);
   const [amount, setAmount] = useState('0');
   const amountBigNumber = numberishToBigNumber(amount || 0);
   const unlockedBalance = crucible?.unlockedBalance || BigNumber.from(0);
   const unlockedBalanceNumber = bigNumberishToNumber(unlockedBalance);
   const step = getStep(unlockedBalanceNumber);
+  const { withdraw } = useContracts();
 
   const { invokeContract, ui } = useContract(withdraw, () => onClose());
 
   const handleWithdraw = () => {
-    const signer = provider?.getSigner();
+    const signer = library?.getSigner();
     invokeContract<withdrawParams>(
       signer,
       crucible.id,

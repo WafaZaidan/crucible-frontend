@@ -2,7 +2,6 @@ import { BigNumber, BigNumberish, ethers } from 'ethers';
 import { crucibleAbi } from '../abi/crucibleAbi';
 import { crucibleFactoryAbi } from '../abi/crucibleFactoryAbi';
 import { _abi } from '../interfaces/Erc20DetailedFactory';
-import { config } from '../config/variables';
 import { aludelAbi } from '../abi/aludelAbi';
 
 function convertTokenIdToAddress(tokenId: BigNumberish) {
@@ -30,8 +29,13 @@ function getCrucibleIdsFromEvents(events: ethers.Event[]) {
   return crucibleIds;
 }
 
-export async function getOwnedCrucibles(signer: any, provider: any) {
-  const { crucibleFactoryAddress, lpTokenAddress, aludelAddress } = config;
+async function getOwnedCrucibles(
+  crucibleFactoryAddress: string,
+  lpTokenAddress: string,
+  aludelAddress: string,
+  signer: any,
+  provider: any
+) {
   const address = await signer.getAddress();
   const token = new ethers.Contract(lpTokenAddress, _abi, signer);
   const crucibleFactory = new ethers.Contract(
@@ -101,3 +105,5 @@ export async function getOwnedCrucibles(signer: any, provider: any) {
     return crucible.owner === address;
   });
 }
+
+export default getOwnedCrucibles;

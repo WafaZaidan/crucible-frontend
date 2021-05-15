@@ -17,11 +17,6 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/modal';
-import { useWeb3 } from '../../context/web3';
-import { useContract } from '../../hooks/useContract';
-import { Crucible } from '../../context/crucibles/crucibles';
-import { increaseStake } from '../../contracts/increaseStake';
-import { config } from '../../config/variables';
 import {
   Slider,
   SliderFilledTrack,
@@ -29,8 +24,13 @@ import {
   SliderTrack,
 } from '@chakra-ui/slider';
 import { Box } from '@chakra-ui/layout';
-import formatNumber from '../../utils/formatNumber';
 import { BigNumber } from 'ethers';
+import { useWeb3React } from '@web3-react/core';
+import { useContract } from '../../hooks/useContract';
+import { Crucible } from '../../context/crucibles';
+import useContracts from '../../contracts/useContracts';
+import useConfigVariables from '../../hooks/useConfigVariables';
+import formatNumber from '../../utils/formatNumber';
 import bigNumberishToNumber from '../../utils/bigNumberishToNumber';
 import numberishToBigNumber from '../../utils/numberishToBigNumber';
 import getStep from '../../utils/getStep';
@@ -47,10 +47,12 @@ type Props = {
 };
 
 const IncreaseStakeModal: FC<Props> = ({ onClose, crucible }) => {
-  const { provider } = useWeb3();
+  const { library } = useWeb3React();
   const [isMax, setIsMax] = useState(false);
   const [amountLpToStake, setAmountLpToStake] = useState('0');
   const amountLpToStakeBN = numberishToBigNumber(amountLpToStake || 0);
+  const config = useConfigVariables();
+  const { increaseStake } = useContracts();
 
   const successCallback = (txHash: string) => {
     // Hacky
@@ -67,7 +69,7 @@ const IncreaseStakeModal: FC<Props> = ({ onClose, crucible }) => {
   const step = getStep(lpBalanceNumber);
 
   const handleIncreaseSubscription = () => {
-    const signer = provider?.getSigner();
+    const signer = library?.getSigner();
     invokeContract<IncreaseStakeParams>(
       signer,
       crucible.id,

@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { Box, Spinner, StatGroup } from '@chakra-ui/react';
 import { Tooltip } from '@chakra-ui/tooltip';
-import { Crucible } from '../../../context/crucibles/crucibles';
+import { Crucible } from '../../../context/crucibles';
 import StatCard from '../../shared/StatCard';
 import formatNumber from '../../../utils/formatNumber';
 import getMultiplier from '../../../utils/getMultiplier';
