@@ -5,12 +5,14 @@ import { Box, Link, Text } from '@chakra-ui/layout';
 import { Image } from '@chakra-ui/image';
 import { Button, IconButton } from '@chakra-ui/button';
 import { IoCloseCircle } from 'react-icons/io5';
+import { useMediaQuery } from '@chakra-ui/react';
 import pot3d from '../../img/pot-3d.png';
 
 const WelcomeToast: FC = () => {
   const toast = useToast();
   const toastId = 'faqs-toast';
   const faqsToastClosed = localStorage.getItem('faqs-toast-closed');
+  const [isLargerThan320] = useMediaQuery('(min-width: 321px)');
 
   const handleClose = () => {
     localStorage.setItem('faqs-toast-closed', 'true');
@@ -31,9 +33,9 @@ const WelcomeToast: FC = () => {
             bg='gray.700'
             position='relative'
             borderRadius='3xl'
-            width='330px'
+            width={isLargerThan320 ? '330px' : 'auto'}
           >
-            <Box ml={[24, 28]}>
+            <Box ml={isLargerThan320 ? [24, 28] : 0}>
               <Text fontWeight='bold' mb={2}>
                 First time minting a crucible?
               </Text>
@@ -69,6 +71,7 @@ const WelcomeToast: FC = () => {
             />
             <Image
               src={pot3d}
+              display={isLargerThan320 ? 'block' : 'none'}
               top={-10}
               left={0}
               height={['160px', '186px']}
