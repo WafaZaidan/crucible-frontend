@@ -18,7 +18,7 @@ const CrucibleMinting: FC = () => {
         p={[8, 10]}
         bg='purple.800'
         flexDir='column'
-        mt={[32, 32, 40]}
+        mt={[16, 32, 40]}
         textAlign='center'
         width={['100%', '100%', 497]}
         borderRadius='3xl'

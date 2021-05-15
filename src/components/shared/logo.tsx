@@ -10,8 +10,8 @@ type Props = {
 };
 
 const Logo: FC<Props> = ({
-  widthList = ['30px', '140px', '200px'],
-  heightList = ['30px', 'auto', 'auto'],
+  widthList = ['40px', '140px', '200px'],
+  heightList = ['40px', 'auto', 'auto'],
 }) => {
   return (
     <LinkBox>
