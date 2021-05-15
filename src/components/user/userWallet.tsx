@@ -1,73 +1,85 @@
 import React, { FC } from 'react';
 import { Box } from '@chakra-ui/layout';
-import { useWeb3 } from '../../context/web3';
 import { truncate } from '../../utils/address';
 import { Button, IconButton } from '@chakra-ui/react';
 import { TiPower } from 'react-icons/ti';
 import { VscLink } from 'react-icons/vsc';
+import { useWeb3React } from '@web3-react/core';
+import { convertChainIdToNetworkName } from '../../utils/convertChainIdToNetworkName';
+import { useModal } from '../../store/modals';
+import { ModalType } from '../modals/types';
+import { injectedConnector } from '../../config';
 
 const UserWallet: FC = () => {
-  const { address, onboard, isLoading } = useWeb3();
+  const { deactivate, account, chainId, connector } = useWeb3React();
+  const { openModal } = useModal();
 
-  const handleConnect = async () => {
-    try {
-      onboard?.walletReset();
-      const wallet = await onboard?.walletSelect();
-      wallet && onboard?.walletCheck();
-    } catch (e) {
-      console.log(e);
-    }
+  const isWalletMetamask = connector === injectedConnector;
+
+  const openWalletConnectionModal = () => {
+    openModal(ModalType.connectWallet);
   };
 
-  const handleSelect = async () => {
-    await onboard?.walletSelect();
+  const openWalletInfoModal = () => {
+    openModal(ModalType.walletInfo);
   };
 
-  const handleReset = () => {
-    localStorage.setItem('onboard.selectedWallet', '');
-    onboard?.walletReset();
-  };
-
-  const walletButtonProps = {
+  const buttonStyles = {
     borderColor: 'cyan.400',
     borderWidth: '2px',
     variant: 'outline',
   };
 
-  if (isLoading) {
-    return <Button {...walletButtonProps} isLoading />;
-  }
-
-  if (address) {
+  if (account) {
     return (
       <Box position='relative'>
-        <Button {...walletButtonProps} onClick={handleSelect} pr={12}>
-          <Box>{truncate(address)}</Box>
-        </Button>
-        <IconButton
-          isRound
-          size='lg'
-          height='44px'
-          variant='ghost'
-          position='absolute'
-          right={0}
-          icon={<TiPower />}
-          aria-label='disconnect'
-          onClick={handleReset}
+        <Button
+          {...buttonStyles}
+          mr={5}
           _hover={{
-            bg: 'none',
-            color: 'cyan.300',
+            ...buttonStyles,
+            cursor: 'initial',
           }}
-        />
+          _active={{
+            ...buttonStyles,
+          }}
+        >
+          {convertChainIdToNetworkName(chainId)}
+        </Button>
+        <Button
+          {...buttonStyles}
+          pr={isWalletMetamask ? 5 : 12}
+          onClick={openWalletInfoModal}
+        >
+          {truncate(account)}
+        </Button>
+
+        {!isWalletMetamask && (
+          <IconButton
+            isRound
+            size='lg'
+            height='44px'
+            variant='ghost'
+            position='absolute'
+            right={0}
+            icon={<TiPower />}
+            aria-label='disconnect'
+            onClick={deactivate}
+            _hover={{
+              bg: 'none',
+              color: 'cyan.300',
+            }}
+          />
+        )}
       </Box>
     );
   }
 
   return (
     <Button
-      {...walletButtonProps}
+      {...buttonStyles}
       rightIcon={<VscLink />}
-      onClick={handleConnect}
+      onClick={openWalletConnectionModal}
     >
       Connect Wallet
     </Button>

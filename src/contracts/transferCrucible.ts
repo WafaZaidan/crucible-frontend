@@ -1,11 +1,9 @@
 import { ethers } from 'ethers';
-import { config } from '../config/variables';
 import { crucibleFactoryAbi } from '../abi/crucibleFactoryAbi';
 import { CallbackArgs, EVENT } from '../hooks/useContract';
 
-const { crucibleFactoryAddress } = config;
-
-export async function transferCrucible(
+async function transferCrucible(
+  crucibleFactoryAddress: string,
   signer: any,
   id: string,
   to: string,
@@ -47,3 +45,5 @@ export async function transferCrucible(
     });
   }
 }
+
+export default transferCrucible;

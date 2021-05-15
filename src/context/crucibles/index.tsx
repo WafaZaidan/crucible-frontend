@@ -6,14 +6,11 @@ import React, {
   useState,
 } from 'react';
 import { BigNumber } from 'ethers';
-import { useWeb3 } from '../web3';
-import { getTokenBalances } from '../../contracts/getTokenBalances';
-import { getOwnedCrucibles } from '../../contracts/getOwnedCrucibles';
-import { getUniswapBalances } from '../../contracts/getUniswapTokenBalances';
-import { getUserRewards } from '../../contracts/aludel';
+import useContracts from '../../contracts/useContracts';
 import { GET_PAIR_HISTORY } from '../../queries/uniswap';
 import { useLazyQuery } from '@apollo/client';
-import { config } from '../../config/variables';
+import useConfigVariables from '../../hooks/useConfigVariables';
+import { useWeb3React } from '@web3-react/core';
 import numberishToBigNumber from '../../utils/numberishToBigNumber';
 
 export type Stake = {
@@ -67,7 +64,7 @@ type CruciblesContextType = {
 const Crucibles = createContext<CruciblesContextType | undefined>(undefined);
 
 const CruciblesProvider = ({ children }: CruciblesProps) => {
-  const { provider, address, wallet, network } = useWeb3();
+  const { library, account, chainId } = useWeb3React();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isRewardsLoading, setIsRewardsLoading] = useState<boolean>(true);
   const [refreshCrucibles, setRefreshCrucibles] = useState<boolean>(false);
@@ -76,7 +73,13 @@ const CruciblesProvider = ({ children }: CruciblesProps) => {
   const [tokenBalances, setTokenBalances] = useState<TokenBalances | undefined>(
     undefined
   );
-  const { pairAddress, networkId } = config;
+  const { pairAddress } = useConfigVariables();
+  const {
+    getUserRewards,
+    getOwnedCrucibles,
+    getUniswapBalances,
+    getTokenBalances,
+  } = useContracts();
 
   const [loadPairs, { data: pairData }] = useLazyQuery(
     GET_PAIR_HISTORY(
@@ -125,31 +128,25 @@ const CruciblesProvider = ({ children }: CruciblesProps) => {
   useEffect(() => {
     setIsLoading(true);
     setIsRewardsLoading(true);
-    if (
-      provider &&
-      wallet &&
-      address &&
-      network &&
-      network === Number(networkId)
-    ) {
-      const signer = provider?.getSigner();
-      getTokenBalances(signer, address as string, network).then(
+    if (library && account && chainId) {
+      const signer = library?.getSigner();
+      getTokenBalances(signer, account as string, chainId).then(
         (balances: TokenBalances) => {
           setTokenBalances(balances);
         }
       );
     }
-  }, [provider, wallet, network, networkId, address, refreshBalances]);
+  }, [library, chainId, account, refreshBalances]);
 
   useEffect(
     () => {
       let updatedCrucibles: Crucible[] = [];
-      if (tokenBalances && provider && network) {
+      if (tokenBalances && library && chainId) {
         // process.env.REACT_APP_NETWORK_ID
 
-        const signer = provider.getSigner();
+        const signer = library.getSigner();
         setIsRewardsLoading(true);
-        getOwnedCrucibles(signer, provider)
+        getOwnedCrucibles(signer, library)
           .then((ownedCrucibles: Crucible[]) => {
             const { mistPrice, totalLpSupply, wethPrice } = tokenBalances;
             updatedCrucibles = ownedCrucibles.map((crucible) => ({
@@ -164,7 +161,7 @@ const CruciblesProvider = ({ children }: CruciblesProps) => {
                 tokenBalances!.totalLpSupply,
                 tokenBalances!.wethPrice,
                 tokenBalances!.mistPrice,
-                network
+                chainId
               ),
             }));
             setCrucibles(updatedCrucibles);
@@ -172,7 +169,7 @@ const CruciblesProvider = ({ children }: CruciblesProps) => {
           })
           .then((rewards) => {
             setIsLoading(false);
-            if (updatedCrucibles && updatedCrucibles.length && network === 1) {
+            if (updatedCrucibles && updatedCrucibles.length && chainId === 1) {
               loadPairs();
             }
 
@@ -204,12 +201,12 @@ const CruciblesProvider = ({ children }: CruciblesProps) => {
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [provider, address, network, refreshCrucibles, tokenBalances, loadPairs]
+    [library, account, chainId, refreshCrucibles, tokenBalances, loadPairs]
   );
 
   const cruciblesOnCurrentNetwork = () => {
-    const signer = provider?.getSigner();
-    return getOwnedCrucibles(signer, provider);
+    const signer = library?.getSigner();
+    return getOwnedCrucibles(signer, library);
   };
 
   return (

@@ -3,7 +3,7 @@ import { truncate } from '../../utils/address';
 import { useHistory } from 'react-router-dom';
 import { Button, IconButton } from '@chakra-ui/button';
 import { Collapse } from '@chakra-ui/transition';
-import { Crucible } from '../../context/crucibles/crucibles';
+import { Crucible } from '../../context/crucibles';
 import { Badge, Box, Flex, HStack, Stack, Text } from '@chakra-ui/layout';
 import { FaLock } from 'react-icons/fa';
 import { useClipboard } from '@chakra-ui/hooks';

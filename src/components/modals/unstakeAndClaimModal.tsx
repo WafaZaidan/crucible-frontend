@@ -1,4 +1,6 @@
 import React, { FC, useState } from 'react';
+import { useWeb3React } from '@web3-react/core';
+import { BigNumber } from 'ethers';
 import {
   Button,
   Flex,
@@ -19,16 +21,6 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/modal';
-import { useWeb3 } from '../../context/web3';
-import { useContract } from '../../hooks/useContract';
-import { Crucible, useCrucibles } from '../../context/crucibles/crucibles';
-import { unstakeAndClaim } from '../../contracts/unstakeAndClaim';
-import formatNumber from '../../utils/formatNumber';
-import { BigNumber } from 'ethers';
-import numberishToBigNumber from '../../utils/numberishToBigNumber';
-import bigNumberishToNumber from '../../utils/bigNumberishToNumber';
-import getStep from '../../utils/getStep';
-import onNumberInputChange from '../../utils/onNumberInputChange';
 import { Box } from '@chakra-ui/layout';
 import {
   Slider,
@@ -36,6 +28,14 @@ import {
   SliderThumb,
   SliderTrack,
 } from '@chakra-ui/slider';
+import { useContract } from '../../hooks/useContract';
+import { Crucible, useCrucibles } from '../../context/crucibles';
+import formatNumber from '../../utils/formatNumber';
+import numberishToBigNumber from '../../utils/numberishToBigNumber';
+import bigNumberishToNumber from '../../utils/bigNumberishToNumber';
+import getStep from '../../utils/getStep';
+import onNumberInputChange from '../../utils/onNumberInputChange';
+import useContracts from '../../contracts/useContracts';
 
 type unstakeAndClaimParams = Parameters<
   (signer: any, crucibleAddress: string, amount: BigNumber) => void
@@ -48,7 +48,7 @@ type Props = {
 
 const UnstakeAndClaimModal: FC<Props> = ({ onClose, crucible }) => {
   const { cruciblesOnCurrentNetwork } = useCrucibles();
-  const { provider, network } = useWeb3();
+  const { library, chainId } = useWeb3React();
   const [isLoading, setIsLoading] = useState(false);
   const [isMax, setIsMax] = useState(false);
   const [amount, setAmount] = useState('0');
@@ -56,6 +56,7 @@ const UnstakeAndClaimModal: FC<Props> = ({ onClose, crucible }) => {
   const lockedBalance = crucible?.lockedBalance || BigNumber.from(0);
   const lockedBalanceNumber = bigNumberishToNumber(lockedBalance);
   const step = getStep(lockedBalanceNumber);
+  const { unstakeAndClaim } = useContracts();
 
   const { invokeContract, ui } = useContract(unstakeAndClaim, () => {
     onClose();
@@ -64,7 +65,7 @@ const UnstakeAndClaimModal: FC<Props> = ({ onClose, crucible }) => {
   const handleUnstakeAndClaim = async () => {
     setIsLoading(true);
     const crucibles = await cruciblesOnCurrentNetwork();
-    if (crucibles.length !== 0 && network === 1) {
+    if (crucibles.length !== 0 && chainId === 1) {
       alert(
         `You have not changed your network yet.
 
@@ -74,7 +75,7 @@ Follow this guide to privately withdraw your stake: https://github.com/Taichi-Ne
       return;
     }
 
-    const signer = provider?.getSigner();
+    const signer = library?.getSigner();
     invokeContract<unstakeAndClaimParams>(
       signer,
       crucible.id,

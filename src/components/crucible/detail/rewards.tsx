@@ -11,7 +11,7 @@ import {
   VStack,
 } from '@chakra-ui/layout';
 import { Progress, StatGroup } from '@chakra-ui/react';
-import { Crucible } from '../../../context/crucibles/crucibles';
+import { Crucible } from '../../../context/crucibles';
 import { Button } from '@chakra-ui/button';
 import dayjs from 'dayjs';
 import UnstakeAndClaimModal from '../../modals/unstakeAndClaimModal';

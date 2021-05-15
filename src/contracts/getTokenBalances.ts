@@ -1,13 +1,14 @@
 import { ethers, Signer } from 'ethers';
-import { config } from '../config/variables';
 import { _abi } from '../interfaces/Erc20DetailedFactory';
 import { ChainId, Fetcher, Token, WETH } from '@uniswap/sdk';
 import { parseUnits } from 'ethers/lib/utils';
 import getMultiplier from '../utils/getMultiplier';
 
-const { lpTokenAddress, mistTokenAddress, wethAddress, daiAddress } = config;
-
-export async function getTokenBalances(
+async function getTokenBalances(
+  lpTokenAddress: string,
+  mistTokenAddress: string,
+  wethAddress: string,
+  daiAddress: string,
   signer: Signer,
   walletAddress: string,
   chainId: ChainId
@@ -54,3 +55,5 @@ export async function getTokenBalances(
     mistPrice,
   };
 }
+
+export default getTokenBalances;

@@ -8,7 +8,7 @@ import {
 } from '@chakra-ui/accordion';
 import { Alert } from '@chakra-ui/alert';
 import { Box, Link, Text } from '@chakra-ui/layout';
-import { config } from '../../config/variables';
+import config from '../../config';
 
 const { mintCrucibleDoc, lpTokensDoc, aludelRewardsDoc } = config;
 

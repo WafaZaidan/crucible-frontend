@@ -11,7 +11,6 @@ const MintingTabs: FC = () => {
   const [tabIndex, setTabIndex] = useState(
     crucibles && crucibles.length > 0 ? 1 : 0
   );
-
   const crucibleCount = crucibles?.length || 0;
   useEffect(() => {
     if (crucibleCount > 0) {
@@ -44,6 +43,7 @@ const MintingTabs: FC = () => {
         {tabIndex === 0 ? 'Mint a Crucible' : 'Crucible Collection'}
       </Heading>
       <Tabs
+        index={tabIndex}
         isFitted
         defaultIndex={tabIndex}
         onChange={(index) => setTabIndex(index)}

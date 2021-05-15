@@ -1,14 +1,15 @@
 import React, { createContext, useContext, ReactNode } from 'react';
 import { API as NotifyAPI } from 'bnc-notify';
 import { useState, useEffect } from 'react';
+import { useWeb3React } from '@web3-react/core';
 import { initNotify } from '../../config/notify';
-import { useWeb3 } from '.';
+import useConfigVariables from '../../hooks/useConfigVariables';
 
 type Transaction = {
   hash?: string;
 };
 
-type NotifyContextProps = {
+type TransactionContextProps = {
   children: ReactNode;
 };
 
@@ -16,24 +17,27 @@ type Web3ContextType = {
   monitorTx(hash: string, reload: () => void): Promise<void>;
 };
 
-const NotifyContext = createContext<Web3ContextType | undefined>(undefined);
+const TransactionContext = createContext<Web3ContextType | undefined>(
+  undefined
+);
 
-const NotifyProvider = ({ children }: NotifyContextProps) => {
-  const { network } = useWeb3();
+const TransactionProvider = ({ children }: TransactionContextProps) => {
+  const { chainId } = useWeb3React();
+  const { dappId } = useConfigVariables();
   const [notify, setNotify] = useState<NotifyAPI | undefined>(undefined);
 
   useEffect(() => {
-    const notify = initNotify();
+    const notify = initNotify(dappId, chainId);
     setNotify(notify);
-  }, []);
+  }, [chainId]);
 
   async function monitorTx(hash: string, reload: () => void) {
     const etherscanLink = (txHash = '') =>
-      network === 1
+      chainId === 1
         ? `https://etherscan.io/tx/${txHash}`
         : `https://rinkeby.etherscan.io/tx/${txHash}`;
 
-    if (notify && network) {
+    if (notify && chainId) {
       const { emitter } = notify.hash(hash);
       emitter.on('txPool', (transaction: Transaction) => {
         return {
@@ -62,22 +66,22 @@ const NotifyProvider = ({ children }: NotifyContextProps) => {
   }
 
   return (
-    <NotifyContext.Provider
+    <TransactionContext.Provider
       value={{
         monitorTx,
       }}
     >
       {children}
-    </NotifyContext.Provider>
+    </TransactionContext.Provider>
   );
 };
 
 const useNotify = () => {
-  const context = useContext(NotifyContext);
+  const context = useContext(TransactionContext);
   if (context === undefined) {
-    throw new Error('useNotify must be used within a NotifyProvider');
+    throw new Error('useNotify must be used within a TransactionProvider');
   }
   return context;
 };
 
-export { NotifyProvider, useNotify };
+export { TransactionProvider, useNotify };
