@@ -175,7 +175,7 @@ const CrucibleCard: FC<Props> = ({
               hasArrow={true}
             >
               <Stat>
-                <StatLabel>Earned MIST Rewards</StatLabel>
+                <StatLabel>MIST Rewards</StatLabel>
                 <StatNumber>
                   {formatNumber.token(crucible.mistRewards || 0)}
                 </StatNumber>
@@ -192,7 +192,7 @@ const CrucibleCard: FC<Props> = ({
               hasArrow={true}
             >
               <Stat>
-                <StatLabel>Earned ETH Rewards</StatLabel>
+                <StatLabel>ETH Rewards</StatLabel>
                 <StatNumber>
                   {formatNumber.token(crucible.wethRewards || 0)}
                 </StatNumber>
