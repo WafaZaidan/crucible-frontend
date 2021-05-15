@@ -6,11 +6,18 @@ import MintingTabs from '../components/minting/mintingTabs';
 import MintingGuide from '../components/minting/mintingGuide';
 import { convertChainIdToNetworkName } from '../utils/convertChainIdToNetworkName';
 import config from '../config';
+import { Button } from '../styles/button';
+import { useTransactions } from '../store/transactions/useTransactions';
+import { ChainId } from '@uniswap/sdk';
 
 const CrucibleMinting: FC = () => {
   const { account, chainId } = useWeb3React();
   const { supportedNetworks } = config;
   const networkUnsupported = !supportedNetworks.includes(chainId as number);
+
+  const { addTransactionToQueue, transactions } = useTransactions();
+
+  console.log(transactions);
 
   const renderContent = useMemo(() => {
     if (!account) {
@@ -48,6 +55,20 @@ const CrucibleMinting: FC = () => {
         boxShadow='xl'
         minH='400px'
       >
+        <button
+          onClick={() =>
+            addTransactionToQueue({
+              chainId: 1,
+              hash: 'string',
+              from: 'string',
+              approval: { tokenAddress: 'string', spender: 'string' },
+              claim: { recipient: 'string' },
+              summary: 'string',
+            })
+          }
+        >
+          CLICK ME
+        </button>
         {renderContent}
       </Flex>
     </Center>
