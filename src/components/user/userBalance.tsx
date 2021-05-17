@@ -1,12 +1,16 @@
 import React, { FC } from 'react';
 import { Box, Flex, SimpleGrid, Text } from '@chakra-ui/layout';
 import { CountUp } from 'use-count-up';
+import { useMediaQuery } from '@chakra-ui/react';
 import useTokenBalances from '../../hooks/useTokenBalances';
 import formatNumber from '../../utils/formatNumber';
 import bigNumberishToNumber from '../../utils/bigNumberishToNumber';
 
 const UserBalance: FC = () => {
   const { ethBalance, mistBalance, lpBalance } = useTokenBalances();
+  const [isLargerThan375] = useMediaQuery('(min-width: 376px)');
+
+  const decimalsToDisplay = isLargerThan375 ? 4 : 3;
 
   const balances = [
     {
@@ -53,7 +57,14 @@ const UserBalance: FC = () => {
                 autoResetKey={value}
                 duration={0.4}
                 formatter={(value) => {
-                  return value >= 0 ? formatNumber.token(value) : '-';
+                  return value >= 0
+                    ? formatNumber.tokenCustom(
+                        value,
+                        '',
+                        decimalsToDisplay,
+                        decimalsToDisplay
+                      )
+                    : '-';
                 }}
               />
             </Text>

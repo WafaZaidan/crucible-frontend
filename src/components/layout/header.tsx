@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { SimpleGrid, Box, Flex } from '@chakra-ui/layout';
+import { Flex, GridItem, Grid } from '@chakra-ui/layout';
 import UserBalance from '../user/userBalance';
 import UserWallet from '../user/userWallet';
 import Logo from '../shared/logo';
@@ -7,26 +7,26 @@ import Logo from '../shared/logo';
 const Header: FC = () => {
   return (
     <>
-      <SimpleGrid
+      <Grid
         p={4}
+        templateColumns={'repeat(6, 1fr)'}
         bg='rgba(0,0,0,0.1)'
-        columns={[2, null, null, 3]}
         alignItems='center'
       >
-        <Box>
+        <GridItem colSpan={[1, null, null, 2]}>
           <Logo />
-        </Box>
-        <Box display={['none', null, null, 'block']}>
+        </GridItem>
+        <GridItem display={['none', null, null, 'block']} colSpan={2}>
           <Flex justifyContent='center'>
             <UserBalance />
           </Flex>
-        </Box>
-        <Box>
+        </GridItem>
+        <GridItem colSpan={[5, null, null, 2]}>
           <Flex justifyContent='flex-end'>
             <UserWallet />
           </Flex>
-        </Box>
-      </SimpleGrid>
+        </GridItem>
+      </Grid>
       <Flex
         justifyContent='center'
         display={['flex', null, null, 'none']}

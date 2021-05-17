@@ -36,7 +36,7 @@ const App: FC = () => {
           background={`url(${bg})`}
           backgroundRepeat='no-repeat'
           backgroundAttachment='fixed'
-          bacgroundPosition='center'
+          backgroundPosition='center'
           backgroundSize='cover'
         >
           <Router>
