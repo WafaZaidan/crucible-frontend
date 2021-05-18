@@ -12,12 +12,10 @@
 
   TODO:
   1. Remove 'any'
-  2. Make thunk type prefix an enum
-  3. Make slice name an enum
-  3. Wrap thunk to handle errors and show toasts
-  4. Concat user 'imported' assets with curated
-  5. Add _getCompatibleAssets thunk
-  6. Add _addCustomAsset thunk
+  2. Wrap thunk to handle errors and show toasts
+  3. Concat user 'imported' assets with curated
+  4. Add _getCompatibleAssets thunk
+  5. Add _addCustomAsset thunk
 */
 
 import { store } from './store';
@@ -26,6 +24,7 @@ import { getOwnedCruciblesNew } from '../contracts/getOwnedCrucibles';
 import { Erc20Detailed } from '../interfaces/Erc20Detailed';
 import { useAppDispatch, useAppSelector } from './hooks';
 import { filterAsync, mapAsync } from '../utils/async';
+import { THUNK_PREFIX, SLICE_NAME } from './enum';
 
 interface Crucible {
   id: string;
@@ -53,7 +52,7 @@ const initialState: CruciblesState = {
 };
 
 const _getOwnedCrucibles = createAsyncThunk(
-  'crucibles/getOwnedCrucibles',
+  THUNK_PREFIX.GET_OWNED_CRUCIBLED,
   async ({ signer, library }: any) => {
     const { crucibleFactoryAddress } = store.getState().config.selectedConfig;
     const { curatedAssets } = store.getState().crucibles;
@@ -84,21 +83,21 @@ const _getOwnedCrucibles = createAsyncThunk(
 );
 
 export const cruciblesSlice = createSlice({
-  name: 'crucibles',
+  name: SLICE_NAME.CRUCIBLES,
   initialState,
   reducers: {
     resetCrucibles: () => initialState,
   },
   extraReducers: (builder) => {
     builder
-      .addCase(_getOwnedCrucibles.pending, (state, action) => {
+      .addCase(_getOwnedCrucibles.pending, (state) => {
         state.cruciblesLoading = true;
       })
       .addCase(_getOwnedCrucibles.fulfilled, (state, action) => {
         state.cruciblesLoading = false;
         state.crucibles = action.payload;
       })
-      .addCase(_getOwnedCrucibles.rejected, (state, action) => {
+      .addCase(_getOwnedCrucibles.rejected, (state) => {
         state.cruciblesLoading = false;
         state.crucibles = [];
       });
