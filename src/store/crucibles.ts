@@ -11,11 +11,10 @@
   6. Check that the user selected asset(s) have a balance and add it to the containedAssetsList if true
 
   TODO:
-  1. Remove 'any'
-  2. Wrap thunk to handle errors and show toasts
-  3. Concat user 'imported' assets with curated
-  4. Add _getCompatibleAssets thunk
-  5. Add _addCustomAsset thunk
+  1. Wrap thunk to handle errors and show toasts
+  2. Concat user 'imported' assets with curated
+  3. Add _getCompatibleAssets thunk
+  4. Add _addCustomAsset thunk
 */
 
 import { store } from './store';
@@ -25,6 +24,9 @@ import { Erc20Detailed } from '../interfaces/Erc20Detailed';
 import { useAppDispatch, useAppSelector } from './hooks';
 import { filterAsync, mapAsync } from '../utils/async';
 import { THUNK_PREFIX, SLICE_NAME } from './enum';
+import { Web3Provider } from '@ethersproject/providers';
+import { castDraft } from 'immer';
+import { Signer } from 'ethers';
 
 interface Crucible {
   id: string;
@@ -53,7 +55,7 @@ const initialState: CruciblesState = {
 
 const _getOwnedCrucibles = createAsyncThunk(
   THUNK_PREFIX.GET_OWNED_CRUCIBLED,
-  async ({ signer, library }: any) => {
+  async ({ signer, library }: { signer: Signer; library: Web3Provider }) => {
     const { crucibleFactoryAddress } = store.getState().config.selectedConfig;
     const { curatedAssets } = store.getState().crucibles;
 
@@ -65,15 +67,15 @@ const _getOwnedCrucibles = createAsyncThunk(
 
     const cruciblesWithContainedAssets = await mapAsync(
       crucibles,
-      // Any hack to remove TS error
-      async (crucible: any) => {
+      async (crucible) => {
         const curatedAssetsWithBalance = await filterAsync(
           curatedAssets,
           async (asset) => (await asset.balanceOf(crucible.id)).gte(0)
         );
+
         return {
           ...crucible,
-          containedAssets: curatedAssetsWithBalance,
+          containedAssets: castDraft(curatedAssetsWithBalance),
         };
       }
     );
@@ -115,7 +117,7 @@ export const useCrucibles = () => {
   const resetCrucibles = () =>
     dispatch(cruciblesSlice.actions.resetCrucibles());
 
-  const getOwnedCrucibles = (signer: any, library: any) =>
+  const getOwnedCrucibles = (signer: Signer, library: Web3Provider) =>
     dispatch(_getOwnedCrucibles({ signer, library }));
 
   return { cruciblesLoading, crucibles, resetCrucibles, getOwnedCrucibles };
