@@ -17,6 +17,8 @@ import { client } from './config/apollo';
 import { ethers } from 'ethers';
 
 import 'focus-visible/dist/focus-visible';
+import { store } from './store/store';
+import { Provider } from 'react-redux';
 
 function getLibrary(provider: any) {
   return new ethers.providers.Web3Provider(provider);
@@ -24,24 +26,26 @@ function getLibrary(provider: any) {
 
 ReactDOM.render(
   <React.StrictMode>
-    <Web3ReactProvider getLibrary={getLibrary}>
-      <TokenProvider>
-        <ApolloProvider client={client}>
-          <TransactionProvider>
-            <NetworkStatsProvider>
-              <CruciblesProvider>
-                <LpStatsProvider>
-                  <ChakraProvider theme={theme}>
-                    <Global styles={GlobalStyles} />
-                    <App />
-                  </ChakraProvider>
-                </LpStatsProvider>
-              </CruciblesProvider>
-            </NetworkStatsProvider>
-          </TransactionProvider>
-        </ApolloProvider>
-      </TokenProvider>
-    </Web3ReactProvider>
+    <Provider store={store}>
+      <Web3ReactProvider getLibrary={getLibrary}>
+        <TokenProvider>
+          <ApolloProvider client={client}>
+            <TransactionProvider>
+              <NetworkStatsProvider>
+                <CruciblesProvider>
+                  <LpStatsProvider>
+                    <ChakraProvider theme={theme}>
+                      <Global styles={GlobalStyles} />
+                      <App />
+                    </ChakraProvider>
+                  </LpStatsProvider>
+                </CruciblesProvider>
+              </NetworkStatsProvider>
+            </TransactionProvider>
+          </ApolloProvider>
+        </TokenProvider>
+      </Web3ReactProvider>
+    </Provider>
   </React.StrictMode>,
   document.getElementById('root')
 );

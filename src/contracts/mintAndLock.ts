@@ -8,16 +8,24 @@ import { crucibleAbi } from '../abi/crucibleAbi';
 import IUniswapV2ERC20 from '@uniswap/v2-core/build/IUniswapV2ERC20.json';
 import { CallbackArgs, EVENT } from '../hooks/useContract';
 import { wait } from '../utils/wait';
+import {
+  TxnStatus,
+  TxnType,
+  UseTransactions,
+} from '../store/transactions/types';
+import { Config } from '../hooks/useConfigVariables';
 
-async function mintAndLock(
-  aludelAddress: string,
-  crucibleFactoryAddress: string,
-  transmuterAddress: string,
+const mintAndLock = async (
+  config: Config,
+  transactionActions: UseTransactions,
   signer: Signer,
   provider: providers.Web3Provider,
   amount: BigNumber,
   callback: (args: CallbackArgs) => void
-) {
+) => {
+  const { aludelAddress, crucibleFactoryAddress, transmuterAddress } = config;
+  const { addTransactionToStore, updateTransaction } = transactionActions;
+
   const walletAddress = await signer.getAddress();
   // fetch contracts
   const aludel = new ethers.Contract(aludelAddress, aludelAbi, signer);
@@ -42,7 +50,10 @@ async function mintAndLock(
   const salt = randomBytes(32);
   const deadline = (await provider.getBlock('latest')).timestamp + 60 * 60 * 24;
 
+  let txn;
+
   try {
+    addTransactionToStore(TxnType.mint);
     // validate balances
     if ((await stakingToken.balanceOf(walletAddress)).lt(amount)) {
       throw new Error('Not enough balance');
@@ -65,8 +76,6 @@ async function mintAndLock(
       totalSteps: 2,
     });
 
-    console.log('Sign Permit');
-
     const permit = await signPermitEIP2612(
       signer,
       walletAddress,
@@ -84,8 +93,6 @@ async function mintAndLock(
       totalSteps: 2,
     });
 
-    console.log('Sign Lock');
-
     const permission = await signPermission(
       'Lock',
       crucible,
@@ -100,9 +107,7 @@ async function mintAndLock(
       type: EVENT.PENDING_APPROVAL,
     });
 
-    console.log('Mint, Deposit, Stake');
-
-    const tx = await transmuter.mintCruciblePermitAndStake(
+    txn = await transmuter.mintCruciblePermitAndStake(
       aludel.address,
       crucibleFactory.address,
       walletAddress,
@@ -111,20 +116,22 @@ async function mintAndLock(
       permission
     );
 
+    updateTransaction({ ...txn, status: TxnStatus.Pending });
+
     callback({
       type: EVENT.TX_CONFIRMED,
       message: 'success',
-      txHash: tx.hash,
+      txHash: txn.hash,
     });
 
-    await tx.wait(1);
+    await txn.wait(1);
 
+    updateTransaction({ ...txn, status: TxnStatus.Mined });
     callback({
       type: EVENT.TX_MINED,
     });
-
-    console.log('  in', tx.hash);
   } catch (e) {
+    updateTransaction({ ...txn, status: TxnStatus.Failed });
     callback({
       type: EVENT.TX_ERROR,
       message: e.message,
@@ -132,6 +139,6 @@ async function mintAndLock(
     });
     console.log(e);
   }
-}
+};
 
 export default mintAndLock;

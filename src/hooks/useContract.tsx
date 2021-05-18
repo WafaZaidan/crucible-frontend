@@ -1,4 +1,4 @@
-import { useState, ReactElement } from 'react';
+import { ReactElement, useState } from 'react';
 import TxErrorModal from '../components/modals/tx/txErrorModal';
 import TxConfirmedModal from '../components/modals/tx/txConfirmedModal';
 import TxPendingSignatureModal from '../components/modals/tx/txPendingSignatureModal';
@@ -6,6 +6,8 @@ import TxPendingApprovalModal from '../components/modals/tx/txPendingApprovalMod
 import { useNotify } from '../context/transactions';
 import { useCrucibles } from '../context/crucibles';
 import { useWeb3React } from '@web3-react/core';
+import { useTransactions } from '../store/transactions/useTransactions';
+import { TxnType } from '../store/transactions/types';
 
 export enum EVENT {
   PENDING_APPROVAL = 'PENDING_APPROVAL',

@@ -3,6 +3,8 @@ import { formatEther, formatUnits } from 'ethers/lib/utils';
 import { aludelAbi } from '../abi/aludelAbi';
 import { _abi } from '../interfaces/Erc20DetailedFactory';
 import { Crucible } from '../context/crucibles';
+import { Config } from '../hooks/useConfigVariables';
+import { UseTransactions } from '../store/transactions/types';
 
 export interface EtherRewards {
   currStakeRewards: BigNumber;
@@ -13,8 +15,12 @@ export interface EtherRewards {
   wethRewards: BigNumber;
 }
 
-export async function getNetworkStats(aludelAddress: string, signer: Signer) {
-  const aludel = new ethers.Contract(aludelAddress, aludelAbi, signer);
+export async function getNetworkStats(
+  config: Config,
+  transactionActions: UseTransactions,
+  signer: Signer
+) {
+  const aludel = new ethers.Contract(config.aludelAddress, aludelAbi, signer);
   const [
     ,
     ,
@@ -51,13 +57,12 @@ export async function getNetworkStats(aludelAddress: string, signer: Signer) {
 
 // Returns array with vault rewards (current and projected)
 export async function getUserRewards(
-  aludelAddress: string,
-  wethAddress: string,
-  mistTokenAddress: string,
-  rewardPool: string,
+  config: Config,
+  transactionActions: UseTransactions,
   signer: any,
   crucibles: Crucible[]
 ): Promise<EtherRewards[]> {
+  const { aludelAddress, wethAddress, mistTokenAddress, rewardPool } = config;
   const plusOneMonth = Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30;
   const aludelContract = new ethers.Contract(aludelAddress, aludelAbi, signer);
   const wethContract = new ethers.Contract(wethAddress, _abi, signer);

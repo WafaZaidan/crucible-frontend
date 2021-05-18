@@ -1,17 +1,36 @@
-import { AddTxnActionPayload, TxnState } from './types';
+import { TxnDetails, TxnState, TxnStatus, TxnType } from './types';
 
-export const addTransactionToQueue = (
+export const addTransactionToStore = (
   transactions: TxnState,
   action: {
-    payload: AddTxnActionPayload;
+    payload: TxnType;
   }
 ) => {
-  const { hash, approval, summary, claim, from, chainId } = action.payload;
-  console.log('we in the txn state action add to qwueue', transactions, action);
-  if (transactions[chainId]?.[hash]) {
-    throw Error('Attempted to add existing transaction.');
+  if (transactions[action.payload]?.status !== TxnStatus.Ready) {
+    throw Error(`${action.payload} transaction is still pending`);
   }
-  const txs = transactions[chainId] ?? {};
-  txs[hash] = { hash, approval, summary, claim, from, addedTime: Date.now() };
-  transactions[chainId] = txs;
+
+  transactions[action.payload] = {
+    status: TxnStatus.Submitted,
+  };
+};
+
+export const updateTransaction = (
+  transactions: TxnState,
+  action: {
+    payload: TxnDetails;
+  }
+) => {
+  console.log(action);
+};
+
+export const clearTransaction = (
+  transactions: TxnState,
+  action: {
+    payload: TxnType;
+  }
+) => {
+  transactions[action.payload] = {
+    status: TxnStatus.Ready,
+  };
 };

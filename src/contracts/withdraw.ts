@@ -2,14 +2,18 @@ import { BigNumber, ethers } from 'ethers';
 import { crucibleAbi } from '../abi/crucibleAbi';
 import IUniswapV2ERC20 from '@uniswap/v2-core/build/IUniswapV2ERC20.json';
 import { CallbackArgs, EVENT } from '../hooks/useContract';
+import { Config } from '../hooks/useConfigVariables';
+import { UseTransactions } from '../store/transactions/types';
 
 async function withdraw(
-  lpTokenAddress: string,
+  config: Config,
+  transactionActions: UseTransactions,
   signer: any,
   crucibleAddress: string,
   amount: BigNumber,
   callback: (args: CallbackArgs) => void
 ) {
+  const { lpTokenAddress } = config;
   const recipient = await signer.getAddress();
 
   // fetch contracts

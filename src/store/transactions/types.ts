@@ -1,39 +1,30 @@
-import { ChainId } from '@uniswap/sdk';
+export enum TxnType {
+  mint = 'MINT',
+  increaseStake = 'INCREASE_STAKE',
+  transfer = 'TRANSFER',
+  claim = 'CLAIM',
+  withdraw = 'WITHDRAW',
+}
 
-export interface TxnReceipt {
-  to: string;
-  from: string;
-  contractAddress: string;
-  transactionIndex: number;
-  blockHash: string;
-  transactionHash: string;
-  blockNumber: number;
-  status?: number;
+export enum TxnStatus {
+  Ready = 'READY',
+  Submitted = 'SUBMITTED',
+  Pending = 'PENDING',
+  Mined = 'MINED',
+  Failed = 'FAILED',
 }
 
 export interface TxnDetails {
-  hash: string;
-  approval?: { tokenAddress: string; spender: string };
-  summary?: string;
-  claim?: { recipient: string };
-  receipt?: TxnReceipt;
-  lastCheckedBlockNumber?: number;
-  addedTime: number;
-  confirmedTime?: number;
-  from: string;
+  status: TxnStatus;
 }
 
-export interface AddTxnActionPayload {
-  chainId: ChainId;
-  hash: string;
-  from: string;
-  approval?: { tokenAddress: string; spender: string };
-  claim?: { recipient: string };
-  summary?: string;
-}
+export type TxnState = {
+  [key in TxnType]?: TxnDetails;
+};
 
-export interface TxnState {
-  [chainId: number]: {
-    [txHash: string]: TxnDetails;
-  };
+export interface UseTransactions {
+  transactions: TxnState;
+  addTransactionToStore: (txnType: TxnType) => void;
+  updateTransaction: (txnType: TxnDetails) => void;
+  clearTransaction: (txnType: TxnType) => void;
 }

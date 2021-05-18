@@ -6,17 +6,19 @@ import { transmuterAbi } from '../abi/transmuterAbi';
 import { CallbackArgs, EVENT } from '../hooks/useContract';
 import IUniswapV2ERC20 from '@uniswap/v2-core/build/IUniswapV2ERC20.json';
 import { wait } from '../utils/wait';
+import { Config } from '../hooks/useConfigVariables';
+import { UseTransactions } from '../store/transactions/types';
 
 async function increaseStake(
-  aludelAddress: string,
-  transmuterAddress: string,
+  config: Config,
+  transactionActions: UseTransactions,
   signer: any,
   crucibleAddress: string,
   amount: BigNumber,
   callback: (args: CallbackArgs) => void
 ) {
+  const { aludelAddress, transmuterAddress } = config;
   const walletAddress = await signer.getAddress();
-
   // fetch contracts
   const aludel = new ethers.Contract(aludelAddress, aludelAbi, signer);
   const stakingToken = new ethers.Contract(

@@ -3,16 +3,17 @@ import { _abi } from '../interfaces/Erc20DetailedFactory';
 import { ChainId, Fetcher, Token, WETH } from '@uniswap/sdk';
 import { parseUnits } from 'ethers/lib/utils';
 import getMultiplier from '../utils/getMultiplier';
+import { Config } from '../hooks/useConfigVariables';
+import { UseTransactions } from '../store/transactions/types';
 
 async function getTokenBalances(
-  lpTokenAddress: string,
-  mistTokenAddress: string,
-  wethAddress: string,
-  daiAddress: string,
+  config: Config,
+  transactionActions: UseTransactions,
   signer: Signer,
   walletAddress: string,
   chainId: ChainId
 ) {
+  const { lpTokenAddress, mistTokenAddress, wethAddress, daiAddress } = config;
   const MIST = new Token(chainId, mistTokenAddress, 18, '⚗', 'Alchemist');
   const DAI = new Token(chainId, daiAddress, 18);
 

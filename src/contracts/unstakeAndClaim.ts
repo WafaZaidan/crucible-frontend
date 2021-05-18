@@ -4,14 +4,18 @@ import { aludelAbi } from '../abi/aludelAbi';
 import { crucibleAbi } from '../abi/crucibleAbi';
 import { CallbackArgs, EVENT } from '../hooks/useContract';
 import IUniswapV2ERC20 from '@uniswap/v2-core/build/IUniswapV2ERC20.json';
+import { Config } from '../hooks/useConfigVariables';
+import { UseTransactions } from '../store/transactions/types';
 
 async function unstakeAndClaim(
-  aludelAddress: string,
+  config: Config,
+  transactionActions: UseTransactions,
   signer: any,
   crucibleAddress: string,
   amount: BigNumber,
   callback: (args: CallbackArgs) => void
 ) {
+  const { aludelAddress } = config;
   const walletAddress = await signer.getAddress();
 
   // fetch contracts

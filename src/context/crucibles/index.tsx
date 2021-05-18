@@ -37,7 +37,7 @@ export type Crucible = {
   currentMistInLp?: BigNumber;
 };
 
-type TokenBalances = {
+export type TokenBalances = {
   lpMistBalance: BigNumber;
   lpWethBalance: BigNumber;
   totalLpSupply: BigNumber;

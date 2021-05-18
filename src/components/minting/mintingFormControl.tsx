@@ -21,6 +21,7 @@ import bigNumberishToNumber from '../../utils/bigNumberishToNumber';
 import getStep from '../../utils/getStep';
 import onNumberInputChange from '../../utils/onNumberInputChange';
 import { useWeb3React } from '@web3-react/core';
+import { useTransactions } from '../../store/transactions/useTransactions';
 
 type MintAndLockParams = Parameters<
   (signer: Signer, provider: providers.Web3Provider, amount: BigNumber) => void
@@ -34,6 +35,7 @@ const MintingFormControl: FC = () => {
   const { mintAndLock } = useContracts();
   const { invokeContract, ui } = useContract(mintAndLock);
   const { lpBalance } = useTokenBalances();
+
   let lpBalanceNumber = 0;
   let step = 1;
   if (lpBalance) {
@@ -54,7 +56,6 @@ const MintingFormControl: FC = () => {
 
   const handleMintCrucible = () => {
     const signer = library?.getSigner() as Signer;
-
     invokeContract<MintAndLockParams>(
       signer,
       library as providers.Web3Provider,

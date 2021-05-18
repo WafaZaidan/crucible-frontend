@@ -1,14 +1,18 @@
 import { ethers } from 'ethers';
 import { crucibleFactoryAbi } from '../abi/crucibleFactoryAbi';
 import { CallbackArgs, EVENT } from '../hooks/useContract';
+import { Config } from '../hooks/useConfigVariables';
+import { UseTransactions } from '../store/transactions/types';
 
 async function transferCrucible(
-  crucibleFactoryAddress: string,
+  config: Config,
+  transactionActions: UseTransactions,
   signer: any,
   id: string,
   to: string,
   callback: (args: CallbackArgs) => void
 ) {
+  const { crucibleFactoryAddress } = config;
   const walletAddress = await signer.getAddress();
 
   const crucibleFactory = new ethers.Contract(

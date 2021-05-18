@@ -1,6 +1,4 @@
 import useConfigVariables from '../hooks/useConfigVariables';
-import { BigNumber, providers, Signer } from 'ethers';
-import { CallbackArgs } from '../hooks/useContract';
 import _mintAndLock from './mintAndLock';
 import {
   getNetworkStats as _getNetworkStats,
@@ -13,135 +11,56 @@ import _unstakeAndClaim from './unstakeAndClaim';
 import _withdraw from './withdraw';
 import _getTokenBalances from './getTokenBalances';
 import _getUniswapBalances from './getUniswapTokenBalances';
-
-import { Crucible } from '../context/crucibles';
-import { ChainId } from '@uniswap/sdk';
+import { useTransactions } from '../store/transactions/useTransactions';
+import {
+  GetNetworkStats,
+  GetOwnedCrucibles,
+  GetTokenBalances,
+  GetUniswapBalances,
+  GetUserRewards,
+  IncreaseStake,
+  MintAndLock,
+  TransferCrucible,
+  UnstakeAndClaim,
+  Withdraw,
+} from './types';
 
 const useContracts = () => {
-  const {
-    aludelAddress,
-    crucibleFactoryAddress,
-    lpTokenAddress,
-    transmuterAddress,
-    wethAddress,
-    mistTokenAddress,
-    rewardPool,
-    daiAddress,
-  } = useConfigVariables();
+  const config = useConfigVariables();
+  const transactionActions = useTransactions();
 
-  const mintAndLock = (
-    signer: Signer,
-    provider: providers.Web3Provider,
-    amount: BigNumber,
-    callback: (args: CallbackArgs) => void
-  ) =>
-    _mintAndLock(
-      aludelAddress,
-      crucibleFactoryAddress,
-      transmuterAddress,
-      signer,
-      provider,
-      amount,
-      callback
-    );
+  const injectConfigAndTxnHook = (fxn: any, ...args: any) =>
+    fxn(config, transactionActions, ...args);
 
-  const getNetworkStats = (signer: Signer) =>
-    _getNetworkStats(aludelAddress, signer);
+  const mintAndLock: MintAndLock = (...args) =>
+    injectConfigAndTxnHook(_mintAndLock, ...args);
 
-  const getUserRewards = (signer: any, crucibles: Crucible[]) =>
-    _getUserRewards(
-      aludelAddress,
-      wethAddress,
-      mistTokenAddress,
-      rewardPool,
-      signer,
-      crucibles
-    );
+  const getNetworkStats: GetNetworkStats = (...args) =>
+    injectConfigAndTxnHook(_getNetworkStats, ...args);
 
-  const increaseStake = (
-    signer: any,
-    crucibleAddress: string,
-    amount: BigNumber,
-    callback: (args: CallbackArgs) => void
-  ) =>
-    _increaseStake(
-      aludelAddress,
-      transmuterAddress,
-      signer,
-      crucibleAddress,
-      amount,
-      callback
-    );
+  const getUserRewards: GetUserRewards = (...args) =>
+    injectConfigAndTxnHook(_getUserRewards, ...args);
 
-  const transferCrucible = (
-    signer: any,
-    id: string,
-    to: string,
-    callback: (args: CallbackArgs) => void
-  ) => {
-    _transferCrucible(crucibleFactoryAddress, signer, id, to, callback);
-  };
+  const increaseStake: IncreaseStake = (...args) =>
+    injectConfigAndTxnHook(_increaseStake, ...args);
 
-  const getOwnedCrucibles = (signer: any, provider: any) =>
-    _getOwnedCrucibles(
-      crucibleFactoryAddress,
-      lpTokenAddress,
-      aludelAddress,
-      signer,
-      provider
-    );
+  const transferCrucible: TransferCrucible = (...args) =>
+    injectConfigAndTxnHook(_transferCrucible, ...args);
 
-  const unstakeAndClaim = (
-    signer: any,
-    crucibleAddress: string,
-    amount: BigNumber,
-    callback: (args: CallbackArgs) => void
-  ) =>
-    _unstakeAndClaim(aludelAddress, signer, crucibleAddress, amount, callback);
+  const getOwnedCrucibles: GetOwnedCrucibles = (...args) =>
+    injectConfigAndTxnHook(_getOwnedCrucibles, ...args);
 
-  const withdraw = (
-    signer: any,
-    crucibleAddress: string,
-    amount: BigNumber,
-    callback: (args: CallbackArgs) => void
-  ) => _withdraw(lpTokenAddress, signer, crucibleAddress, amount, callback);
+  const unstakeAndClaim: UnstakeAndClaim = (...args) =>
+    injectConfigAndTxnHook(_unstakeAndClaim, ...args);
 
-  const getTokenBalances = (
-    signer: Signer,
-    walletAddress: string,
-    chainId: ChainId
-  ) =>
-    _getTokenBalances(
-      lpTokenAddress,
-      mistTokenAddress,
-      wethAddress,
-      daiAddress,
-      signer,
-      walletAddress,
-      chainId
-    );
+  const withdraw: Withdraw = (...args) =>
+    injectConfigAndTxnHook(_withdraw, ...args);
 
-  const getUniswapBalances = (
-    lpBalance: BigNumber,
-    lpMistBalance: BigNumber,
-    lpWethBalance: BigNumber,
-    totalLpSupply: BigNumber,
-    wethPrice: BigNumber,
-    mistPrice: BigNumber,
-    chainId: ChainId
-  ) =>
-    _getUniswapBalances(
-      lpTokenAddress,
-      mistTokenAddress,
-      wethAddress,
-      lpBalance,
-      lpMistBalance,
-      lpWethBalance,
-      totalLpSupply,
-      wethPrice,
-      mistPrice,
-      chainId
-    );
+  const getTokenBalances: GetTokenBalances = (...args) =>
+    injectConfigAndTxnHook(_getTokenBalances, ...args);
+
+  const getUniswapBalances: GetUniswapBalances = (...args) =>
+    injectConfigAndTxnHook(_getUniswapBalances, ...args);
 
   return {
     mintAndLock,

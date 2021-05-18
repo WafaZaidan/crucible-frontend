@@ -1,11 +1,12 @@
 import { ChainId, Pair, Token, TokenAmount } from '@uniswap/sdk';
 import { BigNumber } from 'ethers';
 import numberishToBigNumber from '../utils/numberishToBigNumber';
+import { Config } from '../hooks/useConfigVariables';
+import { UseTransactions } from '../store/transactions/types';
 
 const getUniswapBalances = (
-  lpTokenAddress: string,
-  mistTokenAddress: string,
-  wethAddress: string,
+  config: Config,
+  transactionActions: UseTransactions,
   lpBalance: BigNumber,
   lpMistBalance: BigNumber,
   lpWethBalance: BigNumber,
@@ -14,6 +15,7 @@ const getUniswapBalances = (
   mistPrice: BigNumber,
   chainId: ChainId
 ) => {
+  const { lpTokenAddress, mistTokenAddress, wethAddress } = config;
   const MIST = new Token(chainId, mistTokenAddress, 18, '⚗', 'Alchemist');
   const WETH = new Token(chainId, wethAddress, 18, 'WETH', 'Wrapped Ether');
   const LP = new Token(chainId, lpTokenAddress, 18, 'UNI-V2', 'UniswapV2Pair');
