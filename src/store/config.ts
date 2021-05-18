@@ -15,10 +15,10 @@ interface ConfigState {
 
 const configOptions: ConfigOptions = {
   0: {
-    crucibleFactoryAddress: '124',
+    crucibleFactoryAddress: '0x54e0395CFB4f39beF66DBCd5bD93Cca4E9273D56',
   },
   4: {
-    crucibleFactoryAddress: '124',
+    crucibleFactoryAddress: '0xf92D86483438BDe1d68e501ce15470155DeE08B3',
   },
 };
 
