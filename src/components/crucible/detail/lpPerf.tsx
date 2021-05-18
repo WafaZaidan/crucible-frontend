@@ -88,7 +88,7 @@ const LpPerformance: FC<Props> = ({ crucible }) => {
 
   return (
     <Box p={4} bg='white' color='gray.800' borderRadius='xl'>
-      <StatGroup mt={4} justifyContent='space-between'>
+      <StatGroup gridGap={4}>
         <Tooltip
           label='Current MIST deposited in your subscribed liquidity pool tokens'
           placement='top'

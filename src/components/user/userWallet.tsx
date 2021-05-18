@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Box } from '@chakra-ui/layout';
+import { HStack } from '@chakra-ui/layout';
 import { truncate } from '../../utils/address';
 import { Button, IconButton } from '@chakra-ui/react';
 import { TiPower } from 'react-icons/ti';
@@ -32,10 +32,9 @@ const UserWallet: FC = () => {
 
   if (account) {
     return (
-      <Box position='relative'>
+      <HStack spacing={4}>
         <Button
           {...buttonStyles}
-          mr={5}
           _hover={{
             ...buttonStyles,
             cursor: 'initial',
@@ -48,7 +47,7 @@ const UserWallet: FC = () => {
         </Button>
         <Button
           {...buttonStyles}
-          pr={isWalletMetamask ? 5 : 12}
+          pr={isWalletMetamask ? 4 : 12}
           onClick={openWalletInfoModal}
         >
           {truncate(account)}
@@ -71,7 +70,7 @@ const UserWallet: FC = () => {
             }}
           />
         )}
-      </Box>
+      </HStack>
     );
   }
 

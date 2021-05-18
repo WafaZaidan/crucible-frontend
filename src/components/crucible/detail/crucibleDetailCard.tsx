@@ -44,7 +44,7 @@ const CrucibleDetailCard: FC<Props> = ({ crucible }) => {
 
   return (
     <Box position='relative'>
-      <Heading top='-120px' position='absolute' width='100%'>
+      <Heading top={['-80px', '-120px']} position='absolute' width='100%'>
         Manage Crucible
       </Heading>
       <Flex alignItems='center'>
@@ -63,10 +63,12 @@ const CrucibleDetailCard: FC<Props> = ({ crucible }) => {
         p={4}
         bg='gray.700'
         borderRadius='xl'
+        flexDir={['column', null, 'row']}
         justifyContent='space-between'
       >
         <HStack spacing={3} flexGrow={1}>
           <Box
+            display={['none', 'block']}
             boxSize='48px'
             bgGradient='linear(to-tr, cyan.200, purple.100)'
             borderRadius='md'

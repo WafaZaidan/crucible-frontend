@@ -38,6 +38,7 @@ async function getOwnedCrucibles(
   provider: any
 ) {
   const { crucibleFactoryAddress, lpTokenAddress, aludelAddress } = config;
+
   const address = await signer.getAddress();
   const token = new ethers.Contract(lpTokenAddress, _abi, signer);
   const crucibleFactory = new ethers.Contract(

@@ -1,31 +1,40 @@
 import React, { FC } from 'react';
-import { SimpleGrid, Box, Flex } from '@chakra-ui/layout';
+import { Flex, GridItem, Grid } from '@chakra-ui/layout';
 import UserBalance from '../user/userBalance';
 import UserWallet from '../user/userWallet';
 import Logo from '../shared/logo';
 
 const Header: FC = () => {
   return (
-    <SimpleGrid
-      p={4}
-      bg='rgba(0,0,0,0.1)'
-      columns={[2, null, null, 3]}
-      alignItems='center'
-    >
-      <Box>
-        <Logo />
-      </Box>
-      <Box display={['none', null, null, 'block']}>
-        <Flex justifyContent='center'>
-          <UserBalance />
-        </Flex>
-      </Box>
-      <Box>
-        <Flex justifyContent='flex-end'>
-          <UserWallet />
-        </Flex>
-      </Box>
-    </SimpleGrid>
+    <>
+      <Grid
+        p={4}
+        templateColumns={'repeat(6, 1fr)'}
+        bg='rgba(0,0,0,0.1)'
+        alignItems='center'
+      >
+        <GridItem colSpan={[1, null, null, 2]}>
+          <Logo />
+        </GridItem>
+        <GridItem display={['none', null, null, 'block']} colSpan={2}>
+          <Flex justifyContent='center'>
+            <UserBalance />
+          </Flex>
+        </GridItem>
+        <GridItem colSpan={[5, null, null, 2]}>
+          <Flex justifyContent='flex-end'>
+            <UserWallet />
+          </Flex>
+        </GridItem>
+      </Grid>
+      <Flex
+        justifyContent='center'
+        display={['flex', null, null, 'none']}
+        mt={2}
+      >
+        <UserBalance />
+      </Flex>
+    </>
   );
 };
 

@@ -41,6 +41,8 @@ const useConfigVariables = (): Config => {
         rpcUrl: 'https://mainnet.infura.io/v3/00a5b13ef0cf467698571093487743e6',
         infuraApiKey: '00a5b13ef0cf467698571093487743e6',
         dappId: 'ad454b00-3218-4403-95e9-22c3c7d3adc0',
+        uniswapPoolUrl: 'http://lp.mist.alchemist.wtf',
+        getMistUrl: 'http://swap.mist.alchemist.wtf',
       }
     : {
         ...config,
@@ -56,6 +58,10 @@ const useConfigVariables = (): Config => {
         rpcUrl: 'https://rinkeby.infura.io/v3/00a5b13ef0cf467698571093487743e6',
         infuraApiKey: '00a5b13ef0cf467698571093487743e6',
         dappId: 'ad454b00-3218-4403-95e9-22c3c7d3adc0',
+        uniswapPoolUrl:
+          'https://app.uniswap.org/#/add/v2/0xF6c1210Aca158bBD453A12604A03AeD2659ac0ef/ETH',
+        getMistUrl:
+          'https://app.uniswap.org/#/swap?outputCurrency=0xF6c1210Aca158bBD453A12604A03AeD2659ac0ef&use=V2',
       };
 };
 

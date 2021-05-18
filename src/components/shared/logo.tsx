@@ -6,13 +6,24 @@ import logo from '../../img/logo.png';
 
 type Props = {
   widthList?: number[];
+  heightList?: number[];
 };
 
-const Logo: FC<Props> = ({ widthList = ['140px', '140px', '200px'] }) => {
+const Logo: FC<Props> = ({
+  widthList = ['40px', '140px', '200px'],
+  heightList = ['40px', 'auto', 'auto'],
+}) => {
   return (
     <LinkBox>
       <LinkOverlay as={Link} to='/'>
-        <Image src={logo} width={widthList} alt='alchemist logo' />
+        <Image
+          src={logo}
+          width={widthList}
+          height={heightList}
+          objectFit='cover'
+          objectPosition='0% 0'
+          alt='alchemist logo'
+        />
       </LinkOverlay>
     </LinkBox>
   );

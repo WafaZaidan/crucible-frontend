@@ -21,6 +21,7 @@ export async function getNetworkStats(
   signer: Signer
 ) {
   const aludel = new ethers.Contract(config.aludelAddress, aludelAbi, signer);
+
   const [
     ,
     ,
@@ -78,6 +79,7 @@ export async function getUserRewards(
         totalWeiRewards,
         totalMistRewards,
       ] = await Promise.all([
+        // exact amount of wEth equivelent all of subscriptions
         aludelContract.getCurrentStakeReward(id, lockedBalance),
         aludelContract.getCurrentVaultReward(id),
         aludelContract.getFutureStakeReward(id, lockedBalance, plusOneMonth),

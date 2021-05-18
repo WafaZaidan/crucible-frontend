@@ -9,13 +9,10 @@ import { Flex, Box } from '@chakra-ui/layout';
 import Footer from './components/layout/footer';
 import Header from './components/layout/header';
 import bg from './img/bg.jpg';
-// import Faqs from './pages/faqs';
-// import Landing from './pages/landing';
 import NoMatch from './pages/noMatch';
 import CrucibleDetail from './pages/crucibleDetail';
 import CrucibleMinting from './pages/crucibleMinting';
 import { useTokens } from './context/tokens';
-import MobileLayover from './components/modals/MobileLayover';
 import ModalRoot from './components/modals/ModalRoot';
 import { useCustomRPCNetworkListener } from './hooks/useCustomRPCNetworkListener';
 import { useEagerConnect } from './hooks/useMetamaskEagerConnect';
@@ -29,17 +26,6 @@ const App: FC = () => {
     <>
       <ModalRoot />
       <Flex
-        display={['flex', 'flex', 'none']}
-        minHeight='100vh'
-        flexDirection='column'
-        background={`url(${bg})`}
-        backgroundRepeat='no-repeat'
-        backgroundAttachment='fixed'
-        backgroundSize='cover'
-      >
-        <MobileLayover />
-      </Flex>
-      <Flex
         display={['none', 'none', 'flex']}
         minHeight='100vh'
         flexDirection='column'
@@ -52,9 +38,6 @@ const App: FC = () => {
           <Header />
           <Box flexGrow={1} px={4}>
             <Switch>
-              {/* <Route exact path={process.env.PUBLIC_URL + '/'}>
-                <Landing />
-              </Route> */}
               <Route
                 exact
                 path={process.env.PUBLIC_URL + '/'}
@@ -66,9 +49,6 @@ const App: FC = () => {
               />
               <Redirect from='/crucible/' to='/' />
 
-              {/* <Route exact path={process.env.PUBLIC_URL + '/faqs'}>
-              <Faqs />
-            </Route> */}
               <Route path='*'>
                 <NoMatch />
               </Route>

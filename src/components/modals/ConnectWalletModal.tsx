@@ -47,17 +47,17 @@ const ConnectWalletModal: FC = () => {
           <ModalCloseButton />
           <ModalBody pb={10}>
             <Button
+              isFullWidth
               onClick={() => attemptActivation(injectedConnector)}
-              width='100%'
-              leftIcon={<Image w='30px' src={MMLogo} />}
+              leftIcon={<Image w='30px' h='30px' src={MMLogo} />}
               mb={5}
             >
               Metamask
             </Button>
             <Button
+              isFullWidth
               onClick={() => attemptActivation(walletconnectConnector)}
-              width='100%'
-              leftIcon={<Image w='30px' src={WalletConnectLogo} />}
+              leftIcon={<Image w='30px' h='30px' src={WalletConnectLogo} />}
             >
               WalletConnect
             </Button>

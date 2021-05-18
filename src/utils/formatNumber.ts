@@ -28,6 +28,16 @@ const numberFormatTokenFull = Intl.NumberFormat(navigator.languages.slice(), {
   maximumFractionDigits: 18,
 });
 
+const numberFormatTokenCustom = (
+  minFractionDigits: number,
+  maxFractionDigits: number
+) =>
+  Intl.NumberFormat(navigator.languages.slice(), {
+    style: 'decimal',
+    minimumFractionDigits: minFractionDigits,
+    maximumFractionDigits: maxFractionDigits,
+  });
+
 const numberFormatPercent = Intl.NumberFormat(navigator.languages.slice(), {
   style: 'percent',
   minimumFractionDigits: 1,
@@ -74,6 +84,17 @@ export function tokenFull(value: BigNumberish, units?: number | string) {
   return numberFormatTokenFull.format(bigNumberishToNumber(value, units));
 }
 
+export function tokenCustom(
+  value: BigNumberish,
+  units?: number | string,
+  minFractionDigits = 4,
+  maxFractionDigits = 4
+) {
+  return numberFormatTokenCustom(minFractionDigits, maxFractionDigits).format(
+    bigNumberishToNumber(value, units)
+  );
+}
+
 export function percent(value: BigNumberish, units?: number | string) {
   return numberFormatPercent.format(bigNumberishToNumber(value, units));
 }
@@ -95,6 +116,7 @@ const formatNumber = {
   token,
   tokenWhole,
   tokenFull,
+  tokenCustom,
   percent,
   percentShort,
   percentLong,

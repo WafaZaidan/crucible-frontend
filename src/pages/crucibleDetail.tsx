@@ -41,10 +41,10 @@ const CrucibleDetail: FC = () => {
   return (
     <Center>
       <Flex
-        p={10}
+        p={[6, 10]}
         bg='purple.800'
         flexDir='column'
-        mt={[32, 32, 40]}
+        mt={[20, 32, 40]}
         textAlign='center'
         width={['100%', '100%', 640]}
         borderRadius='3xl'

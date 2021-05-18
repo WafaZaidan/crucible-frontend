@@ -1,7 +1,7 @@
 import { InjectedConnector } from '@web3-react/injected-connector';
 import { WalletConnectConnector } from '@web3-react/walletconnect-connector';
 
-const config = {
+export const config = {
   supportedNetworks: [1, 4],
   appUrl: 'https://alchemist.wtf',
   contactEmail: 'foo@gmail.com',

@@ -1,11 +1,10 @@
 import React, { FC } from 'react';
-import { Box, Flex, HStack, Spinner, StatGroup } from '@chakra-ui/react';
+import { Box, Flex, Spinner, Grid } from '@chakra-ui/react';
 import { Crucible } from '../../../context/crucibles';
 import useConfigVariables from '../../../hooks/useConfigVariables';
 import dayjs from 'dayjs';
 import { useCrucibles } from '../../../context/crucibles';
 import { useLpStats } from '../../../context/lp';
-// import { useNetworkStats } from '../../../context/network';
 import StatCard from '../../shared/StatCard';
 import { Tooltip } from '@chakra-ui/tooltip';
 import formatNumber from '../../../utils/formatNumber';
@@ -74,58 +73,44 @@ const LpPerformance: FC<Props> = ({ crucible }) => {
 
   return (
     <Box p={4} bg='white' color='gray.800' borderRadius='xl'>
-      <Flex
-        justifyContent='space-between'
-        alignItems='start'
-        direction='column'
+      <Grid
+        gridGap={4}
+        templateRows={['repeat(1, 1fr)', 'repeat(2, 1fr)']}
+        templateColumns={['repeat(1, 1fr)', 'repeat(2, 1fr)']}
       >
-        <HStack width='100%' direction='row'>
-          <StatGroup mt={4} alignItems='baseline' width='100%'>
-            <StatCard
-              title='Market Cap'
-              label={marketCap ? formatNumber.currency(marketCap) : '-'}
-            />
-            <StatCard
-              title='Total Value Locked'
-              label={
-                lpStats?.totalVolume
-                  ? formatNumber.currency(lpStats.totalVolume)
-                  : '-'
-              }
-            />
-            <StatCard
-              title='Inflation Rate'
-              label='1%'
-              subLabel='Every 14 days'
-            />
-          </StatGroup>
-        </HStack>
-        <HStack width='100%' direction='row'>
-          <StatGroup mt={2} alignItems='baseline' width='100%'>
-            <StatCard title='Rewards Programs' label='1' subLabel='MIST, ETH' />
-            <StatCard
-              title='Rewards Rate'
-              label={`${formatNumber.tokenWhole(
-                weeklyRewardsRate
-              )} MIST / week`}
-              subLabel={formatNumber.tokenWhole(rewardsRateIncrease)}
-              arrowOnSubLabel
-            />
-            <Tooltip
-              hasArrow
-              label='Rewards multiplier increases from x1 to x10 over this period.'
-              bg='gray.800'
-              color='white'
-              placement='top'
-              offset={[0, 16]}
-            >
-              <Flex style={{ alignSelf: 'stretch' }}>
-                <StatCard title='Reward Scaling Period' label='60 days' />
-              </Flex>
-            </Tooltip>
-          </StatGroup>
-        </HStack>
-      </Flex>
+        <StatCard
+          title='Market Cap'
+          label={marketCap ? formatNumber.currency(marketCap) : '-'}
+        />
+        <StatCard
+          title='Total Value Locked'
+          label={
+            lpStats?.totalVolume
+              ? formatNumber.currency(lpStats.totalVolume)
+              : '-'
+          }
+        />
+        <StatCard title='Inflation Rate' label='1%' subLabel='Every 14 days' />
+        <StatCard title='Rewards Programs' label='1' subLabel='MIST, ETH' />
+        <StatCard
+          title='Rewards Rate'
+          label={`${formatNumber.tokenWhole(weeklyRewardsRate)} MIST / week`}
+          subLabel={formatNumber.tokenWhole(rewardsRateIncrease)}
+          arrowOnSubLabel
+        />
+        <Tooltip
+          hasArrow
+          label='Rewards multiplier increases from x1 to x10 over this period.'
+          bg='gray.800'
+          color='white'
+          placement='top'
+          offset={[0, 16]}
+        >
+          <Flex style={{ alignSelf: 'stretch' }}>
+            <StatCard title='Reward Scaling Period' label='60 days' />
+          </Flex>
+        </Tooltip>
+      </Grid>
     </Box>
   );
 };
