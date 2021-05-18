@@ -17,18 +17,13 @@ import CrucibleMinting from './pages/crucibleMinting';
 import { useTokens } from './context/tokens';
 import MobileLayover from './components/modals/MobileLayover';
 import ModalRoot from './components/modals/ModalRoot';
-import { Provider } from 'react-redux';
 import { useCustomRPCNetworkListener } from './hooks/useCustomRPCNetworkListener';
 import { useEagerConnect } from './hooks/useMetamaskEagerConnect';
-import { useTransactions } from './store/transactions/useTransactions';
 
 const App: FC = () => {
   useTokens();
   useCustomRPCNetworkListener();
   useEagerConnect();
-
-  const { transactions } = useTransactions();
-  console.log(transactions);
 
   return (
     <>
