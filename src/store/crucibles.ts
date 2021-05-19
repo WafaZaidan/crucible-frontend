@@ -12,52 +12,44 @@
 
   TODO:
   1. Wrap thunk to handle errors and show toasts
-  2. Concat user 'imported' assets with curated
-  3. Add _getCompatibleAssets thunk
-  4. Add _addCustomAsset thunk
 */
 
 import { store } from './store';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { getOwnedCruciblesNew } from '../contracts/getOwnedCrucibles';
-import { Erc20Detailed } from '../interfaces/Erc20Detailed';
 import { useAppDispatch, useAppSelector } from './hooks';
-import { filterAsync, mapAsync } from '../utils/async';
 import { THUNK_PREFIX, SLICE_NAME } from './enum';
 import { Web3Provider } from '@ethersproject/providers';
-import { castDraft } from 'immer';
 import { Signer } from 'ethers';
+import { getContainedAssets } from '../helpers/crucible';
+
+interface ContainedAsset {
+  contractAddress: string;
+  tokenName: string;
+  tokenSymbol: string;
+}
 
 interface Crucible {
   id: string;
   owner: string;
   mintTimestamp: number;
-  containedAssets: Erc20Detailed[];
+  containedAssets: ContainedAsset[];
 }
 
 interface CruciblesState {
   crucibles: Crucible[];
-  curatedAssets: Erc20Detailed[];
-  compatibleAssets: Erc20Detailed[];
-
   cruciblesLoading: boolean;
-  compatibleAssetsLoading: boolean;
 }
 
 const initialState: CruciblesState = {
   crucibles: [],
-  curatedAssets: [],
-  compatibleAssets: [],
-
   cruciblesLoading: false,
-  compatibleAssetsLoading: false,
 };
 
 const _getOwnedCrucibles = createAsyncThunk(
   THUNK_PREFIX.GET_OWNED_CRUCIBLED,
   async ({ signer, library }: { signer: Signer; library: Web3Provider }) => {
     const { crucibleFactoryAddress } = store.getState().config.selectedConfig;
-    const { curatedAssets } = store.getState().crucibles;
 
     const crucibles = await getOwnedCruciblesNew(
       crucibleFactoryAddress,
@@ -65,19 +57,15 @@ const _getOwnedCrucibles = createAsyncThunk(
       library
     );
 
-    const cruciblesWithContainedAssets = await mapAsync(
-      crucibles,
-      async (crucible) => {
-        const curatedAssetsWithBalance = await filterAsync(
-          curatedAssets,
-          async (asset) => (await asset.balanceOf(crucible.id)).gte(0)
-        );
+    const containedAssetsList: ContainedAsset[][] = await Promise.all(
+      crucibles.map((crucible) => getContainedAssets(crucible.id))
+    );
 
-        return {
-          ...crucible,
-          containedAssets: castDraft(curatedAssetsWithBalance),
-        };
-      }
+    const cruciblesWithContainedAssets: Crucible[] = crucibles.map(
+      (crucible, idx) => ({
+        ...crucible,
+        containedAssets: containedAssetsList[idx],
+      })
     );
 
     return cruciblesWithContainedAssets;
@@ -120,7 +108,12 @@ export const useCrucibles = () => {
   const getOwnedCrucibles = (signer: Signer, library: Web3Provider) =>
     dispatch(_getOwnedCrucibles({ signer, library }));
 
-  return { cruciblesLoading, crucibles, resetCrucibles, getOwnedCrucibles };
+  return {
+    crucibles,
+    resetCrucibles,
+    getOwnedCrucibles,
+    cruciblesLoading,
+  };
 };
 
 export default cruciblesSlice.reducer;
