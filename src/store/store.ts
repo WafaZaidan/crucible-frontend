@@ -10,7 +10,12 @@ export const store = configureStore({
     modals: modalsReducer,
     crucibles: cruciblesReducer,
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(logger),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: ['crucibles/getOwnedCrucibles/fulfilled'],
+      },
+    }).concat(logger),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

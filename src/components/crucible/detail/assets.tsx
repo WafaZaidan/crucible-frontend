@@ -34,6 +34,7 @@ const Assets = () => {
       <StatGroup>
         {crucibles.map((crucible) => (
           <StatCard
+            key={crucible.id}
             title={crucible.id}
             label={JSON.stringify(crucible.containedAssets)}
           />
