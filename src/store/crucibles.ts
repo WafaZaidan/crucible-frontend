@@ -17,6 +17,7 @@ import { THUNK_PREFIX, SLICE_NAME } from './enum';
 import { Web3Provider } from '@ethersproject/providers';
 import { Signer } from 'ethers';
 import { getContainedAssets } from '../helpers/crucible';
+import { useWeb3React } from '@web3-react/core';
 
 interface ContainedAsset {
   contractAddress: string;
@@ -103,8 +104,10 @@ export const cruciblesSlice = createSlice({
 export const useCrucibles = () => {
   const dispatch = useAppDispatch();
 
-  const crucibleFactoryAddress = useAppSelector(
-    (state) => state.config.selectedConfig.crucibleFactoryAddress
+  const { chainId } = useWeb3React();
+
+  const { crucibleFactoryAddress } = useAppSelector(
+    (state) => state.config.config[chainId || 1]
   );
 
   const cruciblesLoading = useAppSelector(

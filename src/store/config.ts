@@ -13,7 +13,7 @@ interface ConfigOptions {
 }
 
 interface ConfigState {
-  selectedConfig: Config;
+  config: ConfigOptions;
 }
 
 const configOptions: ConfigOptions = {
@@ -32,28 +32,21 @@ const configOptions: ConfigOptions = {
 };
 
 const initialState: ConfigState = {
-  selectedConfig: configOptions[0],
+  config: configOptions,
 };
 
 export const configSlice = createSlice({
   name: 'config',
   initialState,
-  reducers: {
-    changeConfig: (state, action) => {
-      state.selectedConfig = configOptions[action.payload.network];
-    },
-  },
+  reducers: {},
 });
 
 export const useConfig = () => {
   const dispatch = useAppDispatch();
 
-  const config = useAppSelector((state) => state.config.selectedConfig);
+  const config = useAppSelector((state) => state.config.config);
 
-  const changeConfig = (network: number) =>
-    dispatch(configSlice.actions.changeConfig({ network }));
-
-  return { config, changeConfig };
+  return { config };
 };
 
 export default configSlice.reducer;
