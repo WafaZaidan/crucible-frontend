@@ -62,10 +62,7 @@ export const _getOwnedCrucibles = createAsyncThunk(
     );
 
     const containedAssetsList: ContainedAsset[][] = await Promise.all(
-      // Using wallet address instead of crucible.id for testing
-      crucibles.map((crucible) =>
-        getContainedAssets('0xFC107a6D78F6B7bC21924010374e5a428461aef5')
-      )
+      crucibles.map((crucible) => getContainedAssets(crucible.id))
     );
 
     const cruciblesWithContainedAssets: Crucible[] = crucibles.map(
