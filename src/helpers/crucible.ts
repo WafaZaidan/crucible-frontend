@@ -40,6 +40,7 @@ export interface AssetWithBalance {
 }
 
 export const getContainedAssets = async (address: string) => {
+  // TODO: Add these to config
   const apiKey = 'Y44B2NZ5TEZGIG7IAK2M4AYATEYQUX79E4';
   const endpoint = `https://api.etherscan.io/api?module=account&action=tokentx&address=${address}&startblock=0&endblock=999999999&sort=asc&apikey=${apiKey}`;
 
@@ -49,21 +50,32 @@ export const getContainedAssets = async (address: string) => {
 
     const assetsWithBalance: AssetWithBalance = {};
 
+    if (data.status === '0') {
+      throw new Error('Max rate limit reached');
+    }
+
     data.result.map((tx) => {
       if (tx.contractAddress in assetsWithBalance) {
         assetsWithBalance[tx.contractAddress] = {
           ...assetsWithBalance[tx.contractAddress],
           value:
             tx.from === address
-              ? assetsWithBalance[tx.contractAddress].value.sub(tx.value)
-              : assetsWithBalance[tx.contractAddress].value.sub(tx.value),
+              ? assetsWithBalance[tx.contractAddress].value.sub(
+                  BigNumber.from(tx.value)
+                )
+              : assetsWithBalance[tx.contractAddress].value.sub(
+                  BigNumber.from(tx.value)
+                ),
         };
       } else {
         assetsWithBalance[tx.contractAddress] = {
           contractAddress: tx.contractAddress,
           tokenName: tx.tokenName,
           tokenSymbol: tx.tokenSymbol,
-          value: tx.from === address ? tx.value.mul(-1) : tx.value,
+          value:
+            tx.from === address
+              ? BigNumber.from(tx.value).mul(-1)
+              : BigNumber.from(tx.value),
         };
       }
       return tx;
@@ -84,6 +96,8 @@ export const getContainedAssets = async (address: string) => {
 
     return resultsArray;
   } catch (err) {
+    // TODO: Handle error in store
+    alert(err);
     throw err;
   }
 };

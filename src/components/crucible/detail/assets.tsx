@@ -1,3 +1,4 @@
+// TEST PAGE
 import { useEffect } from 'react';
 import { useWeb3React } from '@web3-react/core';
 import { useCrucibles } from '../../../store/crucibles';
@@ -41,7 +42,7 @@ const Assets = () => {
       </div>
       <div>
         <button onClick={() => getOwnedCrucibles(library.getSigner(), library)}>
-          Get crucibles
+          Refresh crucibles
         </button>
       </div>
     </div>

@@ -20,8 +20,9 @@ const CrucibleTabs: FC<Props> = ({ crucible }) => {
 
   return (
     <Box position='relative'>
-      <Tabs align='center' noOfLines={1} isFitted>
+      <Tabs align='center' noOfLines={1} isFitted isLazy>
         <TabList bg='gray.700' borderRadius='xl' border='none' p={2}>
+          <Tab {...tabProps}>Assets</Tab>
           <Tab {...tabProps}>Rewards</Tab>
           <Tab {...tabProps}>LP Performance</Tab>
           <Tab {...tabProps}>Network</Tab>
@@ -29,7 +30,6 @@ const CrucibleTabs: FC<Props> = ({ crucible }) => {
 
         <TabPanels>
           <TabPanel px={0} pb={0}>
-            {/* Placeholder */}
             <Assets />
           </TabPanel>
           <TabPanel px={0} pb={0}>

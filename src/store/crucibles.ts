@@ -3,18 +3,13 @@
   The Crucible smart contract does not have a function to get a list of assets stored within the Crucible
 
   Workaround:
-  1. Hardcode a curated list of assets (e.g. MIST, ETH, MIST-ETH-LP)
-  2. For each crucible, check the balance of each asset from the curated list
-  3. If there is a balance, add it to the containedAssetsList
-  4. Allow users to 'import' more assets via an asset selection modal
-  5. The assets in the asset selection modal will come from a BE endpoint
-  6. Check that the user selected asset(s) have a balance and add it to the containedAssetsList if true
+  1. Use etherscan API to get list of ERC-20 transactions
+  2. Check the final balance for each ERC-20 token after all transactions (last 10,000)
 
   TODO:
   1. Wrap thunk to handle errors and show toasts
 */
 
-import { store } from './store';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { getOwnedCruciblesNew } from '../contracts/getOwnedCrucibles';
 import { useAppDispatch, useAppSelector } from './hooks';
@@ -41,16 +36,24 @@ interface CruciblesState {
   cruciblesLoading: boolean;
 }
 
+interface GetOwnedCruciblesArgs {
+  signer: Signer;
+  library: Web3Provider;
+  crucibleFactoryAddress: string;
+}
+
 const initialState: CruciblesState = {
   crucibles: [],
   cruciblesLoading: false,
 };
 
-const _getOwnedCrucibles = createAsyncThunk(
+export const _getOwnedCrucibles = createAsyncThunk(
   THUNK_PREFIX.GET_OWNED_CRUCIBLED,
-  async ({ signer, library }: { signer: Signer; library: Web3Provider }) => {
-    const { crucibleFactoryAddress } = store.getState().config.selectedConfig;
-
+  async ({
+    signer,
+    library,
+    crucibleFactoryAddress,
+  }: GetOwnedCruciblesArgs) => {
     const crucibles = await getOwnedCruciblesNew(
       crucibleFactoryAddress,
       signer,
@@ -58,7 +61,10 @@ const _getOwnedCrucibles = createAsyncThunk(
     );
 
     const containedAssetsList: ContainedAsset[][] = await Promise.all(
-      crucibles.map((crucible) => getContainedAssets(crucible.id))
+      // Using wallet address instead of crucible.id for testing
+      crucibles.map((crucible) =>
+        getContainedAssets('0xFC107a6D78F6B7bC21924010374e5a428461aef5')
+      )
     );
 
     const cruciblesWithContainedAssets: Crucible[] = crucibles.map(
@@ -97,16 +103,21 @@ export const cruciblesSlice = createSlice({
 export const useCrucibles = () => {
   const dispatch = useAppDispatch();
 
+  const crucibleFactoryAddress = useAppSelector(
+    (state) => state.config.selectedConfig.crucibleFactoryAddress
+  );
+
   const cruciblesLoading = useAppSelector(
     (state) => state.crucibles.cruciblesLoading
   );
+
   const crucibles = useAppSelector((state) => state.crucibles.crucibles);
 
   const resetCrucibles = () =>
     dispatch(cruciblesSlice.actions.resetCrucibles());
 
   const getOwnedCrucibles = (signer: Signer, library: Web3Provider) =>
-    dispatch(_getOwnedCrucibles({ signer, library }));
+    dispatch(_getOwnedCrucibles({ signer, library, crucibleFactoryAddress }));
 
   return {
     crucibles,
