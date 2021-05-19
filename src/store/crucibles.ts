@@ -41,6 +41,7 @@ interface GetOwnedCruciblesArgs {
   signer: Signer;
   library: Web3Provider;
   crucibleFactoryAddress: string;
+  chainId: number;
 }
 
 const initialState: CruciblesState = {
@@ -54,6 +55,7 @@ export const _getOwnedCrucibles = createAsyncThunk(
     signer,
     library,
     crucibleFactoryAddress,
+    chainId,
   }: GetOwnedCruciblesArgs) => {
     const crucibles = await getOwnedCruciblesNew(
       crucibleFactoryAddress,
@@ -62,7 +64,7 @@ export const _getOwnedCrucibles = createAsyncThunk(
     );
 
     const containedAssetsList: ContainedAsset[][] = await Promise.all(
-      crucibles.map((crucible) => getContainedAssets(crucible.id))
+      crucibles.map((crucible) => getContainedAssets(crucible.id, chainId))
     );
 
     const cruciblesWithContainedAssets: Crucible[] = crucibles.map(
@@ -102,7 +104,7 @@ export const cruciblesSlice = createSlice({
 export const useCrucibles = () => {
   const dispatch = useAppDispatch();
 
-  const { chainId } = useWeb3React();
+  const { chainId = 1 } = useWeb3React();
 
   const { crucibleFactoryAddress } = useAppSelector(
     (state) => state.config.config[chainId || 1]
@@ -118,7 +120,9 @@ export const useCrucibles = () => {
     dispatch(cruciblesSlice.actions.resetCrucibles());
 
   const getOwnedCrucibles = (signer: Signer, library: Web3Provider) =>
-    dispatch(_getOwnedCrucibles({ signer, library, crucibleFactoryAddress }));
+    dispatch(
+      _getOwnedCrucibles({ signer, library, crucibleFactoryAddress, chainId })
+    );
 
   return {
     crucibles,

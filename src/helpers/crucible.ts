@@ -39,10 +39,13 @@ export interface AssetWithBalance {
   [key: string]: Asset;
 }
 
-export const getContainedAssets = async (address: string) => {
-  // TODO: Add these to config
+export const getContainedAssets = async (address: string, chainId: number) => {
+  // TODO: Add api key config
   const apiKey = 'Y44B2NZ5TEZGIG7IAK2M4AYATEYQUX79E4';
-  const endpoint = `https://api.etherscan.io/api?module=account&action=tokentx&address=${address}&startblock=0&endblock=999999999&sort=asc&apikey=${apiKey}`;
+  const endpoint =
+    chainId === 1
+      ? `https://api.etherscan.io/api?module=account&action=tokentx&address=${address}&startblock=0&endblock=999999999&sort=asc&apikey=${apiKey}`
+      : `https://api-rinkeby.etherscan.io/api?module=account&action=tokentx&address=${address}&startblock=0&endblock=999999999&sort=asc&apikey=${apiKey}`;
 
   try {
     const response = await fetch(endpoint);
