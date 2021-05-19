@@ -2,6 +2,10 @@
 import { useEffect } from 'react';
 import { useWeb3React } from '@web3-react/core';
 import { useCrucibles } from '../../../store/crucibles';
+import { Box, VStack } from '@chakra-ui/layout';
+import { StatGroup } from '@chakra-ui/stat';
+import { Button } from '@chakra-ui/button';
+import StatCard from '../../shared/StatCard';
 
 const Assets = () => {
   const { library } = useWeb3React();
@@ -26,26 +30,23 @@ const Assets = () => {
   }
 
   return (
-    <div>
-      <div>
+    <Box p={[4, 8]} bg='white' color='gray.800' borderRadius='xl'>
+      <StatGroup>
         {crucibles.map((crucible) => (
-          <div>
-            <div>{crucible.id}</div>
-            {crucible.containedAssets.map((asset) => (
-              <div>{asset.tokenName}</div>
-            ))}
-          </div>
+          <StatCard
+            title={crucible.id}
+            label={JSON.stringify(crucible.containedAssets)}
+          />
         ))}
-      </div>
-      <div>
-        <button onClick={() => resetCrucibles()}>Reset crucibles</button>
-      </div>
-      <div>
-        <button onClick={() => getOwnedCrucibles(library.getSigner(), library)}>
+      </StatGroup>
+
+      <VStack>
+        <Button onClick={() => resetCrucibles()}>Reset crucibles</Button>
+        <Button onClick={() => getOwnedCrucibles(library.getSigner(), library)}>
           Refresh crucibles
-        </button>
-      </div>
-    </div>
+        </Button>
+      </VStack>
+    </Box>
   );
 };
 

@@ -50,8 +50,12 @@ export const getContainedAssets = async (address: string) => {
 
     const assetsWithBalance: AssetWithBalance = {};
 
-    if (data.status === '0') {
+    if (data.message === 'Max rate limit reached') {
       throw new Error('Max rate limit reached');
+    }
+
+    if (data.message === 'No transactions found') {
+      return [];
     }
 
     data.result.map((tx) => {
