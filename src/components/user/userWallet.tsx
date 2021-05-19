@@ -60,7 +60,7 @@ const UserWallet: FC = () => {
             height='44px'
             variant='ghost'
             position='absolute'
-            right={0}
+            right={5}
             icon={<TiPower />}
             aria-label='disconnect'
             onClick={deactivate}

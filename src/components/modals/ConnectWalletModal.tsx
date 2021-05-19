@@ -51,6 +51,7 @@ const ConnectWalletModal: FC = () => {
               onClick={() => attemptActivation(injectedConnector)}
               leftIcon={<Image w='30px' h='30px' src={MMLogo} />}
               mb={5}
+              display={['none', null, 'flex']}
             >
               Metamask
             </Button>
