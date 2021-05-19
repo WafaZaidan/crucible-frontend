@@ -28,7 +28,6 @@ const CruciblesListView: FC = () => {
               key={crucible.id}
               crucible={crucible}
               isRewardsLoading={isRewardsLoading}
-              isExpanded={crucibles.length === 1}
             />
           );
         })}
