@@ -96,8 +96,6 @@ export const getContainedAssets = async (address: string) => {
 
     return resultsArray;
   } catch (err) {
-    // TODO: Handle error in store
-    alert(err);
     throw err;
   }
 };

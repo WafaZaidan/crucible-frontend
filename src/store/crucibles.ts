@@ -94,7 +94,8 @@ export const cruciblesSlice = createSlice({
         state.cruciblesLoading = false;
         state.crucibles = action.payload;
       })
-      .addCase(_getOwnedCrucibles.rejected, (state) => {
+      .addCase(_getOwnedCrucibles.rejected, (state, action) => {
+        console.log(action.error?.message);
         state.cruciblesLoading = false;
         state.crucibles = [];
       });
