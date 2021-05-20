@@ -1,6 +1,5 @@
 // TEST PAGE
 import { useEffect } from 'react';
-import { useWeb3React } from '@web3-react/core';
 import { useCrucibles } from '../../../store/crucibles';
 import { Box, VStack } from '@chakra-ui/layout';
 import { StatGroup } from '@chakra-ui/stat';
@@ -8,7 +7,6 @@ import { Button } from '@chakra-ui/button';
 import StatCard from '../../shared/StatCard';
 
 const Assets = () => {
-  const { library } = useWeb3React();
   const {
     crucibles,
     cruciblesLoading,
@@ -17,7 +15,7 @@ const Assets = () => {
   } = useCrucibles();
 
   useEffect(() => {
-    getOwnedCrucibles(library.getSigner(), library);
+    getOwnedCrucibles();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -43,9 +41,7 @@ const Assets = () => {
 
       <VStack>
         <Button onClick={() => resetCrucibles()}>Reset crucibles</Button>
-        <Button onClick={() => getOwnedCrucibles(library.getSigner(), library)}>
-          Refresh crucibles
-        </Button>
+        <Button onClick={() => getOwnedCrucibles()}>Refresh crucibles</Button>
       </VStack>
     </Box>
   );

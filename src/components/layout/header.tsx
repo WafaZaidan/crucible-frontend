@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import Logo from '../shared/logo';
-import { __DEV__ } from '../../utils/constants';
+import { __PROD__ } from '../../utils/constants';
 import { Flex, GridItem, Grid } from '@chakra-ui/layout';
 import UserBalance from '../user/userBalance';
 import UserWallet from '../user/userWallet';
@@ -20,7 +20,7 @@ const Header: FC = () => {
       >
         <GridItem colSpan={[1, null, null, 2]}>
           <Logo />
-          {__DEV__ && (
+          {!__PROD__ && (
             <FormControl display='flex' alignItems='center'>
               <FormLabel mb='0'>1.3.0-b.3</FormLabel>
               <Switch
