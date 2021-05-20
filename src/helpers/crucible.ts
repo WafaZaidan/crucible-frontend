@@ -55,12 +55,8 @@ export const getContainedAssets = async (
 
     const assetsWithBalance: AssetWithBalance = {};
 
-    if (data.message === 'Max rate limit reached') {
-      throw new Error('Max rate limit reached');
-    }
-
-    if (data.message === 'No transactions found') {
-      return [];
+    if (data.message !== 'OK') {
+      throw new Error((data.result as unknown) as string);
     }
 
     data.result.map((tx) => {
