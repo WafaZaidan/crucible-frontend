@@ -22,16 +22,16 @@ const CrucibleTabs: FC<Props> = ({ crucible }) => {
     <Box position='relative'>
       <Tabs align='center' noOfLines={1} isFitted isLazy>
         <TabList bg='gray.700' borderRadius='xl' border='none' p={2}>
-          {/* <Tab {...tabProps}>Assets</Tab> */}
+          {/*<Tab {...tabProps}>Assets</Tab>*/}
           <Tab {...tabProps}>Rewards</Tab>
           <Tab {...tabProps}>LP Performance</Tab>
           <Tab {...tabProps}>Network</Tab>
         </TabList>
 
         <TabPanels>
-          {/* <TabPanel px={0} pb={0}>
-            <Assets />
-          </TabPanel> */}
+          {/*<TabPanel px={0} pb={0}>*/}
+          {/*  <Assets />*/}
+          {/*</TabPanel>*/}
           <TabPanel px={0} pb={0}>
             <Rewards crucible={crucible} />
           </TabPanel>
