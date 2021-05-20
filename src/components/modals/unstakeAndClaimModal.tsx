@@ -36,6 +36,7 @@ import bigNumberishToNumber from '../../utils/bigNumberishToNumber';
 import getStep from '../../utils/getStep';
 import onNumberInputChange from '../../utils/onNumberInputChange';
 import useContracts from '../../contracts/useContracts';
+import { parseUnits } from '@ethersproject/units';
 
 type unstakeAndClaimParams = Parameters<
   (signer: any, crucibleAddress: string, amount: BigNumber) => void
@@ -43,10 +44,15 @@ type unstakeAndClaimParams = Parameters<
 
 type Props = {
   crucible: Crucible;
+  subscriptionBoundaries: BigNumber[];
   onClose: () => void;
 };
 
-const UnstakeAndClaimModal: FC<Props> = ({ onClose, crucible }) => {
+const UnstakeAndClaimModal: FC<Props> = ({
+  onClose,
+  crucible,
+  subscriptionBoundaries,
+}) => {
   const { cruciblesOnCurrentNetwork } = useCrucibles();
   const { library, chainId } = useWeb3React();
   const [isLoading, setIsLoading] = useState(false);
@@ -75,11 +81,32 @@ Follow this guide to privately withdraw your stake: https://github.com/Taichi-Ne
       return;
     }
 
+    let needsAdjustment = false;
+
+    const setNeedsAdjustment = () => {
+      needsAdjustment = true;
+    };
+
+    const adjust = (value: BigNumber) => {
+      if (needsAdjustment) {
+        return value.add(parseUnits('1', 'wei'));
+      }
+      return value;
+    };
+
+    if (isMax) {
+      subscriptionBoundaries.some((boundary) => boundary.eq(lockedBalance)) &&
+        setNeedsAdjustment();
+    } else {
+      subscriptionBoundaries.some((boundary) => boundary.eq(amountBigNumber)) &&
+        setNeedsAdjustment();
+    }
+
     const signer = library?.getSigner();
     invokeContract<unstakeAndClaimParams>(
       signer,
       crucible.id,
-      isMax ? lockedBalance : amountBigNumber
+      isMax ? lockedBalance : adjust(amountBigNumber)
     );
     setIsLoading(false);
   };

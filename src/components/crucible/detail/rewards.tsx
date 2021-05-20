@@ -1,7 +1,6 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 import {
   Box,
-  Flex,
   Grid,
   GridItem,
   HStack,
@@ -10,8 +9,9 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/layout';
-import { Progress, StatGroup } from '@chakra-ui/react';
+import { Progress } from '@chakra-ui/react';
 import { Crucible } from '../../../context/crucibles';
+import { BigNumber } from '@ethersproject/bignumber';
 import { Button } from '@chakra-ui/button';
 import dayjs from 'dayjs';
 import UnstakeAndClaimModal from '../../modals/unstakeAndClaimModal';
@@ -73,6 +73,21 @@ const Rewards: FC<Props> = ({ crucible }) => {
   const isInFlight = () => {
     return !!localStorage.getItem('inFlightSubscriptionHash');
   };
+
+  const subscriptionBoundaries = useMemo(() => {
+    if (crucible.stakes.length >= 1) {
+      const flattened = crucible.stakes
+        .map((stake) => ({
+          timestamp: Number(stake.timestamp),
+          amount: stake.amount,
+        }))
+        .reverse();
+
+      let sum = BigNumber.from(0);
+      return flattened.map((v) => (sum = sum.add(v.amount)));
+    }
+    return [];
+  }, [crucible]);
 
   return (
     <Box p={[4, 8]} bg='white' color='gray.800' borderRadius='xl'>
@@ -222,6 +237,7 @@ const Rewards: FC<Props> = ({ crucible }) => {
       {claimRewardsModalOpen && (
         <UnstakeAndClaimModal
           crucible={crucible}
+          subscriptionBoundaries={subscriptionBoundaries}
           onClose={() => setClaimRewardsModalOpen(false)}
         />
       )}
