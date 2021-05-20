@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
 import Rewards from './rewards';
 import LpPerformance from './lpPerf';
+// import Assets from './assets';
 import NetworkStats from './networkStats';
 import { Box } from '@chakra-ui/layout';
 import { Crucible } from '../../../context/crucibles';
@@ -19,14 +20,18 @@ const CrucibleTabs: FC<Props> = ({ crucible }) => {
 
   return (
     <Box position='relative'>
-      <Tabs align='center' noOfLines={1} isFitted>
+      <Tabs align='center' noOfLines={1} isFitted isLazy>
         <TabList bg='gray.700' borderRadius='xl' border='none' p={2}>
+          {/* <Tab {...tabProps}>Assets</Tab> */}
           <Tab {...tabProps}>Rewards</Tab>
           <Tab {...tabProps}>LP Performance</Tab>
           <Tab {...tabProps}>Network</Tab>
         </TabList>
 
         <TabPanels>
+          {/* <TabPanel px={0} pb={0}>
+            <Assets />
+          </TabPanel> */}
           <TabPanel px={0} pb={0}>
             <Rewards crucible={crucible} />
           </TabPanel>

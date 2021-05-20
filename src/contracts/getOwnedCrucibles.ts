@@ -106,4 +106,42 @@ async function getOwnedCrucibles(
   });
 }
 
+// TODO: Replace getOwnedCrucibles with getOwnedCruciblesNew
+export const getOwnedCruciblesNew = async (
+  crucibleFactoryAddress: string,
+  signer: any,
+  provider: any
+) => {
+  const address = await signer.getAddress();
+  const crucibleFactory = new ethers.Contract(
+    crucibleFactoryAddress,
+    crucibleFactoryAbi,
+    signer
+  );
+
+  const filter = crucibleFactory.filters.Transfer(null, address);
+  const crucibleEvents = await crucibleFactory.queryFilter(filter, 0, 'latest');
+  const ids = getCrucibleIdsFromEvents(crucibleEvents);
+
+  const crucibles = await Promise.all(
+    ids.map(async ({ id, event }) => {
+      const ownerPromise = crucibleFactory.ownerOf(id);
+      // TODO get the block in which the crucible was actually minted, not the block it was transferred to the latest owner
+      const blockPromise = provider.getBlock(event.blockNumber);
+
+      const [owner, block] = await Promise.all([ownerPromise, blockPromise]);
+
+      return {
+        id,
+        owner,
+        mintTimestamp: block.timestamp,
+      };
+    })
+  );
+
+  return crucibles.filter((crucible) => {
+    return crucible.owner === address;
+  });
+};
+
 export default getOwnedCrucibles;
