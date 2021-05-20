@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import configReducer from './config';
 import modalsReducer from './modals';
 import cruciblesReducer from './crucibles';
+import featureFlagReducer from './featureFlag';
 import logger from 'redux-logger';
 
 export const store = configureStore({
@@ -9,6 +10,7 @@ export const store = configureStore({
     config: configReducer,
     modals: modalsReducer,
     crucibles: cruciblesReducer,
+    featureFlag: featureFlagReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
