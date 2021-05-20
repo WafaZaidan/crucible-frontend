@@ -106,7 +106,7 @@ async function getOwnedCrucibles(
   });
 }
 
-// TODO: Placeholder
+// TODO: Replace getOwnedCrucibles with getOwnedCruciblesNew
 export const getOwnedCruciblesNew = async (
   crucibleFactoryAddress: string,
   signer: any,

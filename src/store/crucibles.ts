@@ -7,7 +7,7 @@
   2. Check the final balance for each ERC-20 token after all transactions (last 10,000)
 
   TODO:
-  1. Wrap thunk to handle errors and show toasts
+  1. Standardize error handling
 */
 
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
@@ -42,6 +42,7 @@ interface GetOwnedCruciblesArgs {
   library: Web3Provider;
   crucibleFactoryAddress: string;
   chainId: number;
+  etherscanApiKey: string;
 }
 
 const initialState: CruciblesState = {
@@ -56,6 +57,7 @@ export const _getOwnedCrucibles = createAsyncThunk(
     library,
     crucibleFactoryAddress,
     chainId,
+    etherscanApiKey,
   }: GetOwnedCruciblesArgs) => {
     const crucibles = await getOwnedCruciblesNew(
       crucibleFactoryAddress,
@@ -64,7 +66,9 @@ export const _getOwnedCrucibles = createAsyncThunk(
     );
 
     const containedAssetsList: ContainedAsset[][] = await Promise.all(
-      crucibles.map((crucible) => getContainedAssets(crucible.id, chainId))
+      crucibles.map((crucible) =>
+        getContainedAssets(crucible.id, chainId, etherscanApiKey)
+      )
     );
 
     const cruciblesWithContainedAssets: Crucible[] = crucibles.map(
@@ -94,7 +98,6 @@ export const cruciblesSlice = createSlice({
         state.crucibles = action.payload;
       })
       .addCase(_getOwnedCrucibles.rejected, (state, action) => {
-        console.log(action.error?.message);
         state.cruciblesLoading = false;
         state.crucibles = [];
       });
@@ -106,8 +109,8 @@ export const useCrucibles = () => {
 
   const { chainId = 1 } = useWeb3React();
 
-  const { crucibleFactoryAddress } = useAppSelector(
-    (state) => state.config.config[chainId || 1]
+  const { crucibleFactoryAddress, etherscanApiKey } = useAppSelector(
+    (state) => state.config.config[chainId]
   );
 
   const cruciblesLoading = useAppSelector(
@@ -121,7 +124,13 @@ export const useCrucibles = () => {
 
   const getOwnedCrucibles = (signer: Signer, library: Web3Provider) =>
     dispatch(
-      _getOwnedCrucibles({ signer, library, crucibleFactoryAddress, chainId })
+      _getOwnedCrucibles({
+        signer,
+        library,
+        crucibleFactoryAddress,
+        chainId,
+        etherscanApiKey,
+      })
     );
 
   return {
