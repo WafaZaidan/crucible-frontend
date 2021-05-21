@@ -14,8 +14,7 @@ import { useTransactions } from '../../store/transactions/reducer';
 const UserWallet: FC = () => {
   const { deactivate, account, chainId, connector } = useWeb3React();
   const { openModal } = useModal();
-  const { pendingTransactions, completedTransactions } = useTransactions();
-  const txnCount = [...pendingTransactions, ...completedTransactions].length;
+  const { pendingTransactions } = useTransactions();
   const isWalletMetamask = connector === injectedConnector;
 
   const openWalletConnectionModal = () => {
@@ -55,7 +54,7 @@ const UserWallet: FC = () => {
           >
             {truncate(account)}
           </Button>
-          {txnCount > 0 && (
+          {pendingTransactions.length > 0 && (
             <Tag
               onClick={openWalletInfoModal}
               colorScheme='red'
@@ -68,7 +67,7 @@ const UserWallet: FC = () => {
               bgColor='rgba(229, 62, 62)'
               cursor='pointer'
             >
-              {txnCount}
+              {pendingTransactions.length}
             </Tag>
           )}
         </Box>

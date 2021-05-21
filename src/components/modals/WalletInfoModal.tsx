@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import {
   Modal,
   ModalBody,
@@ -23,7 +23,7 @@ import {
 } from 'react-icons/all';
 import { Spinner } from '@chakra-ui/spinner';
 import { useTransactions } from '../../store/transactions/reducer';
-import { TxnStatus } from '../../store/transactions/types';
+import { TransactionList, TxnStatus } from '../../store/transactions/types';
 
 const convertTxnStatusToIcon = (status?: TxnStatus) => {
   switch (status) {
@@ -73,8 +73,10 @@ const WalletInfoModal: FC = () => {
       ? `https://etherscan.io/tx/${hash}`
       : `https://rinkeby.etherscan.io/tx/${hash}`;
 
-  const { pendingTransactions, completedTransactions } = useTransactions();
-  const txnsToDisplay = [...pendingTransactions, ...completedTransactions];
+  const {
+    transactions: { saved: savedTransactions },
+    clearSavedTransactions,
+  } = useTransactions();
 
   return (
     <>
@@ -110,13 +112,15 @@ const WalletInfoModal: FC = () => {
                 </HStack>
               </HStack>
             </Box>
-            {txnsToDisplay.length > 0 && (
+            {savedTransactions.length > 0 && (
               <Box mt={5} p={4} bg='white' color='gray.800' borderRadius='xl'>
                 <Flex justifyContent='space-between' mb={3}>
                   <Text fontWeight='bold'>Your Recent Transactions</Text>
-                  {/* <Button size='xs'>Clear All</Button> */}
+                  <Button onClick={clearSavedTransactions} size='xs'>
+                    Clear All
+                  </Button>
                 </Flex>
-                {txnsToDisplay.map((txn) => (
+                {savedTransactions.map((txn) => (
                   <>
                     <Flex
                       justifyContent='space-between'
@@ -127,16 +131,12 @@ const WalletInfoModal: FC = () => {
                       borderBottom='1px solid #EDF2F7'
                     >
                       <Box maxW='300px'>
-                        {txn.hash ? (
-                          <Link
-                            color='blue.400'
-                            href={etherscanTxLink(txn.hash)}
-                          >
-                            {txn.description}
-                          </Link>
-                        ) : (
-                          <Text>{txn.description}</Text>
-                        )}
+                        <Link
+                          color='blue.400'
+                          href={etherscanTxLink(txn.hash || '')}
+                        >
+                          {txn.description}
+                        </Link>
                       </Box>
                       {convertTxnStatusToIcon(txn.status)}
                     </Flex>

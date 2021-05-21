@@ -5,7 +5,9 @@ import _map from 'lodash/map';
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { SLICE_NAME } from '../enum';
 import {
+  CurrentTransactions,
   TransactionList,
+  TxnDetails,
   TxnState,
   TxnStatus,
   TxnType,
@@ -16,7 +18,7 @@ import { useConfig } from '../config';
 import { useNotify } from '../../context/transactions';
 
 const filterTxns = (
-  transactions: TxnState,
+  transactions: CurrentTransactions,
   filterBy: TxnStatus
 ): TransactionList => {
   // @ts-ignore
@@ -33,32 +35,63 @@ const filterTxns = (
   );
 };
 
+const updateLocalStorageSavedTransactions = (txn: TxnDetails) => {
+  const savedTxns = JSON.parse(localStorage.getItem('transactions') || '[]');
+  // @ts-ignore
+  const txnIdx = savedTxns.findIndex((t) => t.hash === txn.hash);
+
+  if (txnIdx === -1) {
+    savedTxns.push(txn);
+  } else {
+    savedTxns[txnIdx] = txn;
+  }
+  localStorage.setItem('transactions', JSON.stringify(savedTxns));
+  return savedTxns;
+};
+
 const defaultTransaction = {
   status: TxnStatus.Ready,
 };
 
 export const initialState: TxnState = {
-  [TxnType.mint]: defaultTransaction,
-  [TxnType.increaseStake]: defaultTransaction,
-  [TxnType.transfer]: defaultTransaction,
-  [TxnType.claim]: defaultTransaction,
-  [TxnType.withdraw]: defaultTransaction,
+  current: {
+    [TxnType.mint]: defaultTransaction,
+    [TxnType.increaseStake]: defaultTransaction,
+    [TxnType.transfer]: defaultTransaction,
+    [TxnType.claim]: defaultTransaction,
+    [TxnType.withdraw]: defaultTransaction,
+  },
+  saved: JSON.parse(localStorage.getItem('transactions') || '[]'),
 };
 
 export const transactionsSlice = createSlice({
   name: SLICE_NAME.TRANSACTIONS,
   initialState,
   reducers: {
+    clearSavedTransactions: (state) => {
+      localStorage.setItem('transactions', '[]');
+      state.saved = [];
+    },
     setTransactionStatus: (state, action) => {
+      const transactions = state;
       const { type, status, description, hash } = action.payload;
-      const txnState = state[type as TxnType];
-
-      state[type as TxnType] = {
-        ...txnState,
+      const currentTransaction = state.current[type as TxnType];
+      const updatedTransaction = {
+        ...currentTransaction,
         status,
-        description: description || txnState.description,
-        hash: hash || txnState.hash,
+        description: description || currentTransaction.description,
+        hash: hash || currentTransaction.hash,
       };
+
+      // save current transaction
+      transactions.current[type as TxnType] = updatedTransaction;
+
+      // save updated transaction
+      if (hash || currentTransaction.hash) {
+        transactions.saved = updateLocalStorageSavedTransactions(
+          updatedTransaction
+        );
+      }
     },
   },
 });
@@ -70,6 +103,10 @@ export const useTransactions = (): UseTransactions => {
   const { monitorTx } = useNotify();
   const configForNetwork = config[web3React.chainId || 1];
   const transactions = useAppSelector((state) => state.transactions);
+
+  const clearSavedTransactions = () => {
+    dispatch(transactionsSlice.actions.clearSavedTransactions());
+  };
 
   const transferCrucible = (crucibleId: string, transferTo: string) =>
     dispatch(
@@ -83,15 +120,20 @@ export const useTransactions = (): UseTransactions => {
     );
 
   const pendingTransactions = filterTxns(
-    transactions,
+    transactions.current,
     TxnStatus.PendingOnChain
   );
-  const completedTransactions = filterTxns(transactions, TxnStatus.Mined);
+
+  const completedTransactions = filterTxns(
+    transactions.current,
+    TxnStatus.Mined
+  );
 
   return {
     transactions,
     pendingTransactions,
     completedTransactions,
+    clearSavedTransactions,
     transferCrucible,
   };
 };
