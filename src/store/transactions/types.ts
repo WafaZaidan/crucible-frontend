@@ -16,18 +16,29 @@ export enum TxnStatus {
 }
 
 export interface TxnDetails {
-  status: TxnStatus;
+  status?: TxnStatus;
+  description?: string;
+  hash?: string;
 }
 
 export type TxnState = {
-  [key in TxnType]?: TxnDetails;
+  [key in TxnType]: TxnDetails;
 };
 
 export type TransferCrucible = {
   (crucibleId: string, transferTo: string): Promise<any>;
 };
 
+export type TransactionList = {
+  type: TxnType;
+  status?: TxnStatus;
+  description?: string;
+  hash?: string;
+}[];
+
 export interface UseTransactions {
   transactions: TxnState;
+  pendingTransactions: TransactionList;
+  completedTransactions: TransactionList;
   transferCrucible: TransferCrucible;
 }

@@ -15,15 +15,8 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/modal';
-import useContracts from '../../contracts/useContracts';
-import { useContract } from '../../hooks/useContract';
 import { ethers } from 'ethers';
-import { useHistory } from 'react-router';
-import { useWeb3React } from '@web3-react/core';
-
-type SendNFTParams = Parameters<
-  (signer: any, id: string, sendAddress: string) => void
->;
+import { useTransactions } from '../../store/transactions/reducer';
 
 type Props = {
   id: string;
@@ -31,25 +24,16 @@ type Props = {
 };
 
 const TransferModal: FC<Props> = ({ onClose, id }) => {
-  const history = useHistory();
-  const { library } = useWeb3React();
   const [error, setError] = useState('');
   const [sendAddress, setSendAddress] = useState('');
-  const { transferCrucible } = useContracts();
 
-  const successCallback = () => {
-    // TODO: Add indicator to crucible list view to show it's being transferred
-    history.push('/');
-  };
-
-  const { invokeContract, ui } = useContract(transferCrucible, successCallback);
+  const { transferCrucible } = useTransactions();
 
   const handleTransferCrucible = () => {
     setError('');
     if (ethers.utils.isAddress(sendAddress)) {
-      const signer = library?.getSigner();
-      invokeContract<SendNFTParams>(signer, id, sendAddress);
-      setSendAddress('');
+      transferCrucible(id, sendAddress);
+      onClose();
     } else {
       setError('Invalid wallet address');
     }
@@ -80,7 +64,6 @@ const TransferModal: FC<Props> = ({ onClose, id }) => {
           </ModalFooter>
         </ModalContent>
       </Modal>
-      {ui}
     </>
   );
 };

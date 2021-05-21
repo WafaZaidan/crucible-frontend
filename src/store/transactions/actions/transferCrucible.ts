@@ -4,10 +4,14 @@ import { TxnStatus, TxnType } from '../types';
 import { transactionsSlice } from '../reducer';
 import { ethers } from 'ethers';
 import { crucibleFactoryAbi } from '../../../abi/crucibleFactoryAbi';
+import { truncate } from '../../../utils/address';
 
 export const transferCrucible = createAsyncThunk(
   THUNK_PREFIX.TRANSFER_CRUCIBLE,
-  async ({ web3React, config, transferTo, crucibleId }: any, { dispatch }) => {
+  async (
+    { web3React, config, monitorTx, transferTo, crucibleId }: any,
+    { dispatch }
+  ) => {
     const { account, library } = web3React;
     const signer = library.getSigner();
     const { crucibleFactoryAddress } = config;
@@ -17,6 +21,9 @@ export const transferCrucible = createAsyncThunk(
       transactionsSlice.actions.setTransactionStatus({
         type: TxnType.transfer,
         status: TxnStatus.Initiated,
+        description: `Transfer crucible ${truncate(crucibleId)} to ${truncate(
+          transferTo
+        )}`,
       })
     );
 
@@ -41,11 +48,14 @@ export const transferCrucible = createAsyncThunk(
         'safeTransferFrom(address,address,uint256)'
       ](account, transferTo, ethers.BigNumber.from(crucibleId));
 
+      monitorTx(tx.hash);
+
       // Set transfer status to PENDING ON CHAIN
       dispatch(
         transactionsSlice.actions.setTransactionStatus({
           type: TxnType.transfer,
           status: TxnStatus.PendingOnChain,
+          hash: tx.hash,
         })
       );
 

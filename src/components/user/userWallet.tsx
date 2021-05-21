@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { HStack } from '@chakra-ui/layout';
 import { truncate } from '../../utils/address';
-import { Button, IconButton } from '@chakra-ui/react';
+import { Box, Button, IconButton, Tag } from '@chakra-ui/react';
 import { TiPower } from 'react-icons/ti';
 import { VscLink } from 'react-icons/vsc';
 import { useWeb3React } from '@web3-react/core';
@@ -9,11 +9,13 @@ import { convertChainIdToNetworkName } from '../../utils/convertChainIdToNetwork
 import { useModal } from '../../store/modals';
 import { ModalType } from '../modals/types';
 import { injectedConnector } from '../../config';
+import { useTransactions } from '../../store/transactions/reducer';
 
 const UserWallet: FC = () => {
   const { deactivate, account, chainId, connector } = useWeb3React();
   const { openModal } = useModal();
-
+  const { pendingTransactions, completedTransactions } = useTransactions();
+  const txnCount = [...pendingTransactions, ...completedTransactions].length;
   const isWalletMetamask = connector === injectedConnector;
 
   const openWalletConnectionModal = () => {
@@ -45,13 +47,31 @@ const UserWallet: FC = () => {
         >
           {convertChainIdToNetworkName(chainId)}
         </Button>
-        <Button
-          {...buttonStyles}
-          pr={isWalletMetamask ? 4 : 12}
-          onClick={openWalletInfoModal}
-        >
-          {truncate(account)}
-        </Button>
+        <Box position='relative'>
+          <Button
+            {...buttonStyles}
+            pr={isWalletMetamask ? 4 : 12}
+            onClick={openWalletInfoModal}
+          >
+            {truncate(account)}
+          </Button>
+          {txnCount > 0 && (
+            <Tag
+              onClick={openWalletInfoModal}
+              colorScheme='red'
+              size='sm'
+              variant='solid'
+              position='absolute'
+              borderRadius='full'
+              left='-5px'
+              top='-5px'
+              bgColor='rgba(229, 62, 62)'
+              cursor='pointer'
+            >
+              {txnCount}
+            </Tag>
+          )}
+        </Box>
 
         {!isWalletMetamask && (
           <IconButton
