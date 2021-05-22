@@ -26,8 +26,6 @@ const App: FC = () => {
   useCustomRPCNetworkListener();
   useEagerConnect();
 
-  console.log(process.env.PUBLIC_URL);
-
   return (
     <>
       <Provider store={store}>

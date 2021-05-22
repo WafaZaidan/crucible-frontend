@@ -25,7 +25,7 @@ const commonConfig: CommonConfig = {
 };
 
 const configOptions: ConfigOptions = {
-  0: {
+  1: {
     crucibleFactoryAddress: '0x54e0395CFB4f39beF66DBCd5bD93Cca4E9273D56',
     wethTokenAddress: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
     mistTokenAddress: '0x88ACDd2a6425c3FaAE4Bc9650Fd7E27e0Bebb7aB',

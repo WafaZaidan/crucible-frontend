@@ -3,17 +3,20 @@ import { Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/tabs';
 import { Box, Flex, Heading, Text, VStack } from '@chakra-ui/layout';
 import { useCrucibles } from '../../context/crucibles';
 import { Spinner } from '@chakra-ui/spinner';
+import { useFeatureFlag } from '../../store/featureFlag';
 import CruciblesListView from '../crucible/cruciblesListView';
 import MintingForm from './mintingForm';
+import CruciblesListViewNew from '../crucible/crucibleListViewNew';
 
 const MintingTabs: FC = () => {
   const { crucibles, isLoading } = useCrucibles();
+  const { featureFlag } = useFeatureFlag();
   const [tabIndex, setTabIndex] = useState(
-    crucibles && crucibles.length > 0 ? 1 : 0
+    featureFlag.enableMultipleRewardPrograms ? 1 : 0
   );
   const crucibleCount = crucibles?.length || 0;
   useEffect(() => {
-    if (crucibleCount > 0) {
+    if (!featureFlag.enableMultipleRewardPrograms && crucibleCount > 0) {
       setTabIndex(1);
     }
   }, [crucibleCount]);
@@ -25,7 +28,7 @@ const MintingTabs: FC = () => {
     _selected: { color: 'purple.800', bg: 'cyan.400' },
   };
 
-  if (isLoading) {
+  if (isLoading && !featureFlag.enableMultipleRewardPrograms) {
     return (
       <Flex justifyContent='center' alignItems='center' flexGrow={1}>
         <VStack>
@@ -58,7 +61,11 @@ const MintingTabs: FC = () => {
             <MintingForm />
           </TabPanel>
           <TabPanel px={0} pb={0}>
-            <CruciblesListView />
+            {featureFlag.enableMultipleRewardPrograms ? (
+              <CruciblesListViewNew />
+            ) : (
+              <CruciblesListView />
+            )}
           </TabPanel>
         </TabPanels>
       </Tabs>

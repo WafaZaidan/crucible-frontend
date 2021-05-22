@@ -68,7 +68,7 @@ export const getContainedAssets = async (
               ? assetsWithBalance[tx.contractAddress].value.sub(
                   BigNumber.from(tx.value)
                 )
-              : assetsWithBalance[tx.contractAddress].value.sub(
+              : assetsWithBalance[tx.contractAddress].value.add(
                   BigNumber.from(tx.value)
                 ),
         };

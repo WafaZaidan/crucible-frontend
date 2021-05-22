@@ -19,17 +19,17 @@ import { Signer } from 'ethers';
 import { getContainedAssets } from '../helpers/crucible';
 import { useWeb3React } from '@web3-react/core';
 
-interface ContainedAsset {
-  contractAddress: string;
-  tokenName: string;
-  tokenSymbol: string;
-}
-
-interface Crucible {
+export interface Crucible {
   id: string;
   owner: string;
   mintTimestamp: number;
   containedAssets: ContainedAsset[];
+}
+
+interface ContainedAsset {
+  contractAddress: string;
+  tokenName: string;
+  tokenSymbol: string;
 }
 
 interface CruciblesState {
