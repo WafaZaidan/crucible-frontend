@@ -19,17 +19,17 @@ import { Signer } from 'ethers';
 import { getContainedAssets } from '../helpers/crucible';
 import { useWeb3React } from '@web3-react/core';
 
-interface ContainedAsset {
-  contractAddress: string;
-  tokenName: string;
-  tokenSymbol: string;
-}
-
-interface Crucible {
+export interface Crucible {
   id: string;
   owner: string;
   mintTimestamp: number;
   containedAssets: ContainedAsset[];
+}
+
+interface ContainedAsset {
+  contractAddress: string;
+  tokenName: string;
+  tokenSymbol: string;
 }
 
 interface CruciblesState {
@@ -107,7 +107,7 @@ export const cruciblesSlice = createSlice({
 export const useCrucibles = () => {
   const dispatch = useAppDispatch();
 
-  const { chainId = 1 } = useWeb3React();
+  const { chainId = 1, library } = useWeb3React();
 
   const { crucibleFactoryAddress, etherscanApiKey } = useAppSelector(
     (state) => state.config.config[chainId]
@@ -122,7 +122,9 @@ export const useCrucibles = () => {
   const resetCrucibles = () =>
     dispatch(cruciblesSlice.actions.resetCrucibles());
 
-  const getOwnedCrucibles = (signer: Signer, library: Web3Provider) =>
+  const signer = library.getSigner();
+
+  const getOwnedCrucibles = () =>
     dispatch(
       _getOwnedCrucibles({
         signer,

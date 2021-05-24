@@ -11,7 +11,7 @@ interface FeatureFlag {
 
 const initialState: FeatureFlag = {
   features: {
-    enableMultipleRewardPrograms: true,
+    enableMultipleRewardPrograms: false,
   },
 };
 

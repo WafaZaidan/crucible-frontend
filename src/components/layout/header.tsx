@@ -1,10 +1,15 @@
 import React, { FC } from 'react';
+import Logo from '../shared/logo';
+import { __PROD__ } from '../../utils/constants';
 import { Flex, GridItem, Grid } from '@chakra-ui/layout';
 import UserBalance from '../user/userBalance';
 import UserWallet from '../user/userWallet';
-import Logo from '../shared/logo';
+import { FormControl, FormLabel } from '@chakra-ui/form-control';
+import { useFeatureFlag } from '../../store/featureFlag';
+import { Switch } from '@chakra-ui/switch';
 
 const Header: FC = () => {
+  const { toggleFlag } = useFeatureFlag();
   return (
     <>
       <Grid
@@ -15,6 +20,14 @@ const Header: FC = () => {
       >
         <GridItem colSpan={[1, null, null, 2]}>
           <Logo />
+          {!__PROD__ && (
+            <FormControl display='flex' alignItems='center'>
+              <FormLabel mb='0'>1.3.0-b.3</FormLabel>
+              <Switch
+                onChange={() => toggleFlag('enableMultipleRewardPrograms')}
+              />
+            </FormControl>
+          )}
         </GridItem>
         <GridItem display={['none', null, null, 'block']} colSpan={2}>
           <Flex justifyContent='center'>
