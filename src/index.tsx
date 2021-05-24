@@ -15,6 +15,8 @@ import { GlobalStyles } from './styles/global-styles';
 import { Global } from '@emotion/react';
 import { client } from './config/apollo';
 import { ethers } from 'ethers';
+import { Provider as ReduxProvider } from 'react-redux';
+import { store } from './store/store';
 
 import 'focus-visible/dist/focus-visible';
 
@@ -33,7 +35,9 @@ ReactDOM.render(
                 <LpStatsProvider>
                   <ChakraProvider theme={theme}>
                     <Global styles={GlobalStyles} />
-                    <App />
+                    <ReduxProvider store={store}>
+                      <App />
+                    </ReduxProvider>
                   </ChakraProvider>
                 </LpStatsProvider>
               </CruciblesProvider>

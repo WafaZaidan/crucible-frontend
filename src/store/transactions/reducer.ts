@@ -40,7 +40,7 @@ const updateLocalStorageSavedTransactions = (txn: TxnDetails) => {
   // @ts-ignore
   const txnIdx = savedTxns.findIndex((t) => t.hash === txn.hash);
 
-  if (txnIdx === -1) {
+  if (txnIdx === -1 && txn.status === TxnStatus.PendingOnChain) {
     savedTxns.push(txn);
   } else {
     savedTxns[txnIdx] = txn;
@@ -69,6 +69,7 @@ export const transactionsSlice = createSlice({
   initialState,
   reducers: {
     clearSavedTransactions: (state) => {
+      console.log('clearing txs');
       localStorage.setItem('transactions', '[]');
       state.saved = [];
     },
@@ -78,6 +79,7 @@ export const transactionsSlice = createSlice({
       const currentTransaction = state.current[type as TxnType];
       const updatedTransaction = {
         ...currentTransaction,
+        type,
         status,
         description: description || currentTransaction.description,
         hash: hash || currentTransaction.hash,
@@ -88,6 +90,7 @@ export const transactionsSlice = createSlice({
 
       // save updated transaction
       if (hash || currentTransaction.hash) {
+        console.log('saving a new tx to state: ', updatedTransaction);
         transactions.saved = updateLocalStorageSavedTransactions(
           updatedTransaction
         );

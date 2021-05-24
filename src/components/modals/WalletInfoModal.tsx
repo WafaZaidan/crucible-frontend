@@ -120,27 +120,26 @@ const WalletInfoModal: FC = () => {
                     Clear All
                   </Button>
                 </Flex>
-                {savedTransactions.map((txn) => (
-                  <>
-                    <Flex
-                      justifyContent='space-between'
-                      py={1}
-                      pl={3}
-                      pr={2}
-                      mb={3}
-                      borderBottom='1px solid #EDF2F7'
-                    >
-                      <Box maxW='300px'>
-                        <Link
-                          color='blue.400'
-                          href={etherscanTxLink(txn.hash || '')}
-                        >
-                          {txn.description}
-                        </Link>
-                      </Box>
-                      {convertTxnStatusToIcon(txn.status)}
-                    </Flex>
-                  </>
+                {savedTransactions.map((txn, i) => (
+                  <Flex
+                    key={`${txn.type}-${i}`}
+                    justifyContent='space-between'
+                    py={1}
+                    pl={3}
+                    pr={2}
+                    mb={3}
+                    borderBottom='1px solid #EDF2F7'
+                  >
+                    <Box maxW='300px'>
+                      <Link
+                        color='blue.400'
+                        href={etherscanTxLink(txn.hash || '')}
+                      >
+                        {txn.description}
+                      </Link>
+                    </Box>
+                    {convertTxnStatusToIcon(txn.status)}
+                  </Flex>
                 ))}
               </Box>
             )}

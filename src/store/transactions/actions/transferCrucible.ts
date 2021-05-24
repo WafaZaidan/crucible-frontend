@@ -48,6 +48,7 @@ export const transferCrucible = createAsyncThunk(
         'safeTransferFrom(address,address,uint256)'
       ](account, transferTo, ethers.BigNumber.from(crucibleId));
 
+      // set up the tx popup monitor
       monitorTx(tx.hash);
 
       // Set transfer status to PENDING ON CHAIN
@@ -69,6 +70,8 @@ export const transferCrucible = createAsyncThunk(
           status: TxnStatus.Mined,
         })
       );
+
+      // getOwnedCrucibles()
     } catch (e) {
       console.log(e);
       dispatch(
