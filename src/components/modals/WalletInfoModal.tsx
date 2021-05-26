@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo, useState } from 'react';
+import React, { FC, useEffect } from 'react';
 import {
   Modal,
   ModalBody,
@@ -9,7 +9,20 @@ import {
 } from '@chakra-ui/modal';
 import { useModal } from '../../store/modals';
 import { useWeb3React } from '@web3-react/core';
-import { Button, Flex, Link, Text, useToast } from '@chakra-ui/react';
+import {
+  Button,
+  Flex,
+  Link,
+  Table,
+  Text,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  useToast,
+  Tag,
+} from '@chakra-ui/react';
 import { Box, HStack } from '@chakra-ui/layout';
 import { ModalType } from './types';
 import { useConnectedWalletName } from '../../hooks/useConnectedWalletName';
@@ -23,7 +36,8 @@ import {
 } from 'react-icons/all';
 import { Spinner } from '@chakra-ui/spinner';
 import { useTransactions } from '../../store/transactions/reducer';
-import { TransactionList, TxnStatus } from '../../store/transactions/types';
+import { TxnStatus } from '../../store/transactions/types';
+import { convertChainIdToNetworkName } from '../../utils/convertChainIdToNetworkName';
 
 const convertTxnStatusToIcon = (status?: TxnStatus) => {
   switch (status) {
@@ -73,10 +87,7 @@ const WalletInfoModal: FC = () => {
       ? `https://etherscan.io/tx/${hash}`
       : `https://rinkeby.etherscan.io/tx/${hash}`;
 
-  const {
-    transactions: { saved: savedTransactions },
-    clearSavedTransactions,
-  } = useTransactions();
+  const { savedTransactions, clearSavedTransactions } = useTransactions();
 
   return (
     <>
@@ -88,6 +99,9 @@ const WalletInfoModal: FC = () => {
           <ModalBody pb={10}>
             <Flex justifyContent='space-between'>
               <Text>Connected with {walletName}</Text>
+              <Tag size='sm' colorScheme='blue'>
+                {convertChainIdToNetworkName(chainId)}
+              </Tag>
               <Button onClick={openWalletConnectModal} size='xs'>
                 Change
               </Button>
@@ -120,27 +134,35 @@ const WalletInfoModal: FC = () => {
                     Clear All
                   </Button>
                 </Flex>
-                {savedTransactions.map((txn, i) => (
-                  <Flex
-                    key={`${txn.type}-${i}`}
-                    justifyContent='space-between'
-                    py={1}
-                    pl={3}
-                    pr={2}
-                    mb={3}
-                    borderBottom='1px solid #EDF2F7'
-                  >
-                    <Box maxW='300px'>
-                      <Link
-                        color='blue.400'
-                        href={etherscanTxLink(txn.hash || '')}
-                      >
-                        {txn.description}
-                      </Link>
-                    </Box>
-                    {convertTxnStatusToIcon(txn.status)}
-                  </Flex>
-                ))}
+                <Table size='sm'>
+                  <Thead>
+                    <Tr>
+                      <Th>Txn</Th>
+                      <Th>Description</Th>
+                      <Th>Status</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {savedTransactions.map((txn, i) => (
+                      <Tr key={`${txn.type}-${i}`}>
+                        <Td>
+                          <Tag mb={1} size='sm' colorScheme='blue'>
+                            {txn.type}
+                          </Tag>
+                        </Td>
+                        <Td>
+                          <Link
+                            color='blue.400'
+                            href={etherscanTxLink(txn.hash || '')}
+                          >
+                            {txn.description}
+                          </Link>
+                        </Td>
+                        <Td>{convertTxnStatusToIcon(txn.status)}</Td>
+                      </Tr>
+                    ))}
+                  </Tbody>
+                </Table>
               </Box>
             )}
           </ModalBody>

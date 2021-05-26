@@ -1,12 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { useWeb3React } from '@web3-react/core';
-import _filter from 'lodash/filter';
-import _map from 'lodash/map';
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { SLICE_NAME } from '../enum';
 import {
-  CurrentTransactions,
-  TransactionList,
   TxnDetails,
   TxnState,
   TxnStatus,
@@ -16,52 +12,29 @@ import {
 import { transferCrucible as _transferCrucible } from './actions/transferCrucible';
 import { useConfig } from '../config';
 import { useNotify } from '../../context/transactions';
-
-const filterTxns = (
-  transactions: CurrentTransactions,
-  filterBy: TxnStatus
-): TransactionList => {
-  // @ts-ignore
-  return _filter(
-    _map(transactions, (txn, txnType) => {
-      if (txn.status === filterBy) {
-        return {
-          type: txnType,
-          ...txn,
-        };
-      }
-    }),
-    (txn) => txn !== undefined
-  );
-};
+import { useToast } from '@chakra-ui/toast';
+import { useCrucibles } from '../../context/crucibles';
 
 const updateLocalStorageSavedTransactions = (txn: TxnDetails) => {
   const savedTxns = JSON.parse(localStorage.getItem('transactions') || '[]');
   // @ts-ignore
   const txnIdx = savedTxns.findIndex((t) => t.hash === txn.hash);
 
+  // only push to local storage if the transaction is pending on chain
+  // this is to prevent saving txns that have not been actually submitted to the blockchain
   if (txnIdx === -1 && txn.status === TxnStatus.PendingOnChain) {
     savedTxns.push(txn);
   } else {
+    // otherwise update the transaction
     savedTxns[txnIdx] = txn;
   }
   localStorage.setItem('transactions', JSON.stringify(savedTxns));
+
   return savedTxns;
 };
 
-const defaultTransaction = {
-  status: TxnStatus.Ready,
-};
-
 export const initialState: TxnState = {
-  current: {
-    [TxnType.mint]: defaultTransaction,
-    [TxnType.increaseStake]: defaultTransaction,
-    [TxnType.transfer]: defaultTransaction,
-    [TxnType.claim]: defaultTransaction,
-    [TxnType.withdraw]: defaultTransaction,
-  },
-  saved: JSON.parse(localStorage.getItem('transactions') || '[]'),
+  transactions: JSON.parse(localStorage.getItem('transactions') || '[]'),
 };
 
 export const transactionsSlice = createSlice({
@@ -69,29 +42,40 @@ export const transactionsSlice = createSlice({
   initialState,
   reducers: {
     clearSavedTransactions: (state) => {
-      console.log('clearing txs');
       localStorage.setItem('transactions', '[]');
-      state.saved = [];
+      state.transactions = [];
     },
     setTransactionStatus: (state, action) => {
-      const transactions = state;
-      const { type, status, description, hash } = action.payload;
-      const currentTransaction = state.current[type as TxnType];
+      const {
+        type,
+        status,
+        description,
+        hash,
+        chainId,
+        account,
+      } = action.payload;
+
+      const currentTransaction =
+        state.transactions.filter((txn) => txn.hash === hash)[0] || {};
+
       const updatedTransaction = {
         ...currentTransaction,
         type,
         status,
+        chainId: chainId || currentTransaction.chainId,
+        account: account || currentTransaction.account,
         description: description || currentTransaction.description,
         hash: hash || currentTransaction.hash,
       };
 
-      // save current transaction
-      transactions.current[type as TxnType] = updatedTransaction;
+      if (!updatedTransaction.chainId || !updatedTransaction.account) {
+        throw new Error(
+          'Network and account must be included when adding a txn to the store'
+        );
+      }
 
-      // save updated transaction
       if (hash || currentTransaction.hash) {
-        console.log('saving a new tx to state: ', updatedTransaction);
-        transactions.saved = updateLocalStorageSavedTransactions(
+        state.transactions = updateLocalStorageSavedTransactions(
           updatedTransaction
         );
       }
@@ -104,36 +88,74 @@ export const useTransactions = (): UseTransactions => {
   const { config } = useConfig();
   const web3React = useWeb3React();
   const { monitorTx } = useNotify();
+  const { reloadBalances, reloadCrucibles } = useCrucibles();
   const configForNetwork = config[web3React.chainId || 1];
-  const transactions = useAppSelector((state) => state.transactions);
+  const { transactions } = useAppSelector((state) => state.transactions);
+  const toast = useToast();
 
   const clearSavedTransactions = () => {
+    console.log('clearing ');
     dispatch(transactionsSlice.actions.clearSavedTransactions());
   };
 
-  const transferCrucible = (crucibleId: string, transferTo: string) =>
-    dispatch(
+  const transferCrucible = async (crucibleId: string, transferTo: string) => {
+    const updateTx = (updatedTx: Partial<TxnDetails>) =>
+      dispatch(
+        transactionsSlice.actions.setTransactionStatus({
+          ...updatedTx,
+          type: TxnType.transfer,
+          account: web3React.account,
+          chainId: web3React.chainId,
+        })
+      );
+
+    const transferAction = await dispatch(
       _transferCrucible({
         config: configForNetwork,
         web3React,
         monitorTx,
+        updateTx,
         transferTo,
         crucibleId,
       })
     );
 
-  const pendingTransactions = filterTxns(
-    transactions.current,
-    TxnStatus.PendingOnChain
+    // transfer success
+    if (_transferCrucible.fulfilled.match(transferAction)) {
+      reloadBalances();
+      reloadCrucibles();
+    }
+
+    // transfer failure
+    if (_transferCrucible.rejected.match(transferAction)) {
+      toast({
+        title: 'Transfer failed',
+        status: 'error',
+        duration: 2000,
+        isClosable: true,
+      });
+
+      updateTx({
+        status: TxnStatus.Failed,
+      });
+    }
+  };
+
+  const pendingTransactions = transactions.filter(
+    (txn) => txn.status === TxnStatus.PendingOnChain
   );
 
-  const completedTransactions = filterTxns(
-    transactions.current,
-    TxnStatus.Mined
+  const completedTransactions = transactions.filter(
+    (txn) => txn.status === TxnStatus.Mined
+  );
+
+  const savedTransactions = transactions.filter(
+    (txn) =>
+      txn.account === web3React.account && txn.chainId === web3React.chainId
   );
 
   return {
-    transactions,
+    savedTransactions,
     pendingTransactions,
     completedTransactions,
     clearSavedTransactions,

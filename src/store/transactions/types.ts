@@ -20,15 +20,15 @@ export interface TxnDetails {
   status?: TxnStatus;
   description?: string;
   hash?: string;
+  // TODO: add chain ID
+  chainId?: number;
+  account?: string;
 }
 
 export type TransactionList = TxnDetails[];
 
-export type CurrentTransactions = { [key in TxnType]: TxnDetails };
-
 export type TxnState = {
-  current: CurrentTransactions;
-  saved: TransactionList;
+  transactions: TransactionList;
 };
 
 export type TransferCrucible = {
@@ -36,7 +36,7 @@ export type TransferCrucible = {
 };
 
 export interface UseTransactions {
-  transactions: TxnState;
+  savedTransactions: TransactionList;
   clearSavedTransactions: () => void;
   pendingTransactions: TransactionList;
   completedTransactions: TransactionList;

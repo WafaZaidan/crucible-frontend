@@ -12,6 +12,8 @@ import { useClipboard } from '@chakra-ui/hooks';
 import { useToast } from '@chakra-ui/toast';
 import TransferModal from '../../modals/transferModal';
 import formatNumber from '../../../utils/formatNumber';
+import { useTransactions } from '../../../store/transactions/reducer';
+import { TxnStatus, TxnType } from '../../../store/transactions/types';
 
 type Props = {
   crucible: Crucible;
@@ -135,7 +137,9 @@ const CrucibleDetailCard: FC<Props> = ({ crucible }) => {
               color='cyan.400'
               variant='ghost'
               icon={<FiSend />}
-              onClick={() => setIsTransferModalOpen(true)}
+              onClick={() => {
+                setIsTransferModalOpen(true);
+              }}
             />
           </Tooltip>
         </HStack>
