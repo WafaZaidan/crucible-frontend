@@ -1,4 +1,8 @@
 import { BigNumber } from '@ethersproject/bignumber';
+import { ethers, Signer } from 'ethers';
+import { crucibleAbi } from '../abi/crucibleAbi';
+import { client as apolloClient } from '../config/apollo';
+import { GET_PAIR_DATA } from '../queries/uniswap';
 
 interface TransactionData {
   status: string;
@@ -39,10 +43,31 @@ export interface AssetWithBalance {
   [key: string]: Asset;
 }
 
+const tokenSymbolFromPair = async (
+  pairAddress: string,
+  tokenSymbol: string,
+  chainId: number
+) => {
+  // Uniswap only have a graph node for mainnet
+  if (chainId !== 1) {
+    return tokenSymbol;
+  }
+  try {
+    const { data } = await apolloClient.query({
+      query: GET_PAIR_DATA(pairAddress),
+    });
+    return data.pair.token0.symbol + ' - ' + data.pair.token1.symbol + ' LP';
+  } catch (e) {
+    console.log(e);
+    return tokenSymbol;
+  }
+};
+
 export const getContainedAssets = async (
   address: string,
   chainId: number,
-  etherscanApiKey: string
+  etherscanApiKey: string,
+  signer: Signer
 ) => {
   const endpoint =
     chainId === 1
@@ -99,7 +124,37 @@ export const getContainedAssets = async (
       resultsArray.push(assetsWithBalance[o]);
     }
 
-    return resultsArray;
+    const updatedResult = Promise.all(
+      resultsArray.map(async (result) => {
+        if (result.tokenSymbol === 'UNI-V2') {
+          // Get unlocked balance
+          const contract = new ethers.Contract(address, crucibleAbi, signer);
+          const lockedBalance = await contract.getBalanceLocked(
+            result.contractAddress
+          );
+          const unlockedBalance = result.value.sub(lockedBalance);
+
+          // Create a custom token symbol to replace UNI-V2
+          const tokenSymbol = await tokenSymbolFromPair(
+            result.contractAddress,
+            result.tokenSymbol,
+            chainId
+          );
+
+          return {
+            ...result,
+            tokenSymbol,
+            value: unlockedBalance,
+          };
+        } else {
+          return {
+            ...result,
+          };
+        }
+      })
+    );
+
+    return updatedResult;
   } catch (err) {
     throw err;
   }

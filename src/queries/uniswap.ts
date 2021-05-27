@@ -107,6 +107,22 @@ export const GET_PAIR_HISTORY = (address: string, timestamps: number[]) => {
   `;
 };
 
+export const GET_PAIR_DATA = (pairAddress: string) => gql`
+  query GetPairData {
+    pair(id: "${pairAddress}") {
+      id
+      token0 {
+        name
+        symbol
+      }
+      token1 {
+        name
+        symbol
+      }
+    }
+  }
+`;
+
 // {
 //   # Mist Pair Address: 0xcd6bcca48069f8588780dfa274960f15685aee0e
 //     liquidityPositionSnapshots(id:"0xcd6bcca48069f8588780dfa274960f15685aee0e-0x365595AB460cB664c77d4e038c9051f09D781065",  block: {number: 10291203}) {

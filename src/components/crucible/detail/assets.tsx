@@ -1,48 +1,36 @@
-// TEST PAGE
-import { useEffect } from 'react';
-import { useCrucibles } from '../../../store/crucibles';
-import { Box, VStack } from '@chakra-ui/layout';
-import { StatGroup } from '@chakra-ui/stat';
-import { Button } from '@chakra-ui/button';
-import StatCard from '../../shared/StatCard';
+import React, { useEffect, useMemo } from 'react';
+import { Crucible, useCrucibles } from '../../../store/crucibles';
+import { Box, Stack } from '@chakra-ui/layout';
+import { useParams } from 'react-router';
+import WithdrawCrucibleAssets from './assets-detail/withdrawCrucibleAssets';
 
 const Assets = () => {
-  const {
-    crucibles,
-    cruciblesLoading,
-    getOwnedCrucibles,
-    resetCrucibles,
-  } = useCrucibles();
+  const { crucibleId } = useParams<{ crucibleId: string }>();
+  const { crucibles, cruciblesLoading, getOwnedCrucibles } = useCrucibles();
 
   useEffect(() => {
     getOwnedCrucibles();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const selectedCrucible = useMemo(() => {
+    return crucibles.find(({ id }) => id === crucibleId) as Crucible;
+  }, [crucibles, crucibleId]);
+
   if (cruciblesLoading) {
     return <div>Loading...</div>;
   }
 
   if (crucibles.length === 0) {
+    // TODO: Send the user back to the list view
     return <div>No crucibles</div>;
   }
 
   return (
-    <Box p={[4, 8]} bg='white' color='gray.800' borderRadius='xl'>
-      <StatGroup>
-        {crucibles.map((crucible) => (
-          <StatCard
-            key={crucible.id}
-            title={crucible.id}
-            label={JSON.stringify(crucible.containedAssets)}
-          />
-        ))}
-      </StatGroup>
-
-      <VStack>
-        <Button onClick={() => resetCrucibles()}>Reset crucibles</Button>
-        <Button onClick={() => getOwnedCrucibles()}>Refresh crucibles</Button>
-      </VStack>
+    <Box>
+      <Stack spacing={4}>
+        <WithdrawCrucibleAssets crucible={selectedCrucible} />
+      </Stack>
     </Box>
   );
 };

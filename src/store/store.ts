@@ -15,7 +15,10 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: ['crucibles/getOwnedCrucibles/fulfilled'],
+        ignoredActions: [
+          'crucibles/getOwnedCrucibles/pending',
+          'crucibles/getOwnedCrucibles/fulfilled',
+        ],
       },
     }).concat(logger),
 });

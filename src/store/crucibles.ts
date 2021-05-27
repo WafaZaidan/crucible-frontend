@@ -15,7 +15,7 @@ import { getOwnedCruciblesNew } from '../contracts/getOwnedCrucibles';
 import { useAppDispatch, useAppSelector } from './hooks';
 import { THUNK_PREFIX, SLICE_NAME } from './enum';
 import { Web3Provider } from '@ethersproject/providers';
-import { Signer } from 'ethers';
+import { BigNumber, Signer } from 'ethers';
 import { getContainedAssets } from '../helpers/crucible';
 import { useWeb3React } from '@web3-react/core';
 
@@ -30,6 +30,7 @@ interface ContainedAsset {
   contractAddress: string;
   tokenName: string;
   tokenSymbol: string;
+  value: BigNumber;
 }
 
 interface CruciblesState {
@@ -67,7 +68,7 @@ export const _getOwnedCrucibles = createAsyncThunk(
 
     const containedAssetsList: ContainedAsset[][] = await Promise.all(
       crucibles.map((crucible) =>
-        getContainedAssets(crucible.id, chainId, etherscanApiKey)
+        getContainedAssets(crucible.id, chainId, etherscanApiKey, signer)
       )
     );
 
