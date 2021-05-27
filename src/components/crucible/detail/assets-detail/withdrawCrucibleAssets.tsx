@@ -74,12 +74,6 @@ const WithdrawCrucibleAssets: React.FC<Props> = ({ crucible }) => {
   const handleWithdrawFromCrucible = () => {
     const signer = library?.getSigner() as Signer;
 
-    // BUG: Amount big number is always 0
-    console.log(crucible.id);
-    console.log(selectedAsset.contractAddress);
-    console.log(tokenBalance);
-    console.log(amountBigNumber);
-
     invokeContract<withdrawFromCrucibleParams>(
       crucible.id,
       selectedAsset.contractAddress,
@@ -144,7 +138,14 @@ const WithdrawCrucibleAssets: React.FC<Props> = ({ crucible }) => {
           </Flex>
         </InputRightElement>
       </NumberInput>
-      <Button isFullWidth onClick={handleWithdrawFromCrucible}>
+      <Button
+        isFullWidth
+        onClick={handleWithdrawFromCrucible}
+        disabled={
+          (!isMax || tokenBalance.lte(0)) &&
+          (amountBigNumber.lte(0) || amountBigNumber.gt(tokenBalance))
+        }
+      >
         Withdraw from Crucible
       </Button>
       {ui}
