@@ -9,20 +9,7 @@ import {
 } from '@chakra-ui/modal';
 import { useModal } from '../../store/modals';
 import { useWeb3React } from '@web3-react/core';
-import {
-  Button,
-  Flex,
-  Link,
-  Table,
-  Text,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  useToast,
-  Tag,
-} from '@chakra-ui/react';
+import { Button, Flex, Link, Text, useToast, Tag } from '@chakra-ui/react';
 import { Box, HStack } from '@chakra-ui/layout';
 import { ModalType } from './types';
 import { useConnectedWalletName } from '../../hooks/useConnectedWalletName';
@@ -42,13 +29,22 @@ import { convertChainIdToNetworkName } from '../../utils/convertChainIdToNetwork
 const convertTxnStatusToIcon = (status?: TxnStatus) => {
   switch (status) {
     case TxnStatus.Failed:
-      return <RiErrorWarningLine size='20px' color='rgba(229, 62, 62)' />;
+      return <RiErrorWarningLine size='27px' color='rgba(229, 62, 62)' />;
     case TxnStatus.Mined:
       return <FiCheckCircle size='20px' color='green' />;
     case TxnStatus.Initiated:
     case TxnStatus.PendingApproval:
+      return (
+        <Spinner
+          size='md'
+          thickness='2px'
+          speed='0.65s'
+          emptyColor='gray.100'
+          color='blue.400'
+        />
+      );
     case TxnStatus.PendingOnChain:
-      return <Spinner />;
+
     // this should not happen
     case TxnStatus.Ready:
       return '';
@@ -134,28 +130,34 @@ const WalletInfoModal: FC = () => {
                     Clear All
                   </Button>
                 </Flex>
-                <Table size='sm' variant='unstyled'>
-                  <Tbody>
-                    {savedTransactions.map((txn, i) => (
-                      <Tr key={`${txn.type}-${i}`}>
-                        <Td>
-                          <Tag mb={1} size='sm' colorScheme='blue'>
-                            {txn.type}
-                          </Tag>
-                        </Td>
-                        <Td>
-                          <Link
-                            color='blue.400'
-                            href={etherscanTxLink(txn.hash || '')}
-                          >
-                            {txn.description}
-                          </Link>
-                        </Td>
-                        <Td>{convertTxnStatusToIcon(txn.status)}</Td>
-                      </Tr>
-                    ))}
-                  </Tbody>
-                </Table>
+                {savedTransactions.map((txn, i) => (
+                  <Flex
+                    columns={2}
+                    spacing={5}
+                    key={`${txn.type}-${i}`}
+                    w='100%'
+                    justifyContent='space-between'
+                    mb={3}
+                    pb={2}
+                    borderBottom='1px solid'
+                    borderColor='lightGray'
+                  >
+                    <Box>
+                      <Box>
+                        <Tag mb={1} size='sm' colorScheme='blue'>
+                          {txn.type}
+                        </Tag>
+                      </Box>
+                      <Link
+                        color='blue.400'
+                        href={etherscanTxLink(txn.hash || '')}
+                      >
+                        {txn.description}
+                      </Link>
+                    </Box>
+                    <Box minW='30px'>{convertTxnStatusToIcon(txn.status)}</Box>
+                  </Flex>
+                ))}
               </Box>
             )}
           </ModalBody>
