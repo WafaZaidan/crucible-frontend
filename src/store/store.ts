@@ -19,8 +19,7 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: ['crucibles/getOwnedCrucibles/fulfilled'],
       },
-    }),
-  // .concat(logger),
+    }).concat(logger),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

@@ -134,14 +134,7 @@ const WalletInfoModal: FC = () => {
                     Clear All
                   </Button>
                 </Flex>
-                <Table size='sm'>
-                  <Thead>
-                    <Tr>
-                      <Th>Txn</Th>
-                      <Th>Description</Th>
-                      <Th>Status</Th>
-                    </Tr>
-                  </Thead>
+                <Table size='sm' variant='unstyled'>
                   <Tbody>
                     {savedTransactions.map((txn, i) => (
                       <Tr key={`${txn.type}-${i}`}>

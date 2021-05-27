@@ -1,9 +1,18 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { THUNK_PREFIX } from '../../enum';
-import { TxnStatus } from '../types';
+import { TxnStatus, TxnType } from '../types';
 import { ethers } from 'ethers';
 import { crucibleFactoryAbi } from '../../../abi/crucibleFactoryAbi';
 import { truncate } from '../../../utils/address';
+
+export interface TransferCrucibleArgs {
+  type: TxnType;
+  status?: TxnStatus;
+  description?: string;
+  hash?: string;
+  chainId: number;
+  account: string;
+}
 
 export const transferCrucible = createAsyncThunk(
   THUNK_PREFIX.TRANSFER_CRUCIBLE,
@@ -22,9 +31,7 @@ export const transferCrucible = createAsyncThunk(
     // Set transfer status to INITIATED
     updateTx({
       status: TxnStatus.Initiated,
-      description: `Transfer crucible ${truncate(crucibleId)} to ${truncate(
-        transferTo
-      )}`,
+      description: `Transfer to ${truncate(transferTo)}`,
     });
 
     // Create a crucible factory contract instance
@@ -38,9 +45,7 @@ export const transferCrucible = createAsyncThunk(
     // Set transfer status to PENDING APPROVAL
     updateTx({
       status: TxnStatus.PendingApproval,
-      description: `Transfer crucible ${truncate(crucibleId)} to ${truncate(
-        transferTo
-      )}`,
+      description: `Transfer to ${truncate(transferTo)}`,
     });
 
     // Ask user to confirm txn
@@ -55,9 +60,7 @@ export const transferCrucible = createAsyncThunk(
     updateTx({
       status: TxnStatus.PendingOnChain,
       hash: tx.hash,
-      description: `Transfer crucible ${truncate(crucibleId)} to ${truncate(
-        transferTo
-      )}`,
+      description: `Transfer to ${truncate(transferTo)}`,
     });
 
     // wait for 1 block confirmation
@@ -66,9 +69,7 @@ export const transferCrucible = createAsyncThunk(
     // Set transfer status to MINED
     updateTx({
       status: TxnStatus.Mined,
-      description: `Transfer crucible ${truncate(crucibleId)} to ${truncate(
-        transferTo
-      )}`,
+      description: `Transfer to ${truncate(transferTo)}`,
     });
 
     return;

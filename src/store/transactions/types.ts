@@ -16,11 +16,10 @@ export enum TxnStatus {
 }
 
 export interface TxnDetails {
-  type?: TxnType;
+  type: TxnType;
   status?: TxnStatus;
   description?: string;
   hash?: string;
-  // TODO: add chain ID
   chainId?: number;
   account?: string;
 }
@@ -32,7 +31,7 @@ export type TxnState = {
 };
 
 export type TransferCrucible = {
-  (crucibleId: string, transferTo: string): Promise<any>;
+  (crucibleId: string, transferTo: string): Promise<void>;
 };
 
 export interface UseTransactions {

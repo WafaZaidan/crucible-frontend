@@ -18,6 +18,8 @@ const useTransactionPoller = () => {
           dispatch(
             transactionsSlice.actions.setTransactionStatus({
               ...txn,
+              account: txn.account as string,
+              chainId: txn.chainId as number,
               status: receipt.status === 1 ? TxnStatus.Mined : TxnStatus.Failed,
             })
           );
@@ -30,13 +32,11 @@ const useTransactionPoller = () => {
   }, [savedTransactions]);
 
   useEffect(() => {
-    // @ts-ignore
-    let interval;
+    let interval: number;
     if (library && savedTransactions.length > 0) {
       checkTransactionStatuses();
       setInterval(() => checkTransactionStatuses(), TX_POLL_INTERVAL);
     }
-    // @ts-ignore
     return () => clearInterval(interval);
   }, [library, savedTransactions.length]);
 };

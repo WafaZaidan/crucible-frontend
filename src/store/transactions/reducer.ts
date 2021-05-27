@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { useWeb3React } from '@web3-react/core';
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { SLICE_NAME } from '../enum';
@@ -9,14 +9,19 @@ import {
   TxnType,
   UseTransactions,
 } from './types';
-import { transferCrucible as _transferCrucible } from './actions/transferCrucible';
+import {
+  transferCrucible as _transferCrucible,
+  TransferCrucibleArgs,
+} from './actions/transferCrucible';
 import { useConfig } from '../config';
 import { useNotify } from '../../context/transactions';
 import { useToast } from '@chakra-ui/toast';
 import { useCrucibles } from '../../context/crucibles';
 
 const updateLocalStorageSavedTransactions = (txn: TxnDetails) => {
-  const savedTxns = JSON.parse(localStorage.getItem('transactions') || '[]');
+  const savedTxns: TxnDetails[] = JSON.parse(
+    localStorage.getItem('transactions') || '[]'
+  );
   // @ts-ignore
   const txnIdx = savedTxns.findIndex((t) => t.hash === txn.hash);
 
@@ -45,14 +50,17 @@ export const transactionsSlice = createSlice({
       localStorage.setItem('transactions', '[]');
       state.transactions = [];
     },
-    setTransactionStatus: (state, action) => {
+    setTransactionStatus: (
+      state,
+      action: PayloadAction<TransferCrucibleArgs>
+    ) => {
       const {
         type,
-        status,
+        account,
+        chainId,
         description,
         hash,
-        chainId,
-        account,
+        status,
       } = action.payload;
 
       const currentTransaction =
@@ -67,12 +75,6 @@ export const transactionsSlice = createSlice({
         description: description || currentTransaction.description,
         hash: hash || currentTransaction.hash,
       };
-
-      if (!updatedTransaction.chainId || !updatedTransaction.account) {
-        throw new Error(
-          'Network and account must be included when adding a txn to the store'
-        );
-      }
 
       if (hash || currentTransaction.hash) {
         state.transactions = updateLocalStorageSavedTransactions(
@@ -94,27 +96,26 @@ export const useTransactions = (): UseTransactions => {
   const toast = useToast();
 
   const clearSavedTransactions = () => {
-    console.log('clearing ');
     dispatch(transactionsSlice.actions.clearSavedTransactions());
   };
 
-  const transferCrucible = async (crucibleId: string, transferTo: string) => {
-    const updateTx = (updatedTx: Partial<TxnDetails>) =>
-      dispatch(
-        transactionsSlice.actions.setTransactionStatus({
-          ...updatedTx,
-          type: TxnType.transfer,
-          account: web3React.account,
-          chainId: web3React.chainId,
-        })
-      );
+  const updateSavedTransaction = (updatedTx: Partial<TxnDetails>) =>
+    dispatch(
+      transactionsSlice.actions.setTransactionStatus({
+        ...updatedTx,
+        type: TxnType.transfer,
+        account: web3React.account as string,
+        chainId: web3React.chainId as number,
+      })
+    );
 
+  const transferCrucible = async (crucibleId: string, transferTo: string) => {
     const transferAction = await dispatch(
       _transferCrucible({
         config: configForNetwork,
         web3React,
         monitorTx,
-        updateTx,
+        updateTx: updateSavedTransaction,
         transferTo,
         crucibleId,
       })
@@ -135,7 +136,7 @@ export const useTransactions = (): UseTransactions => {
         isClosable: true,
       });
 
-      updateTx({
+      updateSavedTransaction({
         status: TxnStatus.Failed,
       });
     }
