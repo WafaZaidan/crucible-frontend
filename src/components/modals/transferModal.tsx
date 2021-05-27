@@ -16,7 +16,7 @@ import {
   ModalOverlay,
 } from '@chakra-ui/modal';
 import { ethers } from 'ethers';
-import { useTransactions } from '../../store/transactions/reducer';
+import { useTransactions } from '../../store/transactions/useTransactions';
 
 type Props = {
   id: string;

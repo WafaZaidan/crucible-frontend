@@ -1,8 +1,9 @@
 import { useCallback, useEffect } from 'react';
-import { transactionsSlice, useTransactions } from './reducer';
+import { transactionsSlice } from './reducer';
 import { useWeb3React } from '@web3-react/core';
 import { useDispatch } from 'react-redux';
 import { TxnStatus } from './types';
+import { useTransactions } from './useTransactions';
 
 const TX_POLL_INTERVAL = 1000 * 5; // 5 seconds
 
@@ -23,9 +24,6 @@ const useTransactionPoller = () => {
               status: receipt.status === 1 ? TxnStatus.Mined : TxnStatus.Failed,
             })
           );
-        } else {
-          console.log('no reciept?');
-          // pending on chain?
         }
       });
     });

@@ -22,18 +22,19 @@ import {
   RiErrorWarningLine,
 } from 'react-icons/all';
 import { Spinner } from '@chakra-ui/spinner';
-import { useTransactions } from '../../store/transactions/reducer';
+import { useTransactions } from '../../store/transactions/useTransactions';
 import { TxnStatus } from '../../store/transactions/types';
 import { convertChainIdToNetworkName } from '../../utils/convertChainIdToNetworkName';
 
 const convertTxnStatusToIcon = (status?: TxnStatus) => {
   switch (status) {
     case TxnStatus.Failed:
-      return <RiErrorWarningLine size='27px' color='rgba(229, 62, 62)' />;
+      return <RiErrorWarningLine size='23px' color='rgba(229, 62, 62)' />;
     case TxnStatus.Mined:
       return <FiCheckCircle size='20px' color='green' />;
     case TxnStatus.Initiated:
     case TxnStatus.PendingApproval:
+    case TxnStatus.PendingOnChain:
       return (
         <Spinner
           size='md'
@@ -43,7 +44,6 @@ const convertTxnStatusToIcon = (status?: TxnStatus) => {
           color='blue.400'
         />
       );
-    case TxnStatus.PendingOnChain:
 
     // this should not happen
     case TxnStatus.Ready:
@@ -84,6 +84,8 @@ const WalletInfoModal: FC = () => {
       : `https://rinkeby.etherscan.io/tx/${hash}`;
 
   const { savedTransactions, clearSavedTransactions } = useTransactions();
+
+  console.log(savedTransactions);
 
   return (
     <>
@@ -149,13 +151,16 @@ const WalletInfoModal: FC = () => {
                         </Tag>
                       </Box>
                       <Link
+                        isExternal
                         color='blue.400'
                         href={etherscanTxLink(txn.hash || '')}
                       >
                         {txn.description}
                       </Link>
                     </Box>
-                    <Box minW='30px'>{convertTxnStatusToIcon(txn.status)}</Box>
+                    <Box w='30px' ml={5}>
+                      {convertTxnStatusToIcon(txn.status)}
+                    </Box>
                   </Flex>
                 ))}
               </Box>
