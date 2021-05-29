@@ -6,14 +6,15 @@ import { Select } from '@chakra-ui/react';
 import { useState } from 'react';
 import { Crucible } from '../../../../store/crucibles';
 import { useContract } from '../../../../hooks/useContract';
-import useContracts from '../../../../contracts/useContracts';
-import bigNumberishToNumber from '../../../../utils/bigNumberishToNumber';
-import getStep from '../../../../utils/getStep';
-import onNumberInputChange from '../../../../utils/onNumberInputChange';
-import formatNumber from '../../../../utils/formatNumber';
 import { useWeb3React } from '@web3-react/core';
 import { Signer } from '@ethersproject/abstract-signer';
 import { BigNumber } from '@ethersproject/bignumber';
+import { useContainedAssets } from '../../../../hooks/useContainedAssets';
+import useContracts from '../../../../contracts/useContracts';
+import getStep from '../../../../utils/getStep';
+import bigNumberishToNumber from '../../../../utils/bigNumberishToNumber';
+import formatNumber from '../../../../utils/formatNumber';
+import onNumberInputChange from '../../../../utils/onNumberInputChange';
 import numberishToBigNumber from '../../../../utils/numberishToBigNumber';
 
 type Props = {
@@ -30,35 +31,37 @@ type withdrawFromCrucibleParams = Parameters<
 >;
 
 const WithdrawCrucibleAssets: React.FC<Props> = ({ crucible }) => {
+  const {
+    containedAssetsLoading,
+    error,
+    containedAssets,
+    selectedAsset,
+    handleSetSelectedAsset,
+  } = useContainedAssets({ address: crucible.id, isCrucible: true });
   const { withdrawFromCrucible } = useContracts();
   const { library } = useWeb3React();
   const { invokeContract, ui } = useContract(withdrawFromCrucible);
   const [isMax, setIsMax] = useState(false);
   const [amount, setAmount] = useState('0');
-  const [selectedAsset, setSelectedAsset] = useState(
-    crucible.containedAssets[0]
-  );
 
-  if (crucible.containedAssets.length === 0) {
-    return (
-      <Box>
-        <Text>This crucible has no assets that can be withdrawn</Text>
-      </Box>
-    );
+  if (error) {
+    return <Text>{error}</Text>;
+  }
+  // TODO: Add loading skeleton
+  if (containedAssetsLoading) {
+    return <Box>Loading...</Box>;
+  }
+  if (containedAssets.length === 0) {
+    return <Text>This crucible has no assets that can be withdrawn</Text>;
+  }
+  if (!selectedAsset) {
+    return null;
   }
 
   const tokenBalance = selectedAsset.value;
   const tokenBalanceNumber = bigNumberishToNumber(tokenBalance);
   const amountBigNumber = numberishToBigNumber(amount || 0);
   const step = getStep(tokenBalanceNumber);
-
-  const handleSetSelectedAsset = (e: any) => {
-    const selected =
-      crucible.containedAssets.find(
-        (asset) => asset.contractAddress === e.target.value
-      ) || crucible.containedAssets[0];
-    setSelectedAsset(selected);
-  };
 
   const onChange = (amountNew: number | string) => {
     onNumberInputChange(
@@ -125,8 +128,8 @@ const WithdrawCrucibleAssets: React.FC<Props> = ({ crucible }) => {
             >
               Max
             </Button>
-            <Select onChange={handleSetSelectedAsset}>
-              {crucible.containedAssets.map((asset) => (
+            <Select onChange={(e) => handleSetSelectedAsset(e.target.value)}>
+              {containedAssets.map((asset) => (
                 <option
                   key={asset.contractAddress}
                   value={asset.contractAddress}

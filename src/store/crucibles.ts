@@ -4,7 +4,7 @@
 
   Workaround:
   1. Use etherscan API to get list of ERC-20 transactions
-  2. Check the final balance for each ERC-20 token after all transactions (last 10,000)
+  2. Create a list of unique tokens that the user has interacted with
 
   TODO:
   1. Standardize error handling
@@ -15,22 +15,13 @@ import { getOwnedCruciblesNew } from '../contracts/getOwnedCrucibles';
 import { useAppDispatch, useAppSelector } from './hooks';
 import { THUNK_PREFIX, SLICE_NAME } from './enum';
 import { Web3Provider } from '@ethersproject/providers';
-import { BigNumber, Signer } from 'ethers';
-import { getContainedAssets } from '../helpers/crucible';
 import { useWeb3React } from '@web3-react/core';
+import { Signer } from 'ethers';
 
 export interface Crucible {
   id: string;
   owner: string;
   mintTimestamp: number;
-  containedAssets: ContainedAsset[];
-}
-
-interface ContainedAsset {
-  contractAddress: string;
-  tokenName: string;
-  tokenSymbol: string;
-  value: BigNumber;
 }
 
 interface CruciblesState {
@@ -42,8 +33,6 @@ interface GetOwnedCruciblesArgs {
   signer: Signer;
   library: Web3Provider;
   crucibleFactoryAddress: string;
-  chainId: number;
-  etherscanApiKey: string;
 }
 
 const initialState: CruciblesState = {
@@ -57,29 +46,13 @@ export const _getOwnedCrucibles = createAsyncThunk(
     signer,
     library,
     crucibleFactoryAddress,
-    chainId,
-    etherscanApiKey,
   }: GetOwnedCruciblesArgs) => {
     const crucibles = await getOwnedCruciblesNew(
       crucibleFactoryAddress,
       signer,
       library
     );
-
-    const containedAssetsList: ContainedAsset[][] = await Promise.all(
-      crucibles.map((crucible) =>
-        getContainedAssets(crucible.id, chainId, etherscanApiKey, signer)
-      )
-    );
-
-    const cruciblesWithContainedAssets: Crucible[] = crucibles.map(
-      (crucible, idx) => ({
-        ...crucible,
-        containedAssets: containedAssetsList[idx],
-      })
-    );
-
-    return cruciblesWithContainedAssets;
+    return crucibles;
   }
 );
 
@@ -110,7 +83,7 @@ export const useCrucibles = () => {
 
   const { chainId = 1, library } = useWeb3React();
 
-  const { crucibleFactoryAddress, etherscanApiKey } = useAppSelector(
+  const { crucibleFactoryAddress } = useAppSelector(
     (state) => state.config.config[chainId]
   );
 
@@ -131,8 +104,6 @@ export const useCrucibles = () => {
         signer,
         library,
         crucibleFactoryAddress,
-        chainId,
-        etherscanApiKey,
       })
     );
 

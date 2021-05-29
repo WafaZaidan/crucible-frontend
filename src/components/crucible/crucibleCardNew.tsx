@@ -3,7 +3,7 @@ import { truncate } from '../../utils/address';
 import { useHistory } from 'react-router-dom';
 import { IconButton } from '@chakra-ui/button';
 import { Crucible } from '../../store/crucibles';
-import { Badge, Box, Flex, Stack, Text } from '@chakra-ui/layout';
+import { Box, Flex, Stack, Text } from '@chakra-ui/layout';
 import { useClipboard } from '@chakra-ui/hooks';
 import { useToast } from '@chakra-ui/toast';
 import { IoMdSettings } from 'react-icons/io';
@@ -60,10 +60,6 @@ const CrucibleCard: FC<Props> = ({ crucible }) => {
             </Box>
           </Stack>
         </Box>
-
-        <Badge px={2} py={1} borderRadius='xl' color='gray.300'>
-          {crucible.containedAssets.length} asset(s)
-        </Badge>
 
         <IconButton
           aria-label='Manage crucible'
