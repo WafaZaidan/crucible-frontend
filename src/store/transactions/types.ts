@@ -1,3 +1,5 @@
+import { BigNumber } from 'ethers';
+
 export enum TxnType {
   mint = 'MINT',
   increaseStake = 'INCREASE_STAKE',
@@ -34,10 +36,15 @@ export type TransferCrucible = {
   (crucibleId: string, transferTo: string): Promise<void>;
 };
 
+export type MintCrucible = {
+  (amountLp: BigNumber): Promise<void>;
+};
+
 export interface UseTransactions {
   savedTransactions: TransactionList;
   clearSavedTransactions: () => void;
   pendingTransactions: TransactionList;
   completedTransactions: TransactionList;
   transferCrucible: TransferCrucible;
+  mintCrucible: MintCrucible;
 }

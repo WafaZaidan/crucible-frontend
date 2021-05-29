@@ -1,12 +1,8 @@
 import { FC, useState } from 'react';
-import { BigNumber, providers } from 'ethers';
 import { Button } from '@chakra-ui/button';
 import { LightMode } from '@chakra-ui/color-mode';
 import { Box, Flex, Text } from '@chakra-ui/layout';
-import { Signer } from '@ethersproject/abstract-signer';
 import { NumberInput, NumberInputField } from '@chakra-ui/number-input';
-import { useContract } from '../../hooks/useContract';
-import useContracts from '../../contracts/useContracts';
 import {
   Slider,
   SliderFilledTrack,
@@ -20,19 +16,12 @@ import formatNumber from '../../utils/formatNumber';
 import bigNumberishToNumber from '../../utils/bigNumberishToNumber';
 import getStep from '../../utils/getStep';
 import onNumberInputChange from '../../utils/onNumberInputChange';
-import { useWeb3React } from '@web3-react/core';
-
-type MintAndLockParams = Parameters<
-  (signer: Signer, provider: providers.Web3Provider, amount: BigNumber) => void
->;
+import { useTransactions } from '../../store/transactions/useTransactions';
 
 const MintingFormControl: FC = () => {
   const [isMax, setIsMax] = useState(false);
   const [amount, setAmount] = useState('0');
   const amountBigNumber = numberishToBigNumber(amount || 0);
-  const { library } = useWeb3React();
-  const { mintAndLock } = useContracts();
-  const { invokeContract, ui } = useContract(mintAndLock);
   const { lpBalance } = useTokenBalances();
   let lpBalanceNumber = 0;
   let step = 1;
@@ -40,6 +29,7 @@ const MintingFormControl: FC = () => {
     lpBalanceNumber = bigNumberishToNumber(lpBalance);
     step = getStep(lpBalanceNumber);
   }
+  const { mintCrucible } = useTransactions();
 
   const onChange = (amountNew: number | string) => {
     onNumberInputChange(
@@ -53,13 +43,8 @@ const MintingFormControl: FC = () => {
   };
 
   const handleMintCrucible = () => {
-    const signer = library?.getSigner() as Signer;
-
-    invokeContract<MintAndLockParams>(
-      signer,
-      library as providers.Web3Provider,
-      isMax && lpBalance ? lpBalance : amountBigNumber
-    );
+    const amountLp = isMax && lpBalance ? lpBalance : amountBigNumber;
+    mintCrucible(amountLp);
   };
 
   return (
@@ -135,7 +120,6 @@ const MintingFormControl: FC = () => {
       >
         Mint a Crucible
       </Button>
-      {ui}
     </Box>
   );
 };

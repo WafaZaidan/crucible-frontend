@@ -9,7 +9,7 @@ import { convertChainIdToNetworkName } from '../../utils/convertChainIdToNetwork
 import { useModal } from '../../store/modals';
 import { ModalType } from '../modals/types';
 import { injectedConnector } from '../../config';
-import { useTransactions } from '../../store/transactions/reducer';
+import { useTransactions } from '../../store/transactions/useTransactions';
 
 const UserWallet: FC = () => {
   const { deactivate, account, chainId, connector } = useWeb3React();

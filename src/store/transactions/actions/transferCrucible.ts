@@ -20,18 +20,21 @@ export const transferCrucible = createAsyncThunk(
     web3React,
     config,
     monitorTx,
+    updateTx,
     transferTo,
     crucibleId,
-    updateTx,
   }: any) => {
     const { account, library } = web3React;
     const signer = library.getSigner();
     const { crucibleFactoryAddress } = config;
 
+    const description = `Transfer to ${truncate(transferTo)}`;
+
     // Set transfer status to INITIATED
     updateTx({
+      type: TxnType.transfer,
       status: TxnStatus.Initiated,
-      description: `Transfer to ${truncate(transferTo)}`,
+      description,
     });
 
     // Create a crucible factory contract instance
@@ -44,8 +47,9 @@ export const transferCrucible = createAsyncThunk(
     // try {
     // Set transfer status to PENDING APPROVAL
     updateTx({
+      type: TxnType.transfer,
       status: TxnStatus.PendingApproval,
-      description: `Transfer to ${truncate(transferTo)}`,
+      description,
     });
 
     // Ask user to confirm txn
@@ -58,9 +62,10 @@ export const transferCrucible = createAsyncThunk(
 
     // Set transfer status to PENDING ON CHAIN
     updateTx({
+      type: TxnType.transfer,
       status: TxnStatus.PendingOnChain,
       hash: tx.hash,
-      description: `Transfer to ${truncate(transferTo)}`,
+      description,
     });
 
     // wait for 1 block confirmation
@@ -68,8 +73,9 @@ export const transferCrucible = createAsyncThunk(
 
     // Set transfer status to MINED
     updateTx({
+      type: TxnType.transfer,
       status: TxnStatus.Mined,
-      description: `Transfer to ${truncate(transferTo)}`,
+      description,
     });
 
     return;

@@ -1,13 +1,11 @@
 import useConfigVariables from '../hooks/useConfigVariables';
-import { BigNumber, providers, Signer } from 'ethers';
+import { BigNumber, Signer } from 'ethers';
 import { CallbackArgs } from '../hooks/useContract';
-import _mintAndLock from './mintAndLock';
 import {
   getNetworkStats as _getNetworkStats,
   getUserRewards as _getUserRewards,
 } from './aludel';
 import _increaseStake from './increaseStake';
-import _transferCrucible from './transferCrucible';
 import _getOwnedCrucibles from './getOwnedCrucibles';
 import _unstakeAndClaim from './unstakeAndClaim';
 import _withdraw from './withdraw';
@@ -28,22 +26,6 @@ const useContracts = () => {
     rewardPool,
     daiAddress,
   } = useConfigVariables();
-
-  const mintAndLock = (
-    signer: Signer,
-    provider: providers.Web3Provider,
-    amount: BigNumber,
-    callback: (args: CallbackArgs) => void
-  ) =>
-    _mintAndLock(
-      aludelAddress,
-      crucibleFactoryAddress,
-      transmuterAddress,
-      signer,
-      provider,
-      amount,
-      callback
-    );
 
   const getNetworkStats = (signer: Signer) =>
     _getNetworkStats(aludelAddress, signer);
@@ -72,15 +54,6 @@ const useContracts = () => {
       amount,
       callback
     );
-
-  const transferCrucible = (
-    signer: any,
-    id: string,
-    to: string,
-    callback: (args: CallbackArgs) => void
-  ) => {
-    _transferCrucible(crucibleFactoryAddress, signer, id, to, callback);
-  };
 
   const getOwnedCrucibles = (signer: any, provider: any) =>
     _getOwnedCrucibles(
@@ -144,11 +117,9 @@ const useContracts = () => {
     );
 
   return {
-    mintAndLock,
     getNetworkStats,
     getUserRewards,
     increaseStake,
-    transferCrucible,
     getOwnedCrucibles,
     unstakeAndClaim,
     withdraw,
