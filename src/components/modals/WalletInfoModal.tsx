@@ -145,11 +145,9 @@ const WalletInfoModal: FC = () => {
                     borderColor='lightGray'
                   >
                     <Box>
-                      <Box>
-                        <Tag mb={1} size='sm' colorScheme='blue'>
-                          {txn.type}
-                        </Tag>
-                      </Box>
+                      <Tag mr={1} size='sm' colorScheme='blue'>
+                        {txn.type}
+                      </Tag>
                       <Link
                         isExternal
                         color='blue.400'
