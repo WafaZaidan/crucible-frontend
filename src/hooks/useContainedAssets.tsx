@@ -19,7 +19,8 @@ export function useContainedAssets({ address, isCrucible = false }: Props) {
   const [containedAssetsLoading, setContainedAssetsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const withUnlockedAmounts = async (assets: ContainedAsset[]) => {
+  // TODO: Handle WETH balance
+  const withUnlockedBalance = async (assets: ContainedAsset[]) => {
     const signer = library.getSigner();
     const crucible = new ethers.Contract(address, crucibleAbi, signer);
 
@@ -39,6 +40,26 @@ export function useContainedAssets({ address, isCrucible = false }: Props) {
     );
   };
 
+  // TODO: Handle WETH balance
+  const withBalance = async (assets: ContainedAsset[]) => {
+    const signer = library.getSigner();
+
+    return Promise.all(
+      assets.map(async (asset) => {
+        const tokenContact = new ethers.Contract(
+          asset.contractAddress,
+          _abi,
+          signer
+        );
+        const tokenBalance = await tokenContact.balanceOf(address);
+        return {
+          ...asset,
+          value: tokenBalance,
+        };
+      })
+    );
+  };
+
   // TODO: Add caching
   const getContainedAssetsInCrucible = async () => {
     try {
@@ -48,8 +69,8 @@ export function useContainedAssets({ address, isCrucible = false }: Props) {
         etherscanApiKey
       );
       const updatedAssets = isCrucible
-        ? await withUnlockedAmounts(assets)
-        : assets;
+        ? await withUnlockedBalance(assets)
+        : await withBalance(assets);
       setContainedAssets(updatedAssets);
       setSelectedAsset(updatedAssets[0]);
     } catch (e) {

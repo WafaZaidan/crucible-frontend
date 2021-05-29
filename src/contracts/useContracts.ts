@@ -14,6 +14,7 @@ import _withdraw from './withdraw';
 import _getTokenBalances from './getTokenBalances';
 import _getUniswapBalances from './getUniswapTokenBalances';
 import _withdrawFromCrucible from './withdrawFromCrucible';
+import _depositToCrucible from './depositToCrucible';
 
 import { Crucible } from '../context/crucibles';
 import { ChainId } from '@uniswap/sdk';
@@ -159,6 +160,15 @@ const useContracts = () => {
       callback
     );
 
+  const depositToCrucible = (
+    signer: Signer,
+    crucibleAddress: string,
+    tokenAddress: string,
+    amount: BigNumber,
+    callback: (args: CallbackArgs) => void
+  ) =>
+    _depositToCrucible(signer, crucibleAddress, tokenAddress, amount, callback);
+
   return {
     mintAndLock,
     getNetworkStats,
@@ -171,6 +181,7 @@ const useContracts = () => {
     getTokenBalances,
     getUniswapBalances,
     withdrawFromCrucible,
+    depositToCrucible,
   };
 };
 

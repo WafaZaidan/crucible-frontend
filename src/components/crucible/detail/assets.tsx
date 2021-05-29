@@ -2,9 +2,12 @@ import React, { useEffect, useMemo } from 'react';
 import { Crucible, useCrucibles } from '../../../store/crucibles';
 import { Box, Stack } from '@chakra-ui/layout';
 import { useParams } from 'react-router';
+import { useWeb3React } from '@web3-react/core';
 import WithdrawCrucibleAssets from './assets-detail/withdrawCrucibleAssets';
+import DepositToCrucible from './assets-detail/depositToCrucible';
 
 const Assets = () => {
+  const { account } = useWeb3React();
   const { crucibleId } = useParams<{ crucibleId: string }>();
   const { crucibles, cruciblesLoading, getOwnedCrucibles } = useCrucibles();
 
@@ -30,6 +33,10 @@ const Assets = () => {
     <Box>
       <Stack spacing={4}>
         <WithdrawCrucibleAssets crucible={selectedCrucible} />
+        <DepositToCrucible
+          crucible={selectedCrucible}
+          walletAddress={account}
+        />
       </Stack>
     </Box>
   );
