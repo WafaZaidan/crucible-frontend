@@ -17,6 +17,9 @@ import onNumberInputChange from '../../../../utils/onNumberInputChange';
 import numberishToBigNumber from '../../../../utils/numberishToBigNumber';
 import { Crucible } from '../../../../store/crucibles';
 
+// TODO: This component is almost identical to withdrawFromCrucible
+// create a re-usable component
+
 type Props = {
   crucible: Crucible;
   walletAddress: string | null | undefined;
