@@ -85,8 +85,6 @@ const WalletInfoModal: FC = () => {
 
   const { savedTransactions, clearSavedTransactions } = useTransactions();
 
-  console.log(savedTransactions);
-
   return (
     <>
       <Modal isOpen={isOpen} onClose={closeModal}>

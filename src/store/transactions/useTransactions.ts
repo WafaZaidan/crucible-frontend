@@ -110,13 +110,11 @@ export const useTransactions = (): UseTransactions => {
       })
     );
 
-    // transfer success
     if (_increaseLP.fulfilled.match(increaseLPAction)) {
       reloadBalances();
       reloadCrucibles();
     }
 
-    // transfer failure
     if (_increaseLP.rejected.match(increaseLPAction)) {
       toast({
         title: 'Failed to increase LP',
