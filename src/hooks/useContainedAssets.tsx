@@ -19,7 +19,6 @@ export function useContainedAssets({ address, isCrucible = false }: Props) {
   const [containedAssetsLoading, setContainedAssetsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // TODO: Handle WETH balance
   const withUnlockedBalance = async (assets: ContainedAsset[]) => {
     const signer = library.getSigner();
     const crucible = new ethers.Contract(address, crucibleAbi, signer);
@@ -40,7 +39,6 @@ export function useContainedAssets({ address, isCrucible = false }: Props) {
     );
   };
 
-  // TODO: Handle WETH balance
   const withBalance = async (assets: ContainedAsset[]) => {
     const signer = library.getSigner();
 

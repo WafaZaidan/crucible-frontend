@@ -16,6 +16,7 @@ import bigNumberishToNumber from '../../../../utils/bigNumberishToNumber';
 import formatNumber from '../../../../utils/formatNumber';
 import onNumberInputChange from '../../../../utils/onNumberInputChange';
 import numberishToBigNumber from '../../../../utils/numberishToBigNumber';
+import AssetsLoadingSkeleton from './assetsLoadingSkeleton';
 
 type Props = {
   crucible: Crucible;
@@ -55,9 +56,8 @@ const TransferErc20: React.FC<Props> = ({ crucible, walletAddress, type }) => {
   if (error) {
     return <Text>{error}</Text>;
   }
-  // TODO: Add loading skeleton
   if (containedAssetsLoading) {
-    return <Box>Loading...</Box>;
+    return <AssetsLoadingSkeleton />;
   }
   if (containedAssets.length === 0) {
     return <Text>No contained assets found</Text>;
