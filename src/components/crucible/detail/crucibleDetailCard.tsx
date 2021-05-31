@@ -10,6 +10,8 @@ import { Badge, Box, Flex, Heading, HStack, Text } from '@chakra-ui/layout';
 import { Tooltip } from '@chakra-ui/tooltip';
 import { useClipboard } from '@chakra-ui/hooks';
 import { useToast } from '@chakra-ui/toast';
+import { useWeb3React } from '@web3-react/core';
+import { useRewardPrograms } from '../../../store/rewardPrograms';
 import TransferModal from '../../modals/transferModal';
 import formatNumber from '../../../utils/formatNumber';
 
@@ -22,6 +24,8 @@ const CrucibleDetailCard: FC<Props> = ({ crucible }) => {
 
   const toast = useToast();
   const history = useHistory();
+  const { chainId = 1 } = useWeb3React();
+  const { setCurrentRewardProgram } = useRewardPrograms();
   let { hasCopied, onCopy } = useClipboard(crucible.id);
 
   const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
@@ -29,6 +33,11 @@ const CrucibleDetailCard: FC<Props> = ({ crucible }) => {
   const mintDate = useMemo(() => {
     return formatNumber.date(crucible.mintTimestamp * 1000);
   }, [crucible.mintTimestamp]);
+
+  useEffect(() => {
+    setCurrentRewardProgram(chainId, 'Aludel');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chainId]);
 
   useEffect(() => {
     if (hasCopied && !toast.isActive(id)) {

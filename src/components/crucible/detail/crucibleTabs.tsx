@@ -7,6 +7,7 @@ import { Box } from '@chakra-ui/layout';
 import { Crucible } from '../../../context/crucibles';
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/tabs';
 import { useFeatureFlag } from '../../../store/featureFlag';
+import RewardsNew from './assets-detail/RewardsNew';
 
 type Props = {
   crucible: Crucible;
@@ -28,6 +29,9 @@ const CrucibleTabs: FC<Props> = ({ crucible }) => {
           {featureFlag.enableMultipleRewardPrograms && (
             <Tab {...tabProps}>Assets</Tab>
           )}
+          {featureFlag.enableMultipleRewardPrograms && (
+            <Tab {...tabProps}>Rewards new</Tab>
+          )}
           <Tab {...tabProps}>Rewards</Tab>
           <Tab {...tabProps}>LP Performance</Tab>
           <Tab {...tabProps}>Network</Tab>
@@ -36,6 +40,11 @@ const CrucibleTabs: FC<Props> = ({ crucible }) => {
           {featureFlag.enableMultipleRewardPrograms && (
             <TabPanel px={0} pb={0}>
               <Assets />
+            </TabPanel>
+          )}
+          {featureFlag.enableMultipleRewardPrograms && (
+            <TabPanel px={0} pb={0}>
+              <RewardsNew />
             </TabPanel>
           )}
           <TabPanel px={0} pb={0}>

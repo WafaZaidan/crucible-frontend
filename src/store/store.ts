@@ -3,6 +3,7 @@ import configReducer from './config';
 import modalsReducer from './modals';
 import cruciblesReducer from './crucibles';
 import featureFlagReducer from './featureFlag';
+import rewardProgramsReducer from './rewardPrograms';
 import logger from 'redux-logger';
 
 export const store = configureStore({
@@ -11,6 +12,7 @@ export const store = configureStore({
     modals: modalsReducer,
     crucibles: cruciblesReducer,
     featureFlag: featureFlagReducer,
+    rewardPrograms: rewardProgramsReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
