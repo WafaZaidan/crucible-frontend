@@ -19,28 +19,36 @@ import numberishToBigNumber from '../../../../utils/numberishToBigNumber';
 
 type Props = {
   crucible: Crucible;
+  walletAddress: string | null | undefined;
+  type: 'deposit' | 'withdraw';
 };
 
-type withdrawFromCrucibleParams = Parameters<
+type transferErc20Params = Parameters<
   (
+    signer: Signer,
     crucibleAddress: string,
     tokenAddress: string,
-    signer: Signer,
     amount: BigNumber
   ) => void
 >;
 
-const WithdrawCrucibleAssets: React.FC<Props> = ({ crucible }) => {
+const TransferErc20: React.FC<Props> = ({ crucible, walletAddress, type }) => {
   const {
     containedAssetsLoading,
     error,
     containedAssets,
     selectedAsset,
     handleSetSelectedAsset,
-  } = useContainedAssets({ address: crucible.id, isCrucible: true });
-  const { withdrawFromCrucible } = useContracts();
+  } = useContainedAssets({
+    address: type === 'withdraw' ? crucible.id : (walletAddress as string),
+    isCrucible: type === 'withdraw',
+  });
+  const { withdrawFromCrucible, depositToCrucible } = useContracts();
+
   const { library } = useWeb3React();
-  const { invokeContract, ui } = useContract(withdrawFromCrucible);
+  const { invokeContract, ui } = useContract(
+    type === 'withdraw' ? withdrawFromCrucible : depositToCrucible
+  );
   const [isMax, setIsMax] = useState(false);
   const [amount, setAmount] = useState('0');
 
@@ -52,7 +60,7 @@ const WithdrawCrucibleAssets: React.FC<Props> = ({ crucible }) => {
     return <Box>Loading...</Box>;
   }
   if (containedAssets.length === 0) {
-    return <Text>This crucible has no assets that can be withdrawn</Text>;
+    return <Text>No contained assets found</Text>;
   }
   if (!selectedAsset) {
     return null;
@@ -74,13 +82,13 @@ const WithdrawCrucibleAssets: React.FC<Props> = ({ crucible }) => {
     );
   };
 
-  const handleWithdrawFromCrucible = () => {
+  const handleTransferErc20 = () => {
     const signer = library?.getSigner() as Signer;
 
-    invokeContract<withdrawFromCrucibleParams>(
+    invokeContract<transferErc20Params>(
+      signer,
       crucible.id,
       selectedAsset.contractAddress,
-      signer,
       isMax && tokenBalance ? tokenBalance : amountBigNumber
     );
   };
@@ -88,7 +96,11 @@ const WithdrawCrucibleAssets: React.FC<Props> = ({ crucible }) => {
   return (
     <Box p={[6]} bg='white' color='gray.800' borderRadius='xl'>
       <Flex alignItems='center' justifyContent='space-between' mb={2}>
-        <Text>Select amount to withdraw</Text>
+        <Text>
+          {type === 'withdraw'
+            ? 'Select amount to withdraw'
+            : 'Select amount to deposit'}
+        </Text>
         <Text>
           Balance: {tokenBalance ? formatNumber.token(tokenBalanceNumber) : '-'}{' '}
           {selectedAsset.tokenSymbol}
@@ -143,17 +155,17 @@ const WithdrawCrucibleAssets: React.FC<Props> = ({ crucible }) => {
       </NumberInput>
       <Button
         isFullWidth
-        onClick={handleWithdrawFromCrucible}
+        onClick={handleTransferErc20}
         disabled={
           (!isMax || tokenBalance.lte(0)) &&
           (amountBigNumber.lte(0) || amountBigNumber.gt(tokenBalance))
         }
       >
-        Withdraw from Crucible
+        {type === 'withdraw' ? 'Withdraw from Crucible' : 'Deposit to Crucible'}
       </Button>
       {ui}
     </Box>
   );
 };
 
-export default WithdrawCrucibleAssets;
+export default TransferErc20;

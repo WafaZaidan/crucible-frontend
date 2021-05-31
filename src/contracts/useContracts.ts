@@ -146,16 +146,16 @@ const useContracts = () => {
     );
 
   const withdrawFromCrucible = (
+    signer: Signer,
     crucibleAddress: string,
     tokenAddress: string,
-    signer: Signer,
     amount: BigNumber,
     callback: (args: CallbackArgs) => void
   ) =>
     _withdrawFromCrucible(
+      signer,
       crucibleAddress,
       tokenAddress,
-      signer,
       amount,
       callback
     );

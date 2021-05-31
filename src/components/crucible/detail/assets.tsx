@@ -3,8 +3,7 @@ import { Crucible, useCrucibles } from '../../../store/crucibles';
 import { Box, Stack } from '@chakra-ui/layout';
 import { useParams } from 'react-router';
 import { useWeb3React } from '@web3-react/core';
-import WithdrawCrucibleAssets from './assets-detail/withdrawCrucibleAssets';
-import DepositToCrucible from './assets-detail/depositToCrucible';
+import TransferErc20 from './assets-detail/transferErc20';
 
 const Assets = () => {
   const { account } = useWeb3React();
@@ -32,10 +31,15 @@ const Assets = () => {
   return (
     <Box>
       <Stack spacing={4}>
-        <WithdrawCrucibleAssets crucible={selectedCrucible} />
-        <DepositToCrucible
+        <TransferErc20
           crucible={selectedCrucible}
           walletAddress={account}
+          type='withdraw'
+        />
+        <TransferErc20
+          crucible={selectedCrucible}
+          walletAddress={account}
+          type='deposit'
         />
       </Stack>
     </Box>

@@ -3,9 +3,9 @@ import { crucibleAbi } from '../abi/crucibleAbi';
 import { CallbackArgs, EVENT } from '../hooks/useContract';
 
 async function withdrawFromCrucible(
+  signer: Signer,
   crucibleAddress: string,
   tokenAddress: string,
-  signer: Signer,
   amount: BigNumber,
   callback: (args: CallbackArgs) => void
 ) {
