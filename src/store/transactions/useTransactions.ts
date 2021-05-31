@@ -7,6 +7,7 @@ import { useCrucibles } from '../../context/crucibles';
 import { useToast } from '@chakra-ui/toast';
 import { transferCrucible as _transferCrucible } from './actions/transferCrucible';
 import { mintCrucible as _mintCrucible } from './actions/mintCrucible';
+import { increaseLP as _increaseLP } from './actions/increaseLP';
 import { transactionsSlice } from './reducer';
 import { BigNumber } from 'ethers';
 
@@ -78,16 +79,45 @@ export const useTransactions = (): UseTransactions => {
       })
     );
 
-    // transfer success
     if (_mintCrucible.fulfilled.match(mintAction)) {
       reloadBalances();
       reloadCrucibles();
     }
 
-    // transfer failure
     if (_mintCrucible.rejected.match(mintAction)) {
       toast({
         title: 'Minting failed',
+        status: 'error',
+        duration: 2000,
+        isClosable: true,
+      });
+
+      updateSavedTransaction({
+        status: TxnStatus.Failed,
+      });
+    }
+  };
+
+  const increaseLP = async (amountLp: BigNumber, crucibleAddress: string) => {
+    const increaseLPAction = await dispatch(
+      _increaseLP({
+        config: configForNetwork,
+        web3React,
+        monitorTx,
+        updateTx: updateSavedTransaction,
+        amountLp,
+        crucibleAddress,
+      })
+    );
+
+    if (_increaseLP.fulfilled.match(increaseLPAction)) {
+      reloadBalances();
+      reloadCrucibles();
+    }
+
+    if (_increaseLP.rejected.match(increaseLPAction)) {
+      toast({
+        title: 'Failed to increase LP',
         status: 'error',
         duration: 2000,
         isClosable: true,
@@ -119,5 +149,6 @@ export const useTransactions = (): UseTransactions => {
     clearSavedTransactions,
     transferCrucible,
     mintCrucible,
+    increaseLP,
   };
 };

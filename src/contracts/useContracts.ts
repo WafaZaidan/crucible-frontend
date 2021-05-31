@@ -5,7 +5,6 @@ import {
   getNetworkStats as _getNetworkStats,
   getUserRewards as _getUserRewards,
 } from './aludel';
-import _increaseStake from './increaseStake';
 import _getOwnedCrucibles from './getOwnedCrucibles';
 import _unstakeAndClaim from './unstakeAndClaim';
 import _withdraw from './withdraw';
@@ -20,7 +19,6 @@ const useContracts = () => {
     aludelAddress,
     crucibleFactoryAddress,
     lpTokenAddress,
-    transmuterAddress,
     wethAddress,
     mistTokenAddress,
     rewardPool,
@@ -38,21 +36,6 @@ const useContracts = () => {
       rewardPool,
       signer,
       crucibles
-    );
-
-  const increaseStake = (
-    signer: any,
-    crucibleAddress: string,
-    amount: BigNumber,
-    callback: (args: CallbackArgs) => void
-  ) =>
-    _increaseStake(
-      aludelAddress,
-      transmuterAddress,
-      signer,
-      crucibleAddress,
-      amount,
-      callback
     );
 
   const getOwnedCrucibles = (signer: any, provider: any) =>
@@ -119,7 +102,6 @@ const useContracts = () => {
   return {
     getNetworkStats,
     getUserRewards,
-    increaseStake,
     getOwnedCrucibles,
     unstakeAndClaim,
     withdraw,
