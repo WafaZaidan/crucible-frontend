@@ -14,28 +14,33 @@ const useTransactionPoller = () => {
 
   const checkTransactionStatuses = useCallback(async () => {
     savedTransactions.forEach((txn) => {
-      library?.getTransactionReceipt(txn.hash).then((receipt: any) => {
-        if (receipt) {
-          dispatch(
-            transactionsSlice.actions.setTransactionStatus({
-              ...txn,
-              account: txn.account as string,
-              chainId: txn.chainId as number,
-              status: receipt.status === 1 ? TxnStatus.Mined : TxnStatus.Failed,
-            })
-          );
-        }
-      });
+      if (txn.hash) {
+        library?.getTransactionReceipt(txn.hash).then((receipt: any) => {
+          if (receipt) {
+            dispatch(
+              transactionsSlice.actions.setTransactionStatus({
+                ...txn,
+                account: txn.account as string,
+                chainId: txn.chainId as number,
+                status:
+                  receipt.status === 1 ? TxnStatus.Mined : TxnStatus.Failed,
+              })
+            );
+          }
+        });
+      }
     });
   }, [savedTransactions]);
 
   useEffect(() => {
-    let interval: number;
+    //   let interval: number;
+    //   if (library && savedTransactions.length > 0) {
     if (library && savedTransactions.length > 0) {
       checkTransactionStatuses();
-      setInterval(() => checkTransactionStatuses(), TX_POLL_INTERVAL);
     }
-    return () => clearInterval(interval);
+    //     setInterval(() => checkTransactionStatuses(), TX_POLL_INTERVAL);
+    //   }
+    //   return () => clearInterval(interval);
   }, [library, savedTransactions.length]);
 };
 

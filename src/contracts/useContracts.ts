@@ -6,7 +6,6 @@ import {
   getUserRewards as _getUserRewards,
 } from './aludel';
 import _getOwnedCrucibles from './getOwnedCrucibles';
-import _unstakeAndClaim from './unstakeAndClaim';
 import _withdraw from './withdraw';
 import _getTokenBalances from './getTokenBalances';
 import _getUniswapBalances from './getUniswapTokenBalances';
@@ -46,14 +45,6 @@ const useContracts = () => {
       signer,
       provider
     );
-
-  const unstakeAndClaim = (
-    signer: any,
-    crucibleAddress: string,
-    amount: BigNumber,
-    callback: (args: CallbackArgs) => void
-  ) =>
-    _unstakeAndClaim(aludelAddress, signer, crucibleAddress, amount, callback);
 
   const withdraw = (
     signer: any,
@@ -103,7 +94,6 @@ const useContracts = () => {
     getNetworkStats,
     getUserRewards,
     getOwnedCrucibles,
-    unstakeAndClaim,
     withdraw,
     getTokenBalances,
     getUniswapBalances,

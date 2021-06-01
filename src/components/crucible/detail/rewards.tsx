@@ -20,6 +20,7 @@ import WithdrawModal from '../../modals/withdrawModal';
 import StatCard from '../../shared/StatCard';
 import formatNumber from '../../../utils/formatNumber';
 import getMultiplier from '../../../utils/getMultiplier';
+import { useTransactions } from '../../../store/transactions/useTransactions';
 
 type Props = {
   crucible: Crucible;

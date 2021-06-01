@@ -32,7 +32,7 @@ export const transactionsSlice = createSlice({
   initialState,
   reducers: {
     clearSavedTransactions: (state) => {
-      localStorage.setItem('transactions', '[]');
+      localStorage.clear();
       state.transactions = [];
     },
     setTransactionStatus: (

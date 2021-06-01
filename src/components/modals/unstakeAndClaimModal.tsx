@@ -28,19 +28,15 @@ import {
   SliderThumb,
   SliderTrack,
 } from '@chakra-ui/slider';
-import { useContract } from '../../hooks/useContract';
 import { Crucible, useCrucibles } from '../../context/crucibles';
 import formatNumber from '../../utils/formatNumber';
 import numberishToBigNumber from '../../utils/numberishToBigNumber';
 import bigNumberishToNumber from '../../utils/bigNumberishToNumber';
 import getStep from '../../utils/getStep';
 import onNumberInputChange from '../../utils/onNumberInputChange';
-import useContracts from '../../contracts/useContracts';
 import { parseUnits } from '@ethersproject/units';
-
-type unstakeAndClaimParams = Parameters<
-  (signer: any, crucibleAddress: string, amount: BigNumber) => void
->;
+import { useTransactions } from '../../store/transactions/useTransactions';
+import { TxnStatus, TxnType } from '../../store/transactions/types';
 
 type Props = {
   crucible: Crucible;
@@ -54,30 +50,38 @@ const UnstakeAndClaimModal: FC<Props> = ({
   subscriptionBoundaries,
 }) => {
   const { cruciblesOnCurrentNetwork } = useCrucibles();
-  const { library, chainId } = useWeb3React();
-  const [isLoading, setIsLoading] = useState(false);
+  const { chainId } = useWeb3React();
   const [isMax, setIsMax] = useState(false);
   const [amount, setAmount] = useState('0');
   const amountBigNumber = numberishToBigNumber(amount || 0);
   const lockedBalance = crucible?.lockedBalance || BigNumber.from(0);
   const lockedBalanceNumber = bigNumberishToNumber(lockedBalance);
   const step = getStep(lockedBalanceNumber);
-  const { unstakeAndClaim } = useContracts();
 
-  const { invokeContract, ui } = useContract(unstakeAndClaim, () => {
-    onClose();
-  });
+  const { unsubscribeLP, savedTransactions } = useTransactions();
+
+  const isUnstakeTxnPending =
+    savedTransactions.filter((txn) => {
+      return (
+        txn.type === TxnType.unsubscribe &&
+        (txn.status === TxnStatus.Initiated ||
+          txn.status === TxnStatus.PendingApproval ||
+          txn.status === TxnStatus.PendingOnChain)
+      );
+    }).length > 0;
+
+  console.log(savedTransactions);
+  console.log(isUnstakeTxnPending);
 
   const handleUnstakeAndClaim = async () => {
-    setIsLoading(true);
     const crucibles = await cruciblesOnCurrentNetwork();
+
     if (crucibles.length !== 0 && chainId === 1) {
       alert(
         `You have not changed your network yet.
 
 Follow this guide to privately withdraw your stake: https://github.com/Taichi-Network/docs/blob/master/sendPriveteTx_tutorial.md`
       );
-      setIsLoading(false);
       return;
     }
 
@@ -102,13 +106,7 @@ Follow this guide to privately withdraw your stake: https://github.com/Taichi-Ne
         setNeedsAdjustment();
     }
 
-    const signer = library?.getSigner();
-    invokeContract<unstakeAndClaimParams>(
-      signer,
-      crucible.id,
-      isMax ? lockedBalance : adjust(amountBigNumber)
-    );
-    setIsLoading(false);
+    unsubscribeLP(isMax ? lockedBalance : adjust(amountBigNumber), crucible.id);
   };
 
   const onChange = (amountNew: number | string) => {
@@ -203,7 +201,7 @@ Follow this guide to privately withdraw your stake: https://github.com/Taichi-Ne
           <ModalFooter>
             <Button
               isFullWidth
-              isLoading={isLoading}
+              isLoading={isUnstakeTxnPending}
               onClick={handleUnstakeAndClaim}
               disabled={
                 (!isMax || lockedBalance.lte(0)) &&
@@ -215,7 +213,6 @@ Follow this guide to privately withdraw your stake: https://github.com/Taichi-Ne
           </ModalFooter>
         </ModalContent>
       </Modal>
-      {ui}
     </>
   );
 };
