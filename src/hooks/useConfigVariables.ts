@@ -42,7 +42,7 @@ const useConfigVariables = (): Config => {
         infuraApiKey: '00a5b13ef0cf467698571093487743e6',
         dappId: 'ad454b00-3218-4403-95e9-22c3c7d3adc0',
         uniswapPoolUrl: 'http://lp.mist.alchemist.wtf',
-        getMistUrl: 'http://swap.mist.alchemist.wtf',
+        getMistUrl: 'http://swap.alchemist.wtf',
       }
     : {
         ...config,

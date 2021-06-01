@@ -37,8 +37,8 @@ export const useModal = () => {
   const isOpen = useAppSelector((state) => state.modals.isOpen);
   const modalType = useAppSelector((state) => state.modals.modalType);
   const modalProps = useAppSelector((state) => state.modals.modalProps);
-  const openModal = (modalType: ReactNode) =>
-    dispatch(modalsSlice.actions.openModal({ modalType }));
+  const openModal = (modalType: ReactNode, modalProps?: any) =>
+    dispatch(modalsSlice.actions.openModal({ modalType, modalProps }));
   const closeModal = () => dispatch(modalsSlice.actions.closeModal());
   return { isOpen, openModal, closeModal, modalType, modalProps };
 };

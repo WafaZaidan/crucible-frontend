@@ -14,18 +14,19 @@ import { Crucible } from '../../../context/crucibles';
 import { BigNumber } from '@ethersproject/bignumber';
 import { Button } from '@chakra-ui/button';
 import dayjs from 'dayjs';
-import UnstakeAndClaimModal from '../../modals/unstakeAndClaimModal';
 import IncreaseStakeModal from '../../modals/increaseStakeModal';
 import WithdrawModal from '../../modals/withdrawModal';
 import StatCard from '../../shared/StatCard';
 import formatNumber from '../../../utils/formatNumber';
 import getMultiplier from '../../../utils/getMultiplier';
+import { useModal } from '../../../store/modals';
+import { ModalType } from '../../modals/types';
 
 type Props = {
   crucible: Crucible;
 };
 const Rewards: FC<Props> = ({ crucible }) => {
-  const [claimRewardsModalOpen, setClaimRewardsModalOpen] = useState(false);
+  const { openModal } = useModal();
   const [increaseStakeModalOpen, setIncreaseStakeModalOpen] = useState(false);
   const [withdrawModalOpen, setWithdrawModalOpen] = useState(false);
   const [
@@ -213,7 +214,12 @@ const Rewards: FC<Props> = ({ crucible }) => {
           <Button
             isFullWidth
             disabled={crucible.lockedBalance.isZero()}
-            onClick={() => setClaimRewardsModalOpen(true)}
+            onClick={() =>
+              openModal(ModalType.claimRewards, {
+                crucible,
+                subscriptionBoundaries,
+              })
+            }
           >
             <Text fontSize='sm'>Claim rewards and unsubscribe</Text>
           </Button>
@@ -233,13 +239,6 @@ const Rewards: FC<Props> = ({ crucible }) => {
         <Text fontSize='sm' color='gray.400'>
           To withdraw, first unsubscribe your LP
         </Text>
-      )}
-      {claimRewardsModalOpen && (
-        <UnstakeAndClaimModal
-          crucible={crucible}
-          subscriptionBoundaries={subscriptionBoundaries}
-          onClose={() => setClaimRewardsModalOpen(false)}
-        />
       )}
       {increaseStakeModalOpen && (
         <IncreaseStakeModal
