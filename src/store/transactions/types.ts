@@ -48,6 +48,10 @@ export type UnsubscribeLP = {
   (amountLp: BigNumber, crucibleAddress: string): Promise<void>;
 };
 
+export type Withdraw = {
+  (amountLp: BigNumber, crucibleAddress: string): Promise<void>;
+};
+
 export interface UseTransactions {
   savedTransactions: TransactionList;
   clearSavedTransactions: () => void;
@@ -57,4 +61,5 @@ export interface UseTransactions {
   mintCrucible: MintCrucible;
   increaseLP: IncreaseLP;
   unsubscribeLP: UnsubscribeLP;
+  withdraw: Withdraw;
 }

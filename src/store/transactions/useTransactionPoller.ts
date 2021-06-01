@@ -9,7 +9,6 @@ const TX_POLL_INTERVAL = 1000 * 5; // 5 seconds
 
 const useTransactionPoller = () => {
   const { savedTransactions } = useTransactions();
-  console.log('poller txns ', savedTransactions);
   const { library } = useWeb3React();
   const dispatch = useDispatch();
 

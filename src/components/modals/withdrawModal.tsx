@@ -1,5 +1,4 @@
 import React, { FC, useState } from 'react';
-import { useWeb3React } from '@web3-react/core';
 import {
   Button,
   Flex,
@@ -24,7 +23,6 @@ import {
   SliderTrack,
 } from '@chakra-ui/slider';
 import { Box } from '@chakra-ui/layout';
-import { useContract } from '../../hooks/useContract';
 import { Crucible } from '../../context/crucibles';
 import { BigNumber } from 'ethers';
 import formatNumber from '../../utils/formatNumber';
@@ -32,11 +30,8 @@ import numberishToBigNumber from '../../utils/numberishToBigNumber';
 import bigNumberishToNumber from '../../utils/bigNumberishToNumber';
 import getStep from '../../utils/getStep';
 import onNumberInputChange from '../../utils/onNumberInputChange';
-import useContracts from '../../contracts/useContracts';
-
-type withdrawParams = Parameters<
-  (signer: any, crucibleAddress: string, amount: BigNumber) => void
->;
+import { useTransactions } from '../../store/transactions/useTransactions';
+import { TxnStatus, TxnType } from '../../store/transactions/types';
 
 type Props = {
   crucible: Crucible;
@@ -44,24 +39,23 @@ type Props = {
 };
 
 const WithdrawStakeModal: FC<Props> = ({ onClose, crucible }) => {
-  const { library } = useWeb3React();
   const [isMax, setIsMax] = useState(false);
   const [amount, setAmount] = useState('0');
   const amountBigNumber = numberishToBigNumber(amount || 0);
   const unlockedBalance = crucible?.unlockedBalance || BigNumber.from(0);
   const unlockedBalanceNumber = bigNumberishToNumber(unlockedBalance);
   const step = getStep(unlockedBalanceNumber);
-  const { withdraw } = useContracts();
+  const { withdraw, savedTransactions } = useTransactions();
 
-  const { invokeContract, ui } = useContract(withdraw, () => onClose());
+  const isWithdrawTxLoading =
+    savedTransactions.filter((txn) => {
+      return (
+        txn.type === TxnType.withdraw && txn.status === TxnStatus.PendingOnChain
+      );
+    }).length > 0;
 
   const handleWithdraw = () => {
-    const signer = library?.getSigner();
-    invokeContract<withdrawParams>(
-      signer,
-      crucible.id,
-      isMax ? unlockedBalance : amountBigNumber
-    );
+    withdraw(isMax ? unlockedBalance : amountBigNumber, crucible.id);
   };
 
   const onChange = (amountNew: number | string) => {
@@ -76,76 +70,73 @@ const WithdrawStakeModal: FC<Props> = ({ onClose, crucible }) => {
   };
 
   return (
-    <>
-      <Modal isOpen={true} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent borderRadius='xl'>
-          <ModalHeader>Withdraw Unsubscribed LP</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <Text mb={4}>
-              After you've claimed your rewards and unsubscribed your LP, you
-              can withdraw your unsubscribed LP from your Crucible.
+    <Modal isOpen={true} onClose={onClose}>
+      <ModalOverlay />
+      <ModalContent borderRadius='xl'>
+        <ModalHeader>Withdraw Unsubscribed LP</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <Text mb={4}>
+            After you've claimed your rewards and unsubscribed your LP, you can
+            withdraw your unsubscribed LP from your Crucible.
+          </Text>
+          <Flex
+            mb={2}
+            justifyContent='space-between'
+            alignItems='center'
+            color='gray.100'
+          >
+            <Text>Select amount</Text>
+            <Text>
+              Balance: <strong>{formatNumber.token(unlockedBalance)} LP</strong>
             </Text>
-            <Flex
-              mb={2}
-              justifyContent='space-between'
-              alignItems='center'
-              color='gray.100'
-            >
-              <Text>Select amount</Text>
-              <Text>
-                Balance:{' '}
-                <strong>{formatNumber.token(unlockedBalance)} LP</strong>
-              </Text>
-            </Flex>
-            <NumberInput
-              value={isMax ? unlockedBalanceNumber.toString() : amount}
-              onChange={onChange}
+          </Flex>
+          <NumberInput
+            value={isMax ? unlockedBalanceNumber.toString() : amount}
+            onChange={onChange}
+            step={step}
+            min={0}
+            max={unlockedBalanceNumber}
+            clampValueOnBlur={false}
+            size='lg'
+          >
+            <NumberInputField pr='4.5rem' borderRadius='xl' />
+            <InputRightElement width='4.5rem'>
+              <Button variant='ghost' onClick={() => setIsMax(true)}>
+                Max
+              </Button>
+            </InputRightElement>
+          </NumberInput>
+          <Box my={4} mx={4}>
+            <Slider
               step={step}
               min={0}
               max={unlockedBalanceNumber}
-              clampValueOnBlur={false}
-              size='lg'
+              value={isMax ? unlockedBalanceNumber : +amount || 0}
+              onChange={onChange}
             >
-              <NumberInputField pr='4.5rem' borderRadius='xl' />
-              <InputRightElement width='4.5rem'>
-                <Button variant='ghost' onClick={() => setIsMax(true)}>
-                  Max
-                </Button>
-              </InputRightElement>
-            </NumberInput>
-            <Box my={4} mx={4}>
-              <Slider
-                step={step}
-                min={0}
-                max={unlockedBalanceNumber}
-                value={isMax ? unlockedBalanceNumber : +amount || 0}
-                onChange={onChange}
-              >
-                <SliderTrack>
-                  <SliderFilledTrack bg='purple.500' />
-                </SliderTrack>
-                <SliderThumb fontSize='sm' boxSize='18px' bg='purple.500' />
-              </Slider>
-            </Box>
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              isFullWidth
-              onClick={handleWithdraw}
-              disabled={
-                (!isMax || unlockedBalance.lte(0)) &&
-                (amountBigNumber.lte(0) || amountBigNumber.gt(unlockedBalance))
-              }
-            >
-              Withdraw
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-      {ui}
-    </>
+              <SliderTrack>
+                <SliderFilledTrack bg='purple.500' />
+              </SliderTrack>
+              <SliderThumb fontSize='sm' boxSize='18px' bg='purple.500' />
+            </Slider>
+          </Box>
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            loading={isWithdrawTxLoading}
+            isFullWidth
+            onClick={handleWithdraw}
+            disabled={
+              (!isMax || unlockedBalance.lte(0)) &&
+              (amountBigNumber.lte(0) || amountBigNumber.gt(unlockedBalance))
+            }
+          >
+            Withdraw
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   );
 };
 

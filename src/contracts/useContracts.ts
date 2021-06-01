@@ -1,12 +1,10 @@
 import useConfigVariables from '../hooks/useConfigVariables';
 import { BigNumber, Signer } from 'ethers';
-import { CallbackArgs } from '../hooks/useContract';
 import {
   getNetworkStats as _getNetworkStats,
   getUserRewards as _getUserRewards,
 } from './aludel';
 import _getOwnedCrucibles from './getOwnedCrucibles';
-import _withdraw from './withdraw';
 import _getTokenBalances from './getTokenBalances';
 import _getUniswapBalances from './getUniswapTokenBalances';
 
@@ -45,13 +43,6 @@ const useContracts = () => {
       signer,
       provider
     );
-
-  const withdraw = (
-    signer: any,
-    crucibleAddress: string,
-    amount: BigNumber,
-    callback: (args: CallbackArgs) => void
-  ) => _withdraw(lpTokenAddress, signer, crucibleAddress, amount, callback);
 
   const getTokenBalances = (
     signer: Signer,
@@ -94,7 +85,6 @@ const useContracts = () => {
     getNetworkStats,
     getUserRewards,
     getOwnedCrucibles,
-    withdraw,
     getTokenBalances,
     getUniswapBalances,
   };
