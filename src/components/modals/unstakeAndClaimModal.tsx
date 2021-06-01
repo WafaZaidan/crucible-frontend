@@ -37,6 +37,7 @@ import getStep from '../../utils/getStep';
 import onNumberInputChange from '../../utils/onNumberInputChange';
 import useContracts from '../../contracts/useContracts';
 import { parseUnits } from '@ethersproject/units';
+import { useModal } from '../../store/modals';
 
 type unstakeAndClaimParams = Parameters<
   (signer: any, crucibleAddress: string, amount: BigNumber) => void
@@ -45,14 +46,13 @@ type unstakeAndClaimParams = Parameters<
 type Props = {
   crucible: Crucible;
   subscriptionBoundaries: BigNumber[];
-  onClose: () => void;
 };
 
 const UnstakeAndClaimModal: FC<Props> = ({
-  onClose,
   crucible,
   subscriptionBoundaries,
 }) => {
+  const { closeModal } = useModal();
   const { cruciblesOnCurrentNetwork } = useCrucibles();
   const { library, chainId } = useWeb3React();
   const [isLoading, setIsLoading] = useState(false);
@@ -65,7 +65,7 @@ const UnstakeAndClaimModal: FC<Props> = ({
   const { unstakeAndClaim } = useContracts();
 
   const { invokeContract, ui } = useContract(unstakeAndClaim, () => {
-    onClose();
+    closeModal();
   });
 
   const handleUnstakeAndClaim = async () => {
@@ -124,7 +124,7 @@ Follow this guide to privately withdraw your stake: https://github.com/Taichi-Ne
 
   return (
     <>
-      <Modal isOpen={true} onClose={onClose}>
+      <Modal isOpen={true} onClose={() => closeModal()}>
         <ModalOverlay />
         <ModalContent borderRadius='xl'>
           <ModalHeader>Claim Aludel rewards and unsubscribe</ModalHeader>
