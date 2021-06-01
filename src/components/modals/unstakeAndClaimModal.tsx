@@ -64,14 +64,9 @@ const UnstakeAndClaimModal: FC<Props> = ({
     savedTransactions.filter((txn) => {
       return (
         txn.type === TxnType.unsubscribe &&
-        (txn.status === TxnStatus.Initiated ||
-          txn.status === TxnStatus.PendingApproval ||
-          txn.status === TxnStatus.PendingOnChain)
+        txn.status === TxnStatus.PendingOnChain
       );
     }).length > 0;
-
-  console.log(savedTransactions);
-  console.log(isUnstakeTxnPending);
 
   const handleUnstakeAndClaim = async () => {
     const crucibles = await cruciblesOnCurrentNetwork();

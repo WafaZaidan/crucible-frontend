@@ -27,7 +27,6 @@ export const useTransactions = (): UseTransactions => {
   };
 
   const updateSavedTransaction = (updatedTx: Partial<TxnDetails>) => {
-    console.log('UPDATING SAVED TXN: ', updatedTx);
     dispatch(
       transactionsSlice.actions.setTransactionStatus({
         ...updatedTx,
