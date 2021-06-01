@@ -28,20 +28,16 @@ import {
   SliderThumb,
   SliderTrack,
 } from '@chakra-ui/slider';
-import { useContract } from '../../hooks/useContract';
 import { Crucible, useCrucibles } from '../../context/crucibles';
 import formatNumber from '../../utils/formatNumber';
 import numberishToBigNumber from '../../utils/numberishToBigNumber';
 import bigNumberishToNumber from '../../utils/bigNumberishToNumber';
 import getStep from '../../utils/getStep';
 import onNumberInputChange from '../../utils/onNumberInputChange';
-import useContracts from '../../contracts/useContracts';
 import { parseUnits } from '@ethersproject/units';
 import { useModal } from '../../store/modals';
-
-type unstakeAndClaimParams = Parameters<
-  (signer: any, crucibleAddress: string, amount: BigNumber) => void
->;
+import { useTransactions } from '../../store/transactions/useTransactions';
+import { TxnStatus, TxnType } from '../../store/transactions/types';
 
 type Props = {
   crucible: Crucible;
@@ -54,30 +50,33 @@ const UnstakeAndClaimModal: FC<Props> = ({
 }) => {
   const { closeModal } = useModal();
   const { cruciblesOnCurrentNetwork } = useCrucibles();
-  const { library, chainId } = useWeb3React();
-  const [isLoading, setIsLoading] = useState(false);
+  const { chainId } = useWeb3React();
   const [isMax, setIsMax] = useState(false);
   const [amount, setAmount] = useState('0');
   const amountBigNumber = numberishToBigNumber(amount || 0);
   const lockedBalance = crucible?.lockedBalance || BigNumber.from(0);
   const lockedBalanceNumber = bigNumberishToNumber(lockedBalance);
   const step = getStep(lockedBalanceNumber);
-  const { unstakeAndClaim } = useContracts();
 
-  const { invokeContract, ui } = useContract(unstakeAndClaim, () => {
-    closeModal();
-  });
+  const { unsubscribeLP, savedTransactions } = useTransactions();
+
+  const isUnstakeTxnPending =
+    savedTransactions.filter((txn) => {
+      return (
+        txn.type === TxnType.unsubscribe &&
+        txn.status === TxnStatus.PendingOnChain
+      );
+    }).length > 0;
 
   const handleUnstakeAndClaim = async () => {
-    setIsLoading(true);
     const crucibles = await cruciblesOnCurrentNetwork();
+
     if (crucibles.length !== 0 && chainId === 1) {
       alert(
         `You have not changed your network yet.
 
 Follow this guide to privately withdraw your stake: https://github.com/Taichi-Network/docs/blob/master/sendPriveteTx_tutorial.md`
       );
-      setIsLoading(false);
       return;
     }
 
@@ -102,13 +101,7 @@ Follow this guide to privately withdraw your stake: https://github.com/Taichi-Ne
         setNeedsAdjustment();
     }
 
-    const signer = library?.getSigner();
-    invokeContract<unstakeAndClaimParams>(
-      signer,
-      crucible.id,
-      isMax ? lockedBalance : adjust(amountBigNumber)
-    );
-    setIsLoading(false);
+    unsubscribeLP(isMax ? lockedBalance : adjust(amountBigNumber), crucible.id);
   };
 
   const onChange = (amountNew: number | string) => {
@@ -123,100 +116,97 @@ Follow this guide to privately withdraw your stake: https://github.com/Taichi-Ne
   };
 
   return (
-    <>
-      <Modal isOpen={true} onClose={() => closeModal()}>
-        <ModalOverlay />
-        <ModalContent borderRadius='xl'>
-          <ModalHeader>Claim Aludel rewards and unsubscribe</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <Text mb={4}>You are claiming the following rewards:</Text>
-            <UnorderedList mb={4}>
-              <ListItem>
-                {formatNumber.tokenFull(crucible.mistRewards || 0)} MIST
-              </ListItem>
-              <ListItem>
-                {formatNumber.tokenFull(crucible.wethRewards || 0)} ETH
-              </ListItem>
-            </UnorderedList>
+    <Modal isOpen={true} onClose={() => closeModal()}>
+      <ModalOverlay />
+      <ModalContent borderRadius='xl'>
+        <ModalHeader>Claim Aludel rewards and unsubscribe</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <Text mb={4}>You are claiming the following rewards:</Text>
+          <UnorderedList mb={4}>
+            <ListItem>
+              {formatNumber.tokenFull(crucible.mistRewards || 0)} MIST
+            </ListItem>
+            <ListItem>
+              {formatNumber.tokenFull(crucible.wethRewards || 0)} ETH
+            </ListItem>
+          </UnorderedList>
+          <Text>
+            By claiming rewards, you are unsubscribing your MIST-ETH LP tokens
+            from the Aludel Rewards program and resetting your rewards
+            multiplier.
+            <br />
+            <br />
+            <b>
+              Before unsubscribing, you'll need to add a new network provider
+              (Taichi) to your wallet following{' '}
+              <Link
+                color='blue.400'
+                href='https://docs.alchemist.wtf/mist/crucible/guides-crucible.alchemist.wtf/claiming-rewards-and-unsubscribing-your-lp'
+                isExternal
+              >
+                this guide.
+              </Link>
+            </b>
+            <br />
+          </Text>
+          <Flex
+            mb={2}
+            justifyContent='space-between'
+            alignItems='center'
+            color='gray.100'
+          >
+            <Text>Select amount</Text>
             <Text>
-              By claiming rewards, you are unsubscribing your MIST-ETH LP tokens
-              from the Aludel Rewards program and resetting your rewards
-              multiplier.
-              <br />
-              <br />
-              <b>
-                Before unsubscribing, you'll need to add a new network provider
-                (Taichi) to your wallet following{' '}
-                <Link
-                  color='blue.400'
-                  href='https://docs.alchemist.wtf/mist/crucible/guides-crucible.alchemist.wtf/claiming-rewards-and-unsubscribing-your-lp'
-                  isExternal
-                >
-                  this guide.
-                </Link>
-              </b>
-              <br />
+              Balance: <strong>{formatNumber.token(lockedBalance)} LP</strong>
             </Text>
-            <Flex
-              mb={2}
-              justifyContent='space-between'
-              alignItems='center'
-              color='gray.100'
-            >
-              <Text>Select amount</Text>
-              <Text>
-                Balance: <strong>{formatNumber.token(lockedBalance)} LP</strong>
-              </Text>
-            </Flex>
-            <NumberInput
-              value={isMax ? lockedBalanceNumber.toString() : amount}
-              onChange={onChange}
+          </Flex>
+          <NumberInput
+            value={isMax ? lockedBalanceNumber.toString() : amount}
+            onChange={onChange}
+            step={step}
+            min={0}
+            max={lockedBalanceNumber}
+            clampValueOnBlur={false}
+            size='lg'
+          >
+            <NumberInputField pr='4.5rem' borderRadius='xl' />
+            <InputRightElement width='4.5rem'>
+              <Button variant='ghost' onClick={() => setIsMax(true)}>
+                Max
+              </Button>
+            </InputRightElement>
+          </NumberInput>
+          <Box my={4} mx={4}>
+            <Slider
               step={step}
               min={0}
               max={lockedBalanceNumber}
-              clampValueOnBlur={false}
-              size='lg'
+              value={isMax ? lockedBalanceNumber : +amount || 0}
+              onChange={onChange}
             >
-              <NumberInputField pr='4.5rem' borderRadius='xl' />
-              <InputRightElement width='4.5rem'>
-                <Button variant='ghost' onClick={() => setIsMax(true)}>
-                  Max
-                </Button>
-              </InputRightElement>
-            </NumberInput>
-            <Box my={4} mx={4}>
-              <Slider
-                step={step}
-                min={0}
-                max={lockedBalanceNumber}
-                value={isMax ? lockedBalanceNumber : +amount || 0}
-                onChange={onChange}
-              >
-                <SliderTrack>
-                  <SliderFilledTrack bg='purple.500' />
-                </SliderTrack>
-                <SliderThumb fontSize='sm' boxSize='18px' bg='purple.500' />
-              </Slider>
-            </Box>
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              isFullWidth
-              isLoading={isLoading}
-              onClick={handleUnstakeAndClaim}
-              disabled={
-                (!isMax || lockedBalance.lte(0)) &&
-                (amountBigNumber.lte(0) || amountBigNumber.gt(lockedBalance))
-              }
-            >
-              Claim rewards and unsubscribe LP
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-      {ui}
-    </>
+              <SliderTrack>
+                <SliderFilledTrack bg='purple.500' />
+              </SliderTrack>
+              <SliderThumb fontSize='sm' boxSize='18px' bg='purple.500' />
+            </Slider>
+          </Box>
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            isFullWidth
+            isLoading={isUnstakeTxnPending}
+            onClick={handleUnstakeAndClaim}
+            disabled={
+              (!isMax || lockedBalance.lte(0)) &&
+              (amountBigNumber.lte(0) || amountBigNumber.gt(lockedBalance))
+            }
+          >
+            Claim rewards and unsubscribe LP
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   );
 };
 
