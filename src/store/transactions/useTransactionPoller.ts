@@ -14,18 +14,21 @@ const useTransactionPoller = () => {
 
   const checkTransactionStatuses = useCallback(async () => {
     savedTransactions.forEach((txn) => {
-      library?.getTransactionReceipt(txn.hash).then((receipt: any) => {
-        if (receipt) {
-          dispatch(
-            transactionsSlice.actions.setTransactionStatus({
-              ...txn,
-              account: txn.account as string,
-              chainId: txn.chainId as number,
-              status: receipt.status === 1 ? TxnStatus.Mined : TxnStatus.Failed,
-            })
-          );
-        }
-      });
+      if (txn.hash) {
+        library?.getTransactionReceipt(txn.hash).then((receipt: any) => {
+          if (receipt) {
+            dispatch(
+              transactionsSlice.actions.setTransactionStatus({
+                ...txn,
+                account: txn.account as string,
+                chainId: txn.chainId as number,
+                status:
+                  receipt.status === 1 ? TxnStatus.Mined : TxnStatus.Failed,
+              })
+            );
+          }
+        });
+      }
     });
   }, [savedTransactions]);
 

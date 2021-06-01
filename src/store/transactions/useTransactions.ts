@@ -8,6 +8,8 @@ import { useToast } from '@chakra-ui/toast';
 import { transferCrucible as _transferCrucible } from './actions/transferCrucible';
 import { mintCrucible as _mintCrucible } from './actions/mintCrucible';
 import { increaseLP as _increaseLP } from './actions/increaseLP';
+import { unsubscribeLP as _unsubscribeLP } from './actions/unsubscribeLP';
+import { withdraw as _withdraw } from './actions/withdrawLP';
 import { transactionsSlice } from './reducer';
 import { BigNumber } from 'ethers';
 
@@ -25,7 +27,7 @@ export const useTransactions = (): UseTransactions => {
     dispatch(transactionsSlice.actions.clearSavedTransactions());
   };
 
-  const updateSavedTransaction = (updatedTx: Partial<TxnDetails>) =>
+  const updateSavedTransaction = (updatedTx: Partial<TxnDetails>) => {
     dispatch(
       transactionsSlice.actions.setTransactionStatus({
         ...updatedTx,
@@ -34,6 +36,7 @@ export const useTransactions = (): UseTransactions => {
         chainId: web3React.chainId as number,
       })
     );
+  };
 
   const transferCrucible = async (crucibleId: string, transferTo: string) => {
     const transferAction = await dispatch(
@@ -129,6 +132,71 @@ export const useTransactions = (): UseTransactions => {
     }
   };
 
+  const unsubscribeLP = async (
+    amountLp: BigNumber,
+    crucibleAddress: string
+  ) => {
+    const unsubLpAction = await dispatch(
+      _unsubscribeLP({
+        config: configForNetwork,
+        web3React,
+        monitorTx,
+        updateTx: updateSavedTransaction,
+        amountLp,
+        crucibleAddress,
+      })
+    );
+
+    if (_unsubscribeLP.fulfilled.match(unsubLpAction)) {
+      reloadBalances();
+      reloadCrucibles();
+    }
+
+    if (_unsubscribeLP.rejected.match(unsubLpAction)) {
+      toast({
+        title: 'Failed to unsubscribe LP',
+        status: 'error',
+        duration: 2000,
+        isClosable: true,
+      });
+
+      updateSavedTransaction({
+        status: TxnStatus.Failed,
+      });
+    }
+  };
+
+  const withdraw = async (amountLp: BigNumber, crucibleAddress: string) => {
+    const withdrawAction = await dispatch(
+      _withdraw({
+        config: configForNetwork,
+        web3React,
+        monitorTx,
+        updateTx: updateSavedTransaction,
+        amountLp,
+        crucibleAddress,
+      })
+    );
+
+    if (_withdraw.fulfilled.match(withdrawAction)) {
+      reloadBalances();
+      reloadCrucibles();
+    }
+
+    if (_withdraw.rejected.match(withdrawAction)) {
+      toast({
+        title: 'Failed to withdraw',
+        status: 'error',
+        duration: 2000,
+        isClosable: true,
+      });
+
+      updateSavedTransaction({
+        status: TxnStatus.Failed,
+      });
+    }
+  };
+
   const pendingTransactions = transactions.filter(
     (txn) => txn.status === TxnStatus.PendingOnChain
   );
@@ -150,5 +218,7 @@ export const useTransactions = (): UseTransactions => {
     transferCrucible,
     mintCrucible,
     increaseLP,
+    unsubscribeLP,
+    withdraw,
   };
 };

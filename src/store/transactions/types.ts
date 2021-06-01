@@ -4,7 +4,7 @@ export enum TxnType {
   mint = 'MINT',
   increaseLp = 'INCREASE LP',
   transfer = 'TRANSFER',
-  claim = 'CLAIM',
+  unsubscribe = 'UNSUBSCRIBE',
   withdraw = 'WITHDRAW',
 }
 
@@ -44,6 +44,14 @@ export type IncreaseLP = {
   (amountLp: BigNumber, crucibleAddress: string): Promise<void>;
 };
 
+export type UnsubscribeLP = {
+  (amountLp: BigNumber, crucibleAddress: string): Promise<void>;
+};
+
+export type Withdraw = {
+  (amountLp: BigNumber, crucibleAddress: string): Promise<void>;
+};
+
 export interface UseTransactions {
   savedTransactions: TransactionList;
   clearSavedTransactions: () => void;
@@ -52,4 +60,6 @@ export interface UseTransactions {
   transferCrucible: TransferCrucible;
   mintCrucible: MintCrucible;
   increaseLP: IncreaseLP;
+  unsubscribeLP: UnsubscribeLP;
+  withdraw: Withdraw;
 }
