@@ -5,8 +5,11 @@ import { useDispatch } from 'react-redux';
 import { TxnStatus } from './types';
 import { useTransactions } from './useTransactions';
 
+const TX_POLL_INTERVAL = 1000 * 5; // 5 seconds
+
 const useTransactionPoller = () => {
   const { savedTransactions } = useTransactions();
+  console.log('poller txns ', savedTransactions);
   const { library } = useWeb3React();
   const dispatch = useDispatch();
 
@@ -31,9 +34,12 @@ const useTransactionPoller = () => {
   }, [savedTransactions]);
 
   useEffect(() => {
+    let interval: number;
     if (library && savedTransactions.length > 0) {
       checkTransactionStatuses();
+      setInterval(() => checkTransactionStatuses(), TX_POLL_INTERVAL);
     }
+    return () => clearInterval(interval);
   }, [library, savedTransactions.length]);
 };
 
