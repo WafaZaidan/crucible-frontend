@@ -54,7 +54,11 @@ const TransferErc20: React.FC<Props> = ({ crucible, walletAddress, type }) => {
   const [amount, setAmount] = useState('0');
 
   if (error) {
-    return <Text>{error}</Text>;
+    return (
+      <Box p={[6]} bg='white' color='gray.800' borderRadius='xl'>
+        <Text>{error}</Text>
+      </Box>
+    );
   }
   if (containedAssetsLoading) {
     return <AssetsLoadingSkeleton />;

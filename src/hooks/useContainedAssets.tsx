@@ -61,6 +61,7 @@ export function useContainedAssets({ address, isCrucible = false }: Props) {
   // TODO: Add caching
   const getContainedAssetsInCrucible = async () => {
     try {
+      setContainedAssetsLoading(true);
       const assets = await getContainedAssets(
         address,
         chainId,
@@ -86,7 +87,6 @@ export function useContainedAssets({ address, isCrucible = false }: Props) {
   };
 
   useEffect(() => {
-    setContainedAssetsLoading(true);
     getContainedAssetsInCrucible();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

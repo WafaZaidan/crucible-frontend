@@ -1,13 +1,12 @@
 import React, { useEffect, useMemo } from 'react';
 import { Crucible, useCrucibles } from '../../../store/crucibles';
 import { Box, Stack } from '@chakra-ui/layout';
-import { useHistory, useParams } from 'react-router';
+import { Redirect, useParams } from 'react-router';
 import { useWeb3React } from '@web3-react/core';
 import TransferErc20 from './assets-detail/transferErc20';
 import AssetsLoadingSkeleton from './assets-detail/assetsLoadingSkeleton';
 
 const Assets = () => {
-  const history = useHistory();
   const { account } = useWeb3React();
   const { crucibleId } = useParams<{ crucibleId: string }>();
   const { crucibles, cruciblesLoading, getOwnedCrucibles } = useCrucibles();
@@ -26,8 +25,7 @@ const Assets = () => {
   }
 
   if (crucibles.length === 0) {
-    history.push('/');
-    return null;
+    return <Redirect to='/' />;
   }
 
   return (

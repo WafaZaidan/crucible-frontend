@@ -54,18 +54,15 @@ export const getContainedAssets = async (
     const response = await fetch(endpoint);
     const data: TransactionData = await response.json();
 
-    const assets: Assets = {};
     const assetsDetail: ContainedAsset[] = [];
 
     if (data.message !== 'OK') {
       throw new Error((data.result as unknown) as string);
     }
 
-    data.result.forEach((tx) => {
-      assets[tx.contractAddress] = {
-        ...tx,
-      };
-    });
+    const assets: Assets = data.result.reduce((acc, tx) => {
+      return { ...acc, [tx.contractAddress]: { ...tx } };
+    }, {});
 
     for (const o in assets) {
       assetsDetail.push(assets[o]);
