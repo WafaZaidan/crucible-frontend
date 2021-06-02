@@ -70,16 +70,6 @@ const UnstakeAndClaimModal: FC<Props> = ({
 
   const handleUnstakeAndClaim = async () => {
     setIsLoading(true);
-    const crucibles = await cruciblesOnCurrentNetwork();
-    if (crucibles.length !== 0 && chainId === 1) {
-      alert(
-        `You have not changed your network yet.
-
-Follow this guide to privately withdraw your stake: https://github.com/Taichi-Network/docs/blob/master/sendPriveteTx_tutorial.md`
-      );
-      setIsLoading(false);
-      return;
-    }
 
     let needsAdjustment = false;
 
@@ -146,16 +136,10 @@ Follow this guide to privately withdraw your stake: https://github.com/Taichi-Ne
               <br />
               <br />
               <b>
-                Before unsubscribing, you'll need to add a new network provider
-                (Taichi) to your wallet following{' '}
-                <Link
-                  color='blue.400'
-                  href='https://docs.alchemist.wtf/mist/crucible/guides-crucible.alchemist.wtf/claiming-rewards-and-unsubscribing-your-lp'
-                  isExternal
-                >
-                  this guide.
-                </Link>
+                You must use Metamask for this process. Hardware wallets are
+                also unsupported (i.e. Ledger, Trezor).
               </b>
+              <br />
               <br />
             </Text>
             <Flex

@@ -18,12 +18,10 @@ import { useTokens } from './context/tokens';
 import ModalRoot from './components/modals/ModalRoot';
 import { Provider } from 'react-redux';
 import { store } from './store/store';
-import { useCustomRPCNetworkListener } from './hooks/useCustomRPCNetworkListener';
 import { useEagerConnect } from './hooks/useMetamaskEagerConnect';
 
 const App: FC = () => {
   useTokens();
-  useCustomRPCNetworkListener();
   useEagerConnect();
 
   return (

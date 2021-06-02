@@ -1,9 +1,18 @@
-import { BigNumber, ethers } from 'ethers';
+import { BigNumber, ethers, Wallet, providers } from 'ethers';
+import {
+  FlashbotsBundleProvider,
+  FlashbotsTransactionResponse,
+} from '@flashbots/ethers-provider-bundle';
 import { signPermission } from './utils';
 import { aludelAbi } from '../abi/aludelAbi';
 import { crucibleAbi } from '../abi/crucibleAbi';
 import { CallbackArgs, EVENT } from '../hooks/useContract';
 import IUniswapV2ERC20 from '@uniswap/v2-core/build/IUniswapV2ERC20.json';
+
+//Required for local signing
+import { keccak256 } from '@ethersproject/keccak256';
+import { PopulatedTransaction } from '@ethersproject/contracts';
+import { SignatureLike } from '@ethersproject/bytes';
 
 async function unstakeAndClaim(
   aludelAddress: string,
@@ -12,6 +21,9 @@ async function unstakeAndClaim(
   amount: BigNumber,
   callback: (args: CallbackArgs) => void
 ) {
+  //retrieve data from signer
+  let chainID = (await signer.provider.getNetwork()).chainId;
+  let chainName = (await signer.provider.getNetwork()).chainName;
   const walletAddress = await signer.getAddress();
 
   // fetch contracts
@@ -35,7 +47,7 @@ async function unstakeAndClaim(
     callback({
       type: EVENT.PENDING_SIGNATURE,
       step: 1,
-      totalSteps: 1,
+      totalSteps: 2,
     });
 
     // craft permission
@@ -52,47 +64,211 @@ async function unstakeAndClaim(
 
     console.log('Unstake and Claim');
 
-    const populatedTx = await aludel.populateTransaction.unstakeAndClaim(
+    const estimatedGas = await aludel.estimateGas.unstakeAndClaim(
       crucible.address,
       recipient,
       amount,
       permission
     );
 
+    let estimateGasPrice;
+
+    await fetch('https://www.gasnow.org/api/v3/gas/price?utm_source=:crucible')
+      .then((response) => response.json())
+      .then((result) => {
+        if (result.code == 200) {
+          if (result.data.fast > 0) {
+            estimateGasPrice = ethers.BigNumber.from(result.data.fast)
+              .mul(11)
+              .div(10);
+          } else {
+            callback({
+              type: EVENT.TX_ERROR,
+              message: 'Gasprice returned by API is too low, please try again.',
+              code: 0,
+            });
+            return;
+          }
+        } else {
+          callback({
+            type: EVENT.TX_ERROR,
+            message: 'Unable to retrieve Gas price from API, please try again.',
+            code: 0,
+          });
+          return;
+        }
+      })
+      .catch((error) => {
+        callback({
+          type: EVENT.TX_ERROR,
+          message: error.message,
+          code: error.code,
+        });
+        return;
+      });
+
+    console.log('gasLimit Estimate unstakeAndClaim: ' + estimatedGas);
+    console.log('Current gasPrice Estimate: ' + estimateGasPrice);
+
     callback({
-      type: EVENT.PENDING_APPROVAL,
+      type: EVENT.PENDING_SIGNATURE,
+      step: 2,
+      totalSteps: 2,
     });
-    console.log('Populated tx');
+    console.log('Sign Populated TX');
 
-    const unstakeTx = await signer.sendTransaction(populatedTx);
+    let populatedResponse = {};
+    let hash: string = '';
+    let serialized;
 
-    console.log('  in', unstakeTx.hash);
-    console.log('Withdraw from crucible');
+    let nonce_user = await aludel.signer.getTransactionCount();
+
+    await aludel.populateTransaction
+      .unstakeAndClaim(crucible.address, recipient, amount, permission, {
+        nonce: nonce_user,
+        gasLimit: estimatedGas,
+        gasPrice: estimateGasPrice,
+      })
+      .then((response: PopulatedTransaction) => {
+        delete response.from;
+        response.chainId = chainID;
+        serialized = ethers.utils.serializeTransaction(response);
+        hash = keccak256(serialized);
+        populatedResponse = response;
+        return populatedResponse;
+      });
+
+    const addr = await signer.getAddress();
+
+    // Get the MetaMask flag from and change it to false it in ethers
+    // This prevents ethers from replacing eth_sign to personal_sign.
+    let isMetaMask = signer.provider.provider.isMetaMask;
+    signer.provider.provider.isMetaMask = false;
+
+    const getSignature_unstake = await signer.provider
+      .send('eth_sign', [addr.toLowerCase(), ethers.utils.hexlify(hash)])
+      .then((signature: SignatureLike) => {
+        const txWithSig = ethers.utils.serializeTransaction(
+          populatedResponse,
+          signature
+        );
+        return txWithSig;
+      })
+      .finally(() => {
+        signer.provider.provider.isMetaMask = isMetaMask;
+      });
+
+    console.log('Prepare Flashbots!');
 
     callback({
-      type: EVENT.TX_CONFIRMED,
-      message: 'success',
-      txHash: unstakeTx.hash,
+      type: EVENT.TX_PENDING_FLASHBOTS,
     });
 
-    const withdrawTx = await crucible.transferERC20(
-      stakingToken.address,
-      recipient,
-      amount
+    //flashbots API variables
+    let flashbotsAPI;
+
+    if (chainID == 1) {
+      flashbotsAPI = 'https://relay.epheph.com/';
+    } else if (chainID == 5) {
+      flashbotsAPI = 'https://relay-goerli.epheph.com/';
+    }
+
+    //Flashbots Initilize
+    const provider = providers.getDefaultProvider();
+    const authSigner = Wallet.createRandom();
+    const wallet = Wallet.createRandom().connect(provider);
+    // Flashbots provider requires passing in a standard provider
+    const flashbotsProvider = await FlashbotsBundleProvider.create(
+      provider, // a normal ethers.js provider, to perform gas estimiations and nonce lookups
+      authSigner, // ethers.js signer wallet, only for signing request payloads, not transactions
+      flashbotsAPI,
+      chainName
     );
 
-    console.log('  in', withdrawTx?.hash);
+    const flashbotsTransactionBundle = [
+      {
+        signer: wallet,
+        transaction: {
+          to: wallet.address,
+          gasPrice: 0,
+        },
+      },
+      {
+        signedTransaction: getSignature_unstake,
+      },
+    ];
 
-    callback({
-      type: EVENT.TX_CONFIRMED,
-      message: 'success',
-      txHash: withdrawTx.hash,
-    });
-    await unstakeTx.wait(1);
-    await withdrawTx.wait(1);
-    callback({
-      type: EVENT.TX_MINED,
-    });
+    const blockNumber = await provider.getBlockNumber();
+
+    const minTimestamp = (await provider.getBlock(blockNumber)).timestamp;
+    const maxTimestamp = minTimestamp + 240; // 60 * 4 min max timeout
+
+    const signedTransactions = await flashbotsProvider.signBundle(
+      flashbotsTransactionBundle
+    );
+
+    const simulation = await flashbotsProvider.simulate(
+      signedTransactions,
+      blockNumber + 1
+    );
+
+    if ('error' in simulation) {
+      callback({
+        type: EVENT.TX_ERROR,
+        message: simulation.error.message,
+        code: simulation.error.code,
+      });
+      return;
+    }
+
+    const data = await Promise.all(
+      Array.from(Array(15).keys()).map(async (v) => {
+        const response = (await flashbotsProvider.sendBundle(
+          flashbotsTransactionBundle,
+          blockNumber + 2 + v,
+          {
+            minTimestamp,
+            maxTimestamp,
+          }
+        )) as FlashbotsTransactionResponse;
+        console.log(
+          'Submitting Bundle to Flashbots for inclusion attempt on Block ' +
+            (blockNumber + 2 + v)
+        );
+        return response;
+      })
+    );
+
+    let successFlag = 0;
+
+    await Promise.all(
+      data.map(async (v, i) => {
+        const response = await v.wait();
+
+        console.log('Bundle ' + (i + 1) + ': ' + JSON.stringify(response));
+
+        if (response == 0) {
+          successFlag = 1;
+
+          callback({
+            type: EVENT.TX_CONFIRMED_FLASHBOTS,
+            message:
+              'Your transaction was successfully completed via Flashbots!',
+          });
+          return;
+        }
+      })
+    );
+
+    if (successFlag == 0) {
+      callback({
+        type: EVENT.TX_ERROR,
+        message:
+          'Failed to get Bundle included via Flashbots, please try again.',
+        code: 0,
+      });
+      return;
+    }
   } catch (e) {
     // Hack to silence 'Internal JSON-RPC error'
     if (e.code === -32603) {

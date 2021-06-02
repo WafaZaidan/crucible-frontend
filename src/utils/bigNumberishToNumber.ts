@@ -4,7 +4,7 @@ import { formatUnits, isBytes } from 'ethers/lib/utils';
 export default function bigNumberishToNumber(
   value: BigNumberish,
   units?: number | string
-) {
+): number {
   if (isBytes(value)) {
     throw new Error('bigNumberishToNumber: Bytes not supported');
   }
@@ -14,5 +14,5 @@ export default function bigNumberishToNumber(
   if (typeof value === 'string') {
     value = parseFloat(value);
   }
-  return value;
+  return value as number;
 }

@@ -3,6 +3,8 @@ import TxErrorModal from '../components/modals/tx/txErrorModal';
 import TxConfirmedModal from '../components/modals/tx/txConfirmedModal';
 import TxPendingSignatureModal from '../components/modals/tx/txPendingSignatureModal';
 import TxPendingApprovalModal from '../components/modals/tx/txPendingApprovalModal';
+import TxPendingFlashbotsModal from '../components/modals/tx/txPendingFlashbotsModal';
+import TxConfirmedFlashbotsModal from '../components/modals/tx/txConfirmedFlashbotsModal';
 import { useNotify } from '../context/transactions';
 import { useCrucibles } from '../context/crucibles';
 import { useWeb3React } from '@web3-react/core';
@@ -13,6 +15,8 @@ export enum EVENT {
   TX_CONFIRMED = 'TX_CONFIRMED',
   TX_MINED = 'TX_MINED',
   TX_ERROR = 'TX_ERROR',
+  TX_PENDING_FLASHBOTS = 'TX_PENDING_FLASHBOTS',
+  TX_CONFIRMED_FLASHBOTS = 'TX_CONFIRMED_FLASHBOTS',
 }
 
 export type CallbackArgs =
@@ -39,6 +43,14 @@ export type CallbackArgs =
   | {
       type: EVENT.TX_MINED;
       txHash?: string;
+    }
+  | {
+      type: EVENT.TX_PENDING_FLASHBOTS;
+      message?: string;
+    }
+  | {
+      type: EVENT.TX_CONFIRMED_FLASHBOTS;
+      message?: string;
     };
 
 export function useContract(
@@ -70,6 +82,10 @@ export function useContract(
         monitorTx(event.txHash, reloadBalances);
         break;
       case EVENT.TX_ERROR:
+        await setTimeout(function () {
+          reloadBalances();
+          reloadCrucibles();
+        }, 3000);
         setUI(
           <TxErrorModal
             message={event.message}
@@ -87,6 +103,20 @@ export function useContract(
             message={event.message}
             step={event.step}
             totalSteps={event.totalSteps}
+          />
+        );
+        break;
+      case EVENT.TX_PENDING_FLASHBOTS:
+        setUI(<TxPendingFlashbotsModal message={event.message} />);
+        break;
+      case EVENT.TX_CONFIRMED_FLASHBOTS:
+        await setTimeout(function () {
+          reloadBalances();
+        }, 3000);
+        setUI(
+          <TxConfirmedFlashbotsModal
+            message={event.message}
+            onClose={() => setUI(null)}
           />
         );
         break;
