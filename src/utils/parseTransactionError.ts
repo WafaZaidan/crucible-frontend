@@ -24,13 +24,16 @@ const commonErrors = {
   // transfer specific - recieving address may have been a crucible address
   'transfer to non ERC721Receiver implementer':
     'Invalid transfer recipient address',
+
+  // balance errors
+  'insufficient balance': 'Insufficient balance',
 };
 
 const parseTransactionError = (error: any) => {
   const errorMsg =
     error?.error?.message || error?.message || 'Transaction Failed';
 
-  console.log('ERROR MSG', errorMsg);
+  console.log('TRANSACTION ERROR', errorMsg);
 
   const commonError = containsAny(errorMsg, Object.keys(commonErrors));
 

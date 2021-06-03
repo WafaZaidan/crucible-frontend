@@ -17,7 +17,7 @@ export const transferCrucible = createAsyncThunk(
     transferTo,
     crucibleId,
   }: any) => {
-    const { account, library } = web3React;
+    const { account, library, chainId } = web3React;
     const signer = library.getSigner();
     const { crucibleFactoryAddress } = config;
     const txnId = uuid();
@@ -43,6 +43,8 @@ export const transferCrucible = createAsyncThunk(
       updateTx({
         id: txnId,
         status: TxnStatus.PendingApproval,
+        account,
+        chainId,
       });
 
       // Ask user to confirm txn
@@ -71,11 +73,8 @@ export const transferCrucible = createAsyncThunk(
 
       return txnId;
     } catch (error) {
-      console.log(error);
-
       const errorMessage = parseTransactionError(error);
 
-      // Set transfer status to FAILED
       updateTx({
         id: txnId,
         status: TxnStatus.Failed,

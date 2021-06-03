@@ -19,14 +19,10 @@ export const transactionsSlice = createSlice({
         state.transactions.filter((txn) => txn.id === action.payload.id)[0] ||
         {};
 
-      console.log('got the current tx: ', currentTransaction);
-
       const updatedTransaction = {
         ...currentTransaction,
         ...(action.payload || {}),
       };
-
-      console.log('and the updated txn: ', updatedTransaction);
 
       const savedTxns: TxnDetails[] = JSON.parse(
         localStorage.getItem('transactions') || '[]'

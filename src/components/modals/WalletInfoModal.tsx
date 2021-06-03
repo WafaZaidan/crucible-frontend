@@ -150,8 +150,8 @@ const WalletInfoModal: FC = () => {
                     borderBottom='1px solid'
                     borderColor='lightGray'
                   >
-                    <Flex>
-                      <Tag mr={1} size='sm' colorScheme='blue'>
+                    <Box>
+                      <Tag mr={2} size='sm' colorScheme='blue'>
                         {txn.type}
                       </Tag>
                       {txn.hash ? (
@@ -163,9 +163,9 @@ const WalletInfoModal: FC = () => {
                           {txn.description}
                         </Link>
                       ) : (
-                        <Text>{txn.description}</Text>
+                        <Text display='inline-block'>{txn.description}</Text>
                       )}
-                    </Flex>
+                    </Box>
                     <Box w='30px' ml={5}>
                       {txn.status === TxnStatus.Failed ? (
                         <Tooltip

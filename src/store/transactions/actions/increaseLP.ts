@@ -124,12 +124,8 @@ export const increaseLP = createAsyncThunk(
         status: TxnStatus.Mined,
       });
     } catch (error) {
-      console.log(error);
-
       const errorMessage = parseTransactionError(error);
 
-      // Set transfer status to FAILED
-      console.log('updatingTX: ', TxnStatus.Failed);
       updateTx({
         id: txnId,
         status: TxnStatus.Failed,

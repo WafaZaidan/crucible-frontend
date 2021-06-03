@@ -102,6 +102,7 @@ Follow this guide to privately withdraw your stake: https://github.com/Taichi-Ne
     }
 
     unsubscribeLP(isMax ? lockedBalance : adjust(amountBigNumber), crucible.id);
+    closeModal();
   };
 
   const onChange = (amountNew: number | string) => {
