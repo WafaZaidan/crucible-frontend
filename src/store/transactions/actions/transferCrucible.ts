@@ -21,7 +21,6 @@ export const transferCrucible = createAsyncThunk(
     const signer = library.getSigner();
     const { crucibleFactoryAddress } = config;
     const txnId = uuid();
-
     const description = `Transfer to ${truncate(transferTo)}`;
 
     // Set transfer status to INITIATED

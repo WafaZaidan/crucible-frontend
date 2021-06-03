@@ -1,4 +1,4 @@
-import { TxnDetails, TxnStatus, UseTransactions } from './types';
+import { TxnDetails, UseTransactions } from './types';
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { useConfig } from '../config';
 import { useWeb3React } from '@web3-react/core';
@@ -38,6 +38,27 @@ export const useTransactions = (): UseTransactions => {
     );
   };
 
+  const resolveTransaction = (
+    rawAction: any,
+    dispatchedAction: any,
+    errorMessage: string
+  ) => {
+    if (rawAction.fulfilled.match(dispatchedAction)) {
+      reloadBalances();
+      reloadCrucibles();
+    }
+
+    // transfer failure
+    if (rawAction.rejected.match(dispatchedAction)) {
+      toast({
+        title: errorMessage,
+        status: 'error',
+        duration: 2000,
+        isClosable: true,
+      });
+    }
+  };
+
   const transferCrucible = async (crucibleId: string, transferTo: string) => {
     const transferAction = await dispatch(
       _transferCrucible({
@@ -49,22 +70,7 @@ export const useTransactions = (): UseTransactions => {
         crucibleId,
       })
     );
-
-    // transfer success
-    if (_transferCrucible.fulfilled.match(transferAction)) {
-      reloadBalances();
-      reloadCrucibles();
-    }
-
-    // transfer failure
-    if (_transferCrucible.rejected.match(transferAction)) {
-      toast({
-        title: 'Transfer failed',
-        status: 'error',
-        duration: 2000,
-        isClosable: true,
-      });
-    }
+    resolveTransaction(_transferCrucible, transferAction, 'Transfer Failed');
   };
 
   const mintCrucible = async (amountLp: BigNumber) => {
@@ -77,24 +83,7 @@ export const useTransactions = (): UseTransactions => {
         amountLp,
       })
     );
-
-    if (_mintCrucible.fulfilled.match(mintAction)) {
-      reloadBalances();
-      reloadCrucibles();
-    }
-
-    if (_mintCrucible.rejected.match(mintAction)) {
-      toast({
-        title: 'Minting failed',
-        status: 'error',
-        duration: 2000,
-        isClosable: true,
-      });
-
-      updateSavedTransaction({
-        status: TxnStatus.Failed,
-      });
-    }
+    resolveTransaction(_mintCrucible, mintAction, 'Minting failed');
   };
 
   const increaseLP = async (amountLp: BigNumber, crucibleAddress: string) => {
@@ -108,26 +97,7 @@ export const useTransactions = (): UseTransactions => {
         crucibleAddress,
       })
     );
-
-    if (_increaseLP.fulfilled.match(increaseLPAction)) {
-      reloadBalances();
-      reloadCrucibles();
-    }
-
-    if (_increaseLP.rejected.match(increaseLPAction)) {
-      console.log('__________________________________-');
-      console.log(increaseLPAction);
-      toast({
-        title: 'Failed to increase LP',
-        status: 'error',
-        duration: 2000,
-        isClosable: true,
-      });
-
-      updateSavedTransaction({
-        status: TxnStatus.Failed,
-      });
-    }
+    resolveTransaction(_increaseLP, increaseLPAction, 'Failed to increase LP');
   };
 
   const unsubscribeLP = async (
@@ -144,26 +114,11 @@ export const useTransactions = (): UseTransactions => {
         crucibleAddress,
       })
     );
-
-    if (_unsubscribeLP.fulfilled.match(unsubLpAction)) {
-      reloadBalances();
-      reloadCrucibles();
-    }
-
-    if (_unsubscribeLP.rejected.match(unsubLpAction)) {
-      console.log('__________________________________-');
-      console.log(unsubLpAction);
-      toast({
-        title: 'Failed to unsubscribe LP',
-        status: 'error',
-        duration: 2000,
-        isClosable: true,
-      });
-
-      updateSavedTransaction({
-        status: TxnStatus.Failed,
-      });
-    }
+    resolveTransaction(
+      _unsubscribeLP,
+      unsubLpAction,
+      'Failed to unsubscribe LP'
+    );
   };
 
   const withdraw = async (amountLp: BigNumber, crucibleAddress: string) => {
@@ -177,26 +132,7 @@ export const useTransactions = (): UseTransactions => {
         crucibleAddress,
       })
     );
-
-    if (_withdraw.fulfilled.match(withdrawAction)) {
-      reloadBalances();
-      reloadCrucibles();
-    }
-
-    if (_withdraw.rejected.match(withdrawAction)) {
-      console.log('__________________________________-');
-      console.log(withdrawAction);
-      toast({
-        title: 'Failed to withdraw',
-        status: 'error',
-        duration: 2000,
-        isClosable: true,
-      });
-
-      updateSavedTransaction({
-        status: TxnStatus.Failed,
-      });
-    }
+    resolveTransaction(_withdraw, withdrawAction, 'Failed to withdraw');
   };
 
   const txnsByAccountAndNetwork = transactions.filter(

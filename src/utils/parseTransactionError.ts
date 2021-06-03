@@ -14,9 +14,12 @@ const commonErrors = {
   // user messed up manual gas values
   'transaction underpriced':
     'Transaction under-priced. Please check the supplied gas amount and try again.',
+  'intrinsic gas too low':
+    'Transaction under-priced. Please check the supplied gas amount and try again.',
 
   // user denied signature via metamask
   'User denied transaction signature': 'Denied transaction signature',
+  'User denied message signature': 'Denied transaction signature',
 
   // transfer specific - recieving address may have been a crucible address
   'transfer to non ERC721Receiver implementer':

@@ -52,6 +52,7 @@ const IncreaseStakeModal: FC<Props> = ({ onClose, crucible }) => {
 
   const handleIncreaseSubscription = () => {
     increaseLP(isMax ? lpBalanceBN : amountLpToStakeBN, crucible.id);
+    onClose();
   };
 
   const onChange = (amountNew: number | string) => {
