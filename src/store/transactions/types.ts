@@ -18,12 +18,14 @@ export enum TxnStatus {
 }
 
 export interface TxnDetails {
+  id: string;
   type: TxnType;
   status?: TxnStatus;
   description?: string;
   hash?: string;
   chainId?: number;
   account?: string;
+  error?: string;
 }
 
 export type TransactionList = TxnDetails[];
@@ -53,10 +55,8 @@ export type Withdraw = {
 };
 
 export interface UseTransactions {
-  savedTransactions: TransactionList;
+  transactions: TransactionList;
   clearSavedTransactions: () => void;
-  pendingTransactions: TransactionList;
-  completedTransactions: TransactionList;
   transferCrucible: TransferCrucible;
   mintCrucible: MintCrucible;
   increaseLP: IncreaseLP;

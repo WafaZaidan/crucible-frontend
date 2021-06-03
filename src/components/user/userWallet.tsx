@@ -10,12 +10,17 @@ import { useModal } from '../../store/modals';
 import { ModalType } from '../modals/types';
 import { injectedConnector } from '../../config';
 import { useTransactions } from '../../store/transactions/useTransactions';
+import { TxnStatus } from '../../store/transactions/types';
 
 const UserWallet: FC = () => {
   const { deactivate, account, chainId, connector } = useWeb3React();
   const { openModal } = useModal();
-  const { pendingTransactions } = useTransactions();
+  const { transactions } = useTransactions();
   const isWalletMetamask = connector === injectedConnector;
+
+  const pendingTransactions = transactions.filter(
+    (txn) => txn.status === TxnStatus.PendingOnChain
+  );
 
   const openWalletConnectionModal = () => {
     openModal(ModalType.connectWallet);

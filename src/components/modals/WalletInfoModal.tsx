@@ -9,7 +9,7 @@ import {
 } from '@chakra-ui/modal';
 import { useModal } from '../../store/modals';
 import { useWeb3React } from '@web3-react/core';
-import { Button, Flex, Link, Text, useToast, Tag } from '@chakra-ui/react';
+import { Button, Flex, Link, Tag, Text, useToast } from '@chakra-ui/react';
 import { Box, HStack } from '@chakra-ui/layout';
 import { ModalType } from './types';
 import { useConnectedWalletName } from '../../hooks/useConnectedWalletName';
@@ -25,6 +25,7 @@ import { Spinner } from '@chakra-ui/spinner';
 import { useTransactions } from '../../store/transactions/useTransactions';
 import { TxnStatus } from '../../store/transactions/types';
 import { convertChainIdToNetworkName } from '../../utils/convertChainIdToNetworkName';
+import { Tooltip } from '@chakra-ui/tooltip';
 
 const convertTxnStatusToIcon = (status?: TxnStatus) => {
   switch (status) {
@@ -32,8 +33,6 @@ const convertTxnStatusToIcon = (status?: TxnStatus) => {
       return <RiErrorWarningLine size='23px' color='rgba(229, 62, 62)' />;
     case TxnStatus.Mined:
       return <FiCheckCircle size='20px' color='green' />;
-    case TxnStatus.Initiated:
-    case TxnStatus.PendingApproval:
     case TxnStatus.PendingOnChain:
       return (
         <Spinner
@@ -45,7 +44,9 @@ const convertTxnStatusToIcon = (status?: TxnStatus) => {
         />
       );
 
-    // this should not happen
+    // these txns should be filtered out
+    case TxnStatus.Initiated:
+    case TxnStatus.PendingApproval:
     case TxnStatus.Ready:
       return '';
   }
@@ -83,7 +84,14 @@ const WalletInfoModal: FC = () => {
       ? `https://etherscan.io/tx/${hash}`
       : `https://rinkeby.etherscan.io/tx/${hash}`;
 
-  const { savedTransactions, clearSavedTransactions } = useTransactions();
+  const { transactions, clearSavedTransactions } = useTransactions();
+
+  const txnsToDisplay = transactions.filter(
+    (txn) =>
+      txn.status === TxnStatus.Failed ||
+      txn.status === TxnStatus.PendingOnChain ||
+      txn.status === TxnStatus.Mined
+  );
 
   return (
     <>
@@ -122,7 +130,7 @@ const WalletInfoModal: FC = () => {
                 </HStack>
               </HStack>
             </Box>
-            {savedTransactions.length > 0 && (
+            {txnsToDisplay.length > 0 && (
               <Box mt={5} p={4} bg='white' color='gray.800' borderRadius='xl'>
                 <Flex justifyContent='space-between' mb={3}>
                   <Text fontWeight='bold'>Your Recent Transactions</Text>
@@ -130,7 +138,7 @@ const WalletInfoModal: FC = () => {
                     Clear All
                   </Button>
                 </Flex>
-                {savedTransactions.map((txn, i) => (
+                {txnsToDisplay.map((txn, i) => (
                   <Flex
                     columns={2}
                     spacing={5}
@@ -142,20 +150,36 @@ const WalletInfoModal: FC = () => {
                     borderBottom='1px solid'
                     borderColor='lightGray'
                   >
-                    <Box>
+                    <Flex>
                       <Tag mr={1} size='sm' colorScheme='blue'>
                         {txn.type}
                       </Tag>
-                      <Link
-                        isExternal
-                        color='blue.400'
-                        href={etherscanTxLink(txn.hash || '')}
-                      >
-                        {txn.description}
-                      </Link>
-                    </Box>
+                      {txn.hash ? (
+                        <Link
+                          isExternal
+                          color='blue.400'
+                          href={etherscanTxLink(txn.hash || '')}
+                        >
+                          {txn.description}
+                        </Link>
+                      ) : (
+                        <Text>{txn.description}</Text>
+                      )}
+                    </Flex>
                     <Box w='30px' ml={5}>
-                      {convertTxnStatusToIcon(txn.status)}
+                      {txn.status === TxnStatus.Failed ? (
+                        <Tooltip
+                          hasArrow
+                          label={`${txn.error?.substr(0, 100)}...`}
+                          bg='gray.800'
+                          color='white'
+                          placement='top'
+                        >
+                          <div>{convertTxnStatusToIcon(txn.status)}</div>
+                        </Tooltip>
+                      ) : (
+                        convertTxnStatusToIcon(txn.status)
+                      )}
                     </Box>
                   </Flex>
                 ))}

@@ -8,14 +8,14 @@ import { useTransactions } from './useTransactions';
 const TX_POLL_INTERVAL = 1000 * 5; // 5 seconds
 
 const useTransactionPoller = () => {
-  const { savedTransactions } = useTransactions();
+  const { transactions } = useTransactions();
   const { library } = useWeb3React();
   const dispatch = useDispatch();
 
   const checkTransactionStatuses = useCallback(async () => {
-    savedTransactions.forEach((txn) => {
-      if (txn.hash) {
-        library?.getTransactionReceipt(txn.hash).then((receipt: any) => {
+    transactions.forEach((txn) => {
+      if (txn.hash && txn.status === TxnStatus.PendingOnChain) {
+        library.getTransactionReceipt(txn.hash).then((receipt: any) => {
           if (receipt) {
             dispatch(
               transactionsSlice.actions.setTransactionStatus({
@@ -30,16 +30,16 @@ const useTransactionPoller = () => {
         });
       }
     });
-  }, [savedTransactions]);
+  }, [transactions]);
 
   useEffect(() => {
     let interval: number;
-    if (library && savedTransactions.length > 0) {
+    if (library && transactions.length > 0) {
       checkTransactionStatuses();
       setInterval(() => checkTransactionStatuses(), TX_POLL_INTERVAL);
     }
     return () => clearInterval(interval);
-  }, [library, savedTransactions.length]);
+  }, [library, transactions.length]);
 };
 
 export default useTransactionPoller;

@@ -58,10 +58,10 @@ const UnstakeAndClaimModal: FC<Props> = ({
   const lockedBalanceNumber = bigNumberishToNumber(lockedBalance);
   const step = getStep(lockedBalanceNumber);
 
-  const { unsubscribeLP, savedTransactions } = useTransactions();
+  const { unsubscribeLP, transactions } = useTransactions();
 
   const isUnstakeTxnPending =
-    savedTransactions.filter((txn) => {
+    transactions.filter((txn) => {
       return (
         txn.type === TxnType.unsubscribe &&
         txn.status === TxnStatus.PendingOnChain

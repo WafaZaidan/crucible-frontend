@@ -1,4 +1,4 @@
-import { TxnDetails, TxnStatus, TxnType, UseTransactions } from './types';
+import { TxnDetails, TxnStatus, UseTransactions } from './types';
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { useConfig } from '../config';
 import { useWeb3React } from '@web3-react/core';
@@ -29,9 +29,9 @@ export const useTransactions = (): UseTransactions => {
 
   const updateSavedTransaction = (updatedTx: Partial<TxnDetails>) => {
     dispatch(
+      // @ts-ignore
       transactionsSlice.actions.setTransactionStatus({
         ...updatedTx,
-        type: updatedTx.type as TxnType,
         account: web3React.account as string,
         chainId: web3React.chainId as number,
       })
@@ -63,10 +63,6 @@ export const useTransactions = (): UseTransactions => {
         status: 'error',
         duration: 2000,
         isClosable: true,
-      });
-
-      updateSavedTransaction({
-        status: TxnStatus.Failed,
       });
     }
   };
@@ -119,6 +115,8 @@ export const useTransactions = (): UseTransactions => {
     }
 
     if (_increaseLP.rejected.match(increaseLPAction)) {
+      console.log('__________________________________-');
+      console.log(increaseLPAction);
       toast({
         title: 'Failed to increase LP',
         status: 'error',
@@ -153,6 +151,8 @@ export const useTransactions = (): UseTransactions => {
     }
 
     if (_unsubscribeLP.rejected.match(unsubLpAction)) {
+      console.log('__________________________________-');
+      console.log(unsubLpAction);
       toast({
         title: 'Failed to unsubscribe LP',
         status: 'error',
@@ -184,6 +184,8 @@ export const useTransactions = (): UseTransactions => {
     }
 
     if (_withdraw.rejected.match(withdrawAction)) {
+      console.log('__________________________________-');
+      console.log(withdrawAction);
       toast({
         title: 'Failed to withdraw',
         status: 'error',
@@ -197,23 +199,13 @@ export const useTransactions = (): UseTransactions => {
     }
   };
 
-  const pendingTransactions = transactions.filter(
-    (txn) => txn.status === TxnStatus.PendingOnChain
-  );
-
-  const completedTransactions = transactions.filter(
-    (txn) => txn.status === TxnStatus.Mined
-  );
-
-  const savedTransactions = transactions.filter(
+  const txnsByAccountAndNetwork = transactions.filter(
     (txn) =>
       txn.account === web3React.account && txn.chainId === web3React.chainId
   );
 
   return {
-    savedTransactions,
-    pendingTransactions,
-    completedTransactions,
+    transactions: txnsByAccountAndNetwork,
     clearSavedTransactions,
     transferCrucible,
     mintCrucible,

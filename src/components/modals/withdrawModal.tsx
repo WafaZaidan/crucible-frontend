@@ -45,10 +45,10 @@ const WithdrawStakeModal: FC<Props> = ({ onClose, crucible }) => {
   const unlockedBalance = crucible?.unlockedBalance || BigNumber.from(0);
   const unlockedBalanceNumber = bigNumberishToNumber(unlockedBalance);
   const step = getStep(unlockedBalanceNumber);
-  const { withdraw, savedTransactions } = useTransactions();
+  const { withdraw, transactions } = useTransactions();
 
   const isWithdrawTxLoading =
-    savedTransactions.filter((txn) => {
+    transactions.filter((txn) => {
       return (
         txn.type === TxnType.withdraw && txn.status === TxnStatus.PendingOnChain
       );
