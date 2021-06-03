@@ -16,13 +16,11 @@ import CrucibleDetail from './pages/crucibleDetail';
 import CrucibleMinting from './pages/crucibleMinting';
 import { useTokens } from './context/tokens';
 import ModalRoot from './components/modals/ModalRoot';
-import { useCustomRPCNetworkListener } from './hooks/useCustomRPCNetworkListener';
 import { useEagerConnect } from './hooks/useMetamaskEagerConnect';
 import useTransactionPoller from './store/transactions/useTransactionPoller';
 
 const App: FC = () => {
   useTokens();
-  useCustomRPCNetworkListener();
   useEagerConnect();
   useTransactionPoller();
 

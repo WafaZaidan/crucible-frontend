@@ -23,8 +23,6 @@ const CrucibleMinting: FC = () => {
             <Spinner />
             <Text pt={4}>
               Unsupported network. Please switch to{' '}
-              <strong>{convertChainIdToNetworkName(1)}</strong>. If you are on
-              the <strong>Taichi</strong> network you need to switch back to{' '}
               <strong>{convertChainIdToNetworkName(1)}</strong> to view your
               Crucibles.
             </Text>

@@ -10,8 +10,8 @@ type Props = {
 };
 
 const Logo: FC<Props> = ({
-  widthList = ['40px', '140px', '200px'],
-  heightList = ['40px', 'auto', 'auto'],
+  widthList = ['40px', null, null, '200px'],
+  heightList = ['40px', null, null, 'auto'],
 }) => {
   return (
     <LinkBox>
@@ -22,7 +22,6 @@ const Logo: FC<Props> = ({
           height={heightList}
           objectFit='cover'
           objectPosition='0% 0'
-          alt='alchemist logo'
         />
       </LinkOverlay>
     </LinkBox>

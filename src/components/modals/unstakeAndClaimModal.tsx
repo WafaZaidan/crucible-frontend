@@ -1,5 +1,4 @@
 import React, { FC, useState } from 'react';
-import { useWeb3React } from '@web3-react/core';
 import { BigNumber } from 'ethers';
 import {
   Button,
@@ -49,8 +48,6 @@ const UnstakeAndClaimModal: FC<Props> = ({
   subscriptionBoundaries,
 }) => {
   const { closeModal } = useModal();
-  const { cruciblesOnCurrentNetwork } = useCrucibles();
-  const { chainId } = useWeb3React();
   const [isMax, setIsMax] = useState(false);
   const [amount, setAmount] = useState('0');
   const amountBigNumber = numberishToBigNumber(amount || 0);
@@ -69,17 +66,6 @@ const UnstakeAndClaimModal: FC<Props> = ({
     }).length > 0;
 
   const handleUnstakeAndClaim = async () => {
-    const crucibles = await cruciblesOnCurrentNetwork();
-
-    if (crucibles.length !== 0 && chainId === 1) {
-      alert(
-        `You have not changed your network yet.
-
-Follow this guide to privately withdraw your stake: https://github.com/Taichi-Network/docs/blob/master/sendPriveteTx_tutorial.md`
-      );
-      return;
-    }
-
     let needsAdjustment = false;
 
     const setNeedsAdjustment = () => {
@@ -159,7 +145,17 @@ Follow this guide to privately withdraw your stake: https://github.com/Taichi-Ne
           >
             <Text>Select amount</Text>
             <Text>
-              Balance: <strong>{formatNumber.token(lockedBalance)} LP</strong>
+              By claiming rewards, you are unsubscribing your MIST-ETH LP tokens
+              from the Aludel Rewards program and resetting your rewards
+              multiplier.
+              <br />
+              <br />
+              <b>
+                You must use Metamask for this process. Hardware wallets are
+                also unsupported (i.e. Ledger, Trezor).
+              </b>
+              <br />
+              <br />
             </Text>
           </Flex>
           <NumberInput
