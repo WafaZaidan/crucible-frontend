@@ -1,6 +1,7 @@
 import { useWeb3React } from '@web3-react/core';
-import { useEffect } from 'react';
 import { injectedConnector } from '../config';
+import { useEffect } from 'react';
+import { isMobile } from 'react-device-detect';
 
 export function useEagerConnect() {
   const { activate } = useWeb3React();
@@ -12,4 +13,11 @@ export function useEagerConnect() {
       }
     });
   }, [activate]);
+
+  useEffect(() => {
+    // @ts-ignore
+    if (isMobile && window.ethereum) {
+      activate(injectedConnector);
+    }
+  });
 }

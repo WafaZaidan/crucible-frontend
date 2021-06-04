@@ -17,7 +17,8 @@ interface Config {
   rewardPool: string;
   rpcUrl: string;
   infuraApiKey: string;
-  dappId: string;
+  blocknativeApiKey: string;
+  portisApiKey: string;
   uniswapSubgraphUrl: string;
   uniswapPoolUrl: string;
   getMistUrl: string;
@@ -40,7 +41,6 @@ const useConfigVariables = (): Config => {
         rewardPool: '0x04108d6E9a51BeC5170F8Fd953a156cF754bA541',
         rpcUrl: 'https://mainnet.infura.io/v3/00a5b13ef0cf467698571093487743e6',
         infuraApiKey: '00a5b13ef0cf467698571093487743e6',
-        dappId: 'ad454b00-3218-4403-95e9-22c3c7d3adc0',
         uniswapPoolUrl: 'http://lp.mist.alchemist.wtf',
         getMistUrl: 'http://swap.alchemist.wtf',
       }
@@ -57,7 +57,6 @@ const useConfigVariables = (): Config => {
         rewardPool: '0x60dd59e72B2468C64fD9F369488aedf9b5F65Ffe',
         rpcUrl: 'https://rinkeby.infura.io/v3/00a5b13ef0cf467698571093487743e6',
         infuraApiKey: '00a5b13ef0cf467698571093487743e6',
-        dappId: 'ad454b00-3218-4403-95e9-22c3c7d3adc0',
         uniswapPoolUrl:
           'https://app.uniswap.org/#/add/v2/0xF6c1210Aca158bBD453A12604A03AeD2659ac0ef/ETH',
         getMistUrl:
