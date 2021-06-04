@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
 import { randomBytes } from 'ethers/lib/utils';
 import IUniswapV2ERC20 from '@uniswap/v2-core/build/IUniswapV2ERC20.json';
-import { createAsyncThunk } from '@reduxjs/toolkit';
+import { createAsyncThunk, isRejectedWithValue } from '@reduxjs/toolkit';
 import { THUNK_PREFIX } from '../../enum';
 import { crucibleAbi } from '../../../abi/crucibleAbi';
 import { transmuterAbi } from '../../../abi/transmuterAbi';
@@ -32,11 +32,8 @@ export const mintCrucible = createAsyncThunk(
     try {
       const { library, account, chainId } = web3React;
       const signer = library.getSigner();
-      const {
-        crucibleFactoryAddress,
-        aludelAddress,
-        transmuterAddress,
-      } = config;
+      const { crucibleFactoryAddress, aludelAddress, transmuterAddress } =
+        config;
       const salt = randomBytes(32);
       const deadline =
         (await library.getBlock('latest')).timestamp + 60 * 60 * 24;

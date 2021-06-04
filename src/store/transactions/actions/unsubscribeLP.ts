@@ -1,4 +1,4 @@
-import { ethers } from 'ethers';
+import { ethers, providers, Wallet } from 'ethers';
 import IUniswapV2ERC20 from '@uniswap/v2-core/build/IUniswapV2ERC20.json';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { v4 as uuid } from 'uuid';
@@ -9,13 +9,20 @@ import { signPermission } from '../../../contracts/utils';
 import { TxnStatus, TxnType } from '../types';
 import bigNumberishToNumber from '../../../utils/bigNumberishToNumber';
 import parseTransactionError from '../../../utils/parseTransactionError';
+import { PopulatedTransaction } from '@ethersproject/contracts';
+import { keccak256 } from '@ethersproject/keccak256';
+import { SignatureLike } from '@ethersproject/bytes';
+import {
+  FlashbotsBundleProvider,
+  FlashbotsTransactionResponse,
+} from '@flashbots/ethers-provider-bundle';
 
 export const unsubscribeLP = createAsyncThunk(
   THUNK_PREFIX.UNSUBSCRIBE_LP,
   async ({
     web3React,
     config,
-    monitorTx,
+    // monitorTx, // TODO: Figure out how to monitor flashbots txns
     updateTx,
     amountLp,
     crucibleAddress,
@@ -24,6 +31,7 @@ export const unsubscribeLP = createAsyncThunk(
     const description = `Unsubscribe ${bigNumberishToNumber(amountLp)} LP`;
     const { library, account, chainId } = web3React;
     const signer = library.getSigner();
+    let chainName = (await signer.provider.getNetwork()).chainName;
     const { aludelAddress } = config;
 
     updateTx({
@@ -74,48 +82,175 @@ export const unsubscribeLP = createAsyncThunk(
         nonce
       );
 
-      // populate a txn object for unstake & claim
-      const populatedTransaction = await aludel.populateTransaction.unstakeAndClaim(
+      updateTx({
+        id: txnId,
+        status: TxnStatus.PendingOnChain,
+      });
+
+      const estimatedGas = await aludel.estimateGas.unstakeAndClaim(
         crucible.address,
         account,
         amountLp,
         permission
       );
 
-      // send the unstake & claim transaction - user confirms with wallet
-      const unstakeTx = await signer.sendTransaction(populatedTransaction);
+      let estimateGasPrice;
 
-      // monitor the unstaking tx
-      monitorTx(unstakeTx.hash);
+      await fetch(
+        'https://www.gasnow.org/api/v3/gas/price?utm_source=:crucible'
+      )
+        .then((response) => response.json())
+        .then((result) => {
+          // eslint-disable-next-line eqeqeq
+          if (result.code == 200) {
+            if (result.data.fast > 0) {
+              estimateGasPrice = ethers.BigNumber.from(result.data.fast)
+                .mul(11)
+                .div(10);
+            } else {
+              throw Error(
+                'Gasprice returned by API is too low, please try again.'
+              );
+            }
+          } else {
+            throw Error(
+              'Unable to retrieve Gas price from API, please try again.'
+            );
+          }
+        })
+        .catch((error) => {
+          throw error;
+        });
 
-      // set txn to "pending"
-      updateTx({
-        id: txnId,
-        status: TxnStatus.PendingOnChain,
-        hash: unstakeTx.hash,
-      });
+      let populatedResponse = {};
+      let hash: string = '';
+      let serialized;
 
-      // wait for tokens to  be unstaked...
-      await unstakeTx.wait(1);
+      let nonce_user = await aludel.signer.getTransactionCount();
 
-      // withdraw tokens
-      const withdrawTx = await crucible.transferERC20(
-        stakingToken.address,
-        account,
-        amountLp
+      await aludel.populateTransaction
+        .unstakeAndClaim(crucible.address, account, amountLp, permission, {
+          nonce: nonce_user,
+          gasLimit: estimatedGas,
+          gasPrice: estimateGasPrice,
+        })
+        .then((response: PopulatedTransaction) => {
+          delete response.from;
+          response.chainId = chainId;
+          serialized = ethers.utils.serializeTransaction(response);
+          hash = keccak256(serialized);
+          populatedResponse = response;
+          return populatedResponse;
+        });
+
+      let isMetaMask = signer.provider.provider.isMetaMask;
+      signer.provider.provider.isMetaMask = false;
+
+      const getSignature_unstake = await signer.provider
+        .send('eth_sign', [account.toLowerCase(), ethers.utils.hexlify(hash)])
+        .then((signature: SignatureLike) => {
+          const txWithSig = ethers.utils.serializeTransaction(
+            populatedResponse,
+            signature
+          );
+          return txWithSig;
+        })
+        .finally(() => {
+          signer.provider.provider.isMetaMask = isMetaMask;
+        });
+
+      //flashbots API variables
+      const flashbotsAPI =
+        chainId == 1
+          ? 'http://localhost:4000/https://relay.epheph.com/'
+          : 'http://localhost:4000/https://relay-goerli.epheph.com/';
+
+      //Flashbots Initilize
+      const provider = providers.getDefaultProvider();
+      const authSigner = Wallet.createRandom();
+      const wallet = Wallet.createRandom().connect(provider);
+
+      // Flashbots provider requires passing in a standard provider
+      const flashbotsProvider = await FlashbotsBundleProvider.create(
+        provider, // a normal ethers.js provider, to perform gas estimiations and nonce lookups
+        authSigner, // ethers.js signer wallet, only for signing request payloads, not transactions
+        flashbotsAPI,
+        chainName
       );
 
-      // monitor the withdraw tx
-      monitorTx(withdrawTx.hash);
+      const flashbotsTransactionBundle = [
+        {
+          signer: wallet,
+          transaction: {
+            to: wallet.address,
+            gasPrice: 0,
+          },
+        },
+        {
+          signedTransaction: getSignature_unstake,
+        },
+      ];
 
-      // wait for txn to complete
-      await withdrawTx.wait(1);
+      const blockNumber = await provider.getBlockNumber();
 
-      // mark as success
-      updateTx({
-        id: txnId,
-        status: TxnStatus.Mined,
-      });
+      const minTimestamp = (await provider.getBlock(blockNumber)).timestamp;
+      const maxTimestamp = minTimestamp + 240; // 60 * 4 min max timeout
+
+      const signedTransactions = await flashbotsProvider.signBundle(
+        flashbotsTransactionBundle
+      );
+
+      const simulation = await flashbotsProvider.simulate(
+        signedTransactions,
+        blockNumber + 1
+      );
+
+      if ('error' in simulation) {
+        throw Error(simulation.error.message);
+      }
+
+      const data = await Promise.all(
+        Array.from(Array(15).keys()).map(async (v) => {
+          const response = (await flashbotsProvider.sendBundle(
+            flashbotsTransactionBundle,
+            blockNumber + 2 + v,
+            {
+              minTimestamp,
+              maxTimestamp,
+            }
+          )) as FlashbotsTransactionResponse;
+          console.log(
+            'Submitting Bundle to Flashbots for inclusion attempt on Block ' +
+              (blockNumber + 2 + v)
+          );
+          return response;
+        })
+      );
+
+      let successFlag = 0;
+
+      await Promise.all(
+        data.map(async (v, i) => {
+          const response = await v.wait();
+
+          if (response == 0) {
+            successFlag = 1;
+
+            updateTx({
+              id: txnId,
+              status: TxnStatus.Mined,
+            });
+
+            return;
+          }
+        })
+      );
+
+      if (successFlag == 0) {
+        throw Error(
+          'Failed to get Bundle included via Flashbots, please try again.'
+        );
+      }
     } catch (error) {
       const errorMessage = parseTransactionError(error);
 

@@ -50,6 +50,8 @@ export const useTransactions = (): UseTransactions => {
 
     // transfer failure
     if (rawAction.rejected.match(dispatchedAction)) {
+      // generic error handling
+
       toast({
         title: errorMessage,
         status: 'error',

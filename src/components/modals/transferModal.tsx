@@ -34,6 +34,7 @@ const TransferModal: FC<Props> = ({ onClose, id }) => {
     if (ethers.utils.isAddress(sendAddress)) {
       transferCrucible(id, sendAddress);
       onClose();
+      window.scrollTo(0, 0);
     } else {
       setError('Invalid wallet address');
     }

@@ -4,7 +4,6 @@ import {
   Button,
   Flex,
   InputRightElement,
-  Link,
   ListItem,
   NumberInput,
   NumberInputField,
@@ -27,7 +26,7 @@ import {
   SliderThumb,
   SliderTrack,
 } from '@chakra-ui/slider';
-import { Crucible, useCrucibles } from '../../context/crucibles';
+import { Crucible } from '../../context/crucibles';
 import formatNumber from '../../utils/formatNumber';
 import numberishToBigNumber from '../../utils/numberishToBigNumber';
 import bigNumberishToNumber from '../../utils/bigNumberishToNumber';
@@ -89,6 +88,7 @@ const UnstakeAndClaimModal: FC<Props> = ({
 
     unsubscribeLP(isMax ? lockedBalance : adjust(amountBigNumber), crucible.id);
     closeModal();
+    window.scrollTo(0, 0);
   };
 
   const onChange = (amountNew: number | string) => {
@@ -118,32 +118,12 @@ const UnstakeAndClaimModal: FC<Props> = ({
               {formatNumber.tokenFull(crucible.wethRewards || 0)} ETH
             </ListItem>
           </UnorderedList>
-          <Text>
-            By claiming rewards, you are unsubscribing your MIST-ETH LP tokens
-            from the Aludel Rewards program and resetting your rewards
-            multiplier.
-            <br />
-            <br />
-            <b>
-              Before unsubscribing, you'll need to add a new network provider
-              (Taichi) to your wallet following{' '}
-              <Link
-                color='blue.400'
-                href='https://docs.alchemist.wtf/mist/crucible/guides-crucible.alchemist.wtf/claiming-rewards-and-unsubscribing-your-lp'
-                isExternal
-              >
-                this guide.
-              </Link>
-            </b>
-            <br />
-          </Text>
           <Flex
             mb={2}
             justifyContent='space-between'
             alignItems='center'
             color='gray.100'
           >
-            <Text>Select amount</Text>
             <Text>
               By claiming rewards, you are unsubscribing your MIST-ETH LP tokens
               from the Aludel Rewards program and resetting your rewards
@@ -158,6 +138,7 @@ const UnstakeAndClaimModal: FC<Props> = ({
               <br />
             </Text>
           </Flex>
+          <Text>Select amount</Text>
           <NumberInput
             value={isMax ? lockedBalanceNumber.toString() : amount}
             onChange={onChange}

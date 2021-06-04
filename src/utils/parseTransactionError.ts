@@ -27,6 +27,12 @@ const commonErrors = {
 
   // balance errors
   'insufficient balance': 'Insufficient balance',
+
+  // Flashbots errors
+  'missing response':
+    'Invalid network - Flashbots supported on Mainnet or Görli',
+  'invalid chain id for signer':
+    'Invalid network - Flashbots supported on Mainnet or Görli',
 };
 
 const parseTransactionError = (error: any) => {

@@ -57,6 +57,7 @@ const WithdrawStakeModal: FC<Props> = ({ onClose, crucible }) => {
   const handleWithdraw = () => {
     withdraw(isMax ? unlockedBalance : amountBigNumber, crucible.id);
     onClose();
+    window.scrollTo(0, 0);
   };
 
   const onChange = (amountNew: number | string) => {
