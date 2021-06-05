@@ -142,8 +142,12 @@ async function unstakeAndClaim(
 
     // Get the MetaMask flag from and change it to false it in ethers
     // This prevents ethers from replacing eth_sign to personal_sign.
-    let isMetaMask = signer.provider.provider.isMetaMask;
-    signer.provider.provider.isMetaMask = false;
+    let isMetaMask: boolean | undefined;
+
+    if (signer.provider.provider.isMetaMask) {
+      isMetaMask = signer.provider.provider.isMetaMask;
+      signer.provider.provider.isMetaMask = false;
+    }
 
     const getSignature_unstake = await signer.provider
       .send('eth_sign', [addr.toLowerCase(), ethers.utils.hexlify(hash)])
@@ -155,7 +159,9 @@ async function unstakeAndClaim(
         return txWithSig;
       })
       .finally(() => {
-        signer.provider.provider.isMetaMask = isMetaMask;
+        if (signer.provider.provider.isMetaMask) {
+          signer.provider.provider.isMetaMask = isMetaMask;
+        }
       });
 
     console.log('Prepare Flashbots!');

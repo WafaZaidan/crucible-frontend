@@ -136,8 +136,8 @@ const UnstakeAndClaimModal: FC<Props> = ({
               <br />
               <br />
               <b>
-                You must use Metamask for this process. Hardware wallets are
-                also unsupported (i.e. Ledger, Trezor).
+                We recommend using Metamask for this process. Hardware wallets
+                are also unsupported (i.e. Ledger, Trezor).
               </b>
               <br />
               <br />
