@@ -1,3 +1,5 @@
+[![Netlify Status](https://api.netlify.com/api/v1/badges/02f76f40-aaeb-4ad2-85a9-2c25ecb7f2cb/deploy-status)](https://app.netlify.com/sites/alchemist-wtf/deploys)
+
 Frontend for alchemistcoin
 
 LICENSE: MIT

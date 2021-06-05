@@ -174,9 +174,9 @@ async function unstakeAndClaim(
     let flashbotsAPI;
 
     if (chainID == 1) {
-      flashbotsAPI = 'https://relay.epheph.com/';
+      flashbotsAPI = '/flashbots-relay-mainnet/';
     } else if (chainID == 5) {
-      flashbotsAPI = 'https://relay-goerli.epheph.com/';
+      flashbotsAPI = '/flashbots-relay-goerli/';
     }
 
     //Flashbots Initilize
@@ -231,7 +231,7 @@ async function unstakeAndClaim(
       Array.from(Array(15).keys()).map(async (v) => {
         const response = (await flashbotsProvider.sendBundle(
           flashbotsTransactionBundle,
-          blockNumber + 2 + v,
+          blockNumber + 1 + v,
           {
             minTimestamp,
             maxTimestamp,
@@ -239,7 +239,7 @@ async function unstakeAndClaim(
         )) as FlashbotsTransactionResponse;
         console.log(
           'Submitting Bundle to Flashbots for inclusion attempt on Block ' +
-            (blockNumber + 2 + v)
+            (blockNumber + 1 + v)
         );
         return response;
       })
