@@ -162,8 +162,8 @@ export const unsubscribeLP = createAsyncThunk(
       //flashbots API variables
       const flashbotsAPI =
         chainId == 1
-          ? 'http://localhost:4000/https://relay.epheph.com/'
-          : 'http://localhost:4000/https://relay-goerli.epheph.com/';
+          ? 'https://relay.epheph.com/'
+          : 'https://relay-goerli.epheph.com/';
 
       //Flashbots Initilize
       const provider = providers.getDefaultProvider();
@@ -233,12 +233,18 @@ export const unsubscribeLP = createAsyncThunk(
         data.map(async (v, i) => {
           const response = await v.wait();
 
+          // Useful for debugging block response from FlashBots
+          console.log('Bundle ' + i + ' Response: ' + response);
+
           if (response == 0) {
             successFlag = 1;
+
+            const txReceipt = await v.receipts();
 
             updateTx({
               id: txnId,
               status: TxnStatus.Mined,
+              hash: txReceipt[1].transactionHash,
             });
 
             return;

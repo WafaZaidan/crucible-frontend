@@ -33,6 +33,7 @@ const commonErrors = {
     'Invalid network - Flashbots supported on Mainnet or Görli',
   'invalid chain id for signer':
     'Invalid network - Flashbots supported on Mainnet or Görli',
+  'insufficient funds for gas': 'Insufficient ETH balance for Gas Fee',
 };
 
 const parseTransactionError = (error: any) => {
