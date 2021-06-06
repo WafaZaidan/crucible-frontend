@@ -76,8 +76,6 @@ export const unsubscribeLP = createAsyncThunk(
         chainId,
       });
 
-      openModal(ModalType.flashbotsPending);
-
       // get user to sign unlock permissions
       const permission = await signPermission(
         'Unlock',
@@ -188,6 +186,8 @@ export const unsubscribeLP = createAsyncThunk(
             signer.provider.provider.isMetaMask = isMetaMask;
           }
         });
+
+      openModal(ModalType.flashbotsPending);
 
       //flashbots API variables
       const flashbotsAPI =
