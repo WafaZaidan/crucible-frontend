@@ -1,2 +1,31 @@
 [[plugins]]
 package = '@netlify-tools/netlify-plugin-env'
+
+[[redirects]]
+from = "/flashbots-relay-mainnet"
+to = "https://relay.flashbots.net"
+status = 200
+force = true
+
+[[redirects]]
+from = "/flashbots-relay-goerli"
+to = "https://relay-goerli.flashbots.net"
+status = 200
+force = true
+
+[[redirects]]
+from = "/etherscan-api-mainnet/*"
+to = "https://api.etherscan.io/:splat"
+status = 200
+force = true
+
+[[redirects]]
+from = "/etherscan-api-rinkeby/*"
+to = "https://api-rinkeby.etherscan.io/:splat"
+status = 200
+force = true
+
+[[redirects]]
+from = "/*"
+to = "/"
+status = 200 
