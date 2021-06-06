@@ -1,6 +1,11 @@
 import { useWeb3React } from '@web3-react/core';
 import { useMemo } from 'react';
-import { injectedConnector, walletconnectConnector } from '../config';
+import {
+  injectedConnector,
+  walletconnectConnector,
+  portisConnector,
+  walletlinkConnector,
+} from '../config';
 
 export function useConnectedWalletName() {
   const { active, connector } = useWeb3React();
@@ -12,6 +17,12 @@ export function useConnectedWalletName() {
       }
       if (connector === walletconnectConnector) {
         return 'WalletConnect';
+      }
+      if (connector === portisConnector) {
+        return 'Portis';
+      }
+      if (connector === walletlinkConnector) {
+        return 'Coinbase';
       }
     }
     return null;

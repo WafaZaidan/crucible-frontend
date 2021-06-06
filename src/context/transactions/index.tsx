@@ -17,18 +17,18 @@ type Web3ContextType = {
   monitorTx(hash: string, reload: () => void): Promise<void>;
 };
 
-const TransactionContext = createContext<Web3ContextType | undefined>(
-  undefined
-);
+const TransactionContext =
+  createContext<Web3ContextType | undefined>(undefined);
 
 const TransactionProvider = ({ children }: TransactionContextProps) => {
   const { chainId } = useWeb3React();
-  const { dappId } = useConfigVariables();
+  const { blocknativeApiKey } = useConfigVariables();
   const [notify, setNotify] = useState<NotifyAPI | undefined>(undefined);
 
   useEffect(() => {
-    const notify = initNotify(dappId, chainId);
+    const notify = initNotify(blocknativeApiKey, chainId);
     setNotify(notify);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chainId]);
 
   async function monitorTx(hash: string, reload: () => void) {
