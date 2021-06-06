@@ -31,6 +31,7 @@ const commonErrors = {
   // Flashbots errors
   'missing response':
     'Invalid network - Flashbots supported on Mainnet or Görli',
+  'bad response': 'Invalid network - Flashbots supported on Mainnet or Görli',
   'invalid chain id for signer':
     'Invalid network - Flashbots supported on Mainnet or Görli',
   'insufficient funds for gas': 'Insufficient ETH balance for Gas Fee',

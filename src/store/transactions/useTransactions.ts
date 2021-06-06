@@ -12,6 +12,7 @@ import { unsubscribeLP as _unsubscribeLP } from './actions/unsubscribeLP';
 import { withdraw as _withdraw } from './actions/withdrawLP';
 import { transactionsSlice } from './reducer';
 import { BigNumber } from 'ethers';
+import { useModal } from '../modals';
 
 export const useTransactions = (): UseTransactions => {
   const dispatch = useAppDispatch();
@@ -22,6 +23,7 @@ export const useTransactions = (): UseTransactions => {
   const configForNetwork = config[web3React.chainId || 1];
   const { transactions } = useAppSelector((state) => state.transactions);
   const toast = useToast();
+  const modal = useModal();
 
   const clearSavedTransactions = () => {
     dispatch(transactionsSlice.actions.clearSavedTransactions());
@@ -38,11 +40,7 @@ export const useTransactions = (): UseTransactions => {
     );
   };
 
-  const resolveTransaction = (
-    rawAction: any,
-    dispatchedAction: any,
-    errorMessage: string
-  ) => {
+  const resolveTransaction = (rawAction: any, dispatchedAction: any) => {
     if (rawAction.fulfilled.match(dispatchedAction)) {
       reloadBalances();
       reloadCrucibles();
@@ -52,8 +50,10 @@ export const useTransactions = (): UseTransactions => {
     if (rawAction.rejected.match(dispatchedAction)) {
       // generic error handling
 
+      console.log(dispatchedAction);
+
       toast({
-        title: errorMessage,
+        title: 'Transaction Failed',
         status: 'error',
         duration: 2000,
         isClosable: true,
@@ -61,45 +61,44 @@ export const useTransactions = (): UseTransactions => {
     }
   };
 
+  const actionArguments = {
+    config: configForNetwork,
+    web3React,
+    monitorTx,
+    updateTx: updateSavedTransaction,
+    modal,
+  };
+
   const transferCrucible = async (crucibleId: string, transferTo: string) => {
     const transferAction = await dispatch(
       _transferCrucible({
-        config: configForNetwork,
-        web3React,
-        monitorTx,
-        updateTx: updateSavedTransaction,
+        ...actionArguments,
         transferTo,
         crucibleId,
       })
     );
-    resolveTransaction(_transferCrucible, transferAction, 'Transfer Failed');
+    resolveTransaction(_transferCrucible, transferAction);
   };
 
   const mintCrucible = async (amountLp: BigNumber) => {
     const mintAction = await dispatch(
       _mintCrucible({
-        config: configForNetwork,
-        web3React,
-        monitorTx,
-        updateTx: updateSavedTransaction,
+        ...actionArguments,
         amountLp,
       })
     );
-    resolveTransaction(_mintCrucible, mintAction, 'Minting failed');
+    resolveTransaction(_mintCrucible, mintAction);
   };
 
   const increaseLP = async (amountLp: BigNumber, crucibleAddress: string) => {
     const increaseLPAction = await dispatch(
       _increaseLP({
-        config: configForNetwork,
-        web3React,
-        monitorTx,
-        updateTx: updateSavedTransaction,
+        ...actionArguments,
         amountLp,
         crucibleAddress,
       })
     );
-    resolveTransaction(_increaseLP, increaseLPAction, 'Failed to increase LP');
+    resolveTransaction(_increaseLP, increaseLPAction);
   };
 
   const unsubscribeLP = async (
@@ -108,33 +107,23 @@ export const useTransactions = (): UseTransactions => {
   ) => {
     const unsubLpAction = await dispatch(
       _unsubscribeLP({
-        config: configForNetwork,
-        web3React,
-        monitorTx,
-        updateTx: updateSavedTransaction,
+        ...actionArguments,
         amountLp,
         crucibleAddress,
       })
     );
-    resolveTransaction(
-      _unsubscribeLP,
-      unsubLpAction,
-      'Failed to unsubscribe LP'
-    );
+    resolveTransaction(_unsubscribeLP, unsubLpAction);
   };
 
   const withdraw = async (amountLp: BigNumber, crucibleAddress: string) => {
     const withdrawAction = await dispatch(
       _withdraw({
-        config: configForNetwork,
-        web3React,
-        monitorTx,
-        updateTx: updateSavedTransaction,
+        ...actionArguments,
         amountLp,
         crucibleAddress,
       })
     );
-    resolveTransaction(_withdraw, withdrawAction, 'Failed to withdraw');
+    resolveTransaction(_withdraw, withdrawAction);
   };
 
   const txnsByAccountAndNetwork = transactions.filter(

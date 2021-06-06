@@ -28,7 +28,8 @@ const TxPendingFlashbotsModal: FC<Props> = () => {
             <Box textAlign='center' color='gray.200' my={4}>
               <Text>
                 This process may take up to 5 minutes. Please do not close the
-                window.
+                window. No gas will be charged if your claim fails and is not
+                included in a bundle. You can simply retry.
               </Text>
             </Box>
           </ModalBody>

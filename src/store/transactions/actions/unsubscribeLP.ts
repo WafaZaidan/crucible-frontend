@@ -16,6 +16,7 @@ import {
   FlashbotsBundleProvider,
   FlashbotsTransactionResponse,
 } from '@flashbots/ethers-provider-bundle';
+import { ModalType } from '../../../components/modals/types';
 
 export const unsubscribeLP = createAsyncThunk(
   THUNK_PREFIX.UNSUBSCRIBE_LP,
@@ -24,6 +25,7 @@ export const unsubscribeLP = createAsyncThunk(
     config,
     // monitorTx, // TODO: Figure out how to monitor flashbots txns
     updateTx,
+    modal,
     amountLp,
     crucibleAddress,
   }: any) => {
@@ -31,8 +33,11 @@ export const unsubscribeLP = createAsyncThunk(
     const description = `Unsubscribe ${bigNumberishToNumber(amountLp)} LP`;
     const { library, account, chainId } = web3React;
     const signer = library.getSigner();
-    let chainName = (await signer.provider.getNetwork()).chainName;
+    const chainName = (await signer.provider.getNetwork()).chainName;
     const { aludelAddress } = config;
+    const { openModal, closeModal } = modal;
+
+    console.log('got everything set up');
 
     updateTx({
       id: txnId,
@@ -70,6 +75,8 @@ export const unsubscribeLP = createAsyncThunk(
         account,
         chainId,
       });
+
+      openModal(ModalType.flashbotsPending);
 
       // get user to sign unlock permissions
       const permission = await signPermission(
@@ -262,6 +269,8 @@ export const unsubscribeLP = createAsyncThunk(
 
             const txReceipt = await v.receipts();
 
+            openModal(ModalType.flashbotsConfirmed);
+
             updateTx({
               id: txnId,
               status: TxnStatus.Mined,
@@ -280,6 +289,8 @@ export const unsubscribeLP = createAsyncThunk(
       }
     } catch (error) {
       const errorMessage = parseTransactionError(error);
+
+      closeModal();
 
       updateTx({
         id: txnId,
