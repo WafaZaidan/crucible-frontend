@@ -16,7 +16,7 @@ import parseTransactionError from '../../../utils/parseTransactionError';
 
 export const mintCrucible = createAsyncThunk(
   THUNK_PREFIX.MINT_CRUCIBLE,
-  async ({ web3React, config, monitorTx, updateTx, amountLp }: any) => {
+  async ({ web3React, config, monitorTx, updateTx, toast, amountLp }: any) => {
     const txnId = uuid();
     const description = `Create Crucible with ${bigNumberishToNumber(
       amountLp
@@ -77,6 +77,13 @@ export const mintCrucible = createAsyncThunk(
         signer
       );
 
+      toast({
+        title: 'Pending signature (1 of 2)',
+        status: 'info',
+        duration: 2000,
+        isClosable: true,
+      });
+
       //Signature #1
       const permit = await signPermitEIP2612(
         signer,
@@ -89,6 +96,13 @@ export const mintCrucible = createAsyncThunk(
 
       //short wait so that metamask can pop up the second signature request
       await wait(300);
+
+      toast({
+        title: 'Pending signature (1 of 2)',
+        status: 'info',
+        duration: 2000,
+        isClosable: true,
+      });
 
       //signature #2
       const permission = await signPermission(

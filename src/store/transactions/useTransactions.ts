@@ -67,6 +67,7 @@ export const useTransactions = (): UseTransactions => {
     monitorTx,
     updateTx: updateSavedTransaction,
     modal,
+    toast,
   };
 
   const transferCrucible = async (crucibleId: string, transferTo: string) => {

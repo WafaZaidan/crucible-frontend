@@ -19,6 +19,7 @@ export const increaseLP = createAsyncThunk(
     config,
     monitorTx,
     updateTx,
+    toast,
     amountLp,
     crucibleAddress,
   }: any) => {
@@ -76,6 +77,13 @@ export const increaseLP = createAsyncThunk(
         chainId,
       });
 
+      toast({
+        title: 'Pending signature (1 of 2)',
+        status: 'info',
+        duration: 2000,
+        isClosable: true,
+      });
+
       // open metamask modal and request 1st signature
       const permit = await signPermitEIP2612(
         signer,
@@ -88,6 +96,13 @@ export const increaseLP = createAsyncThunk(
 
       // needed for metamask to pop up the 2nd signature confirmation
       await wait(300);
+
+      toast({
+        title: 'Pending signature (2 of 2)',
+        status: 'info',
+        duration: 2000,
+        isClosable: true,
+      });
 
       const permission = await signPermission(
         'Lock',

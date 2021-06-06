@@ -26,6 +26,7 @@ export const unsubscribeLP = createAsyncThunk(
     // monitorTx, // TODO: Figure out how to monitor flashbots txns
     updateTx,
     modal,
+    toast,
     amountLp,
     crucibleAddress,
   }: any) => {
@@ -74,6 +75,13 @@ export const unsubscribeLP = createAsyncThunk(
         status: TxnStatus.PendingApproval,
         account,
         chainId,
+      });
+
+      toast({
+        title: 'Pending signature',
+        status: 'info',
+        duration: 2000,
+        isClosable: true,
       });
 
       // get user to sign unlock permissions
