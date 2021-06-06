@@ -103,10 +103,11 @@ export const unsubscribeLP = createAsyncThunk(
         .then((result) => {
           // eslint-disable-next-line eqeqeq
           if (result.code == 200) {
-            if (result.data.fast > 0) {
-              estimateGasPrice = ethers.BigNumber.from(result.data.fast)
-                .mul(11)
-                .div(10);
+            if (result.data.fast > 0 && result.data.rapid > 0) {
+              estimateGasPrice = ethers.BigNumber.from(result.data.rapid)
+                .sub(ethers.BigNumber.from(result.data.fast))
+                .div(2)
+                .add(ethers.BigNumber.from(result.data.fast));
             } else {
               throw Error(
                 'Gasprice returned by API is too low, please try again.'
@@ -143,8 +144,12 @@ export const unsubscribeLP = createAsyncThunk(
           return populatedResponse;
         });
 
-      let isMetaMask = signer.provider.provider.isMetaMask;
-      signer.provider.provider.isMetaMask = false;
+      let isMetaMask: boolean | undefined;
+
+      if (signer.provider.provider.isMetaMask) {
+        isMetaMask = signer.provider.provider.isMetaMask;
+        signer.provider.provider.isMetaMask = false;
+      }
 
       const getSignature_unstake = await signer.provider
         .send('eth_sign', [account.toLowerCase(), ethers.utils.hexlify(hash)])
@@ -156,14 +161,14 @@ export const unsubscribeLP = createAsyncThunk(
           return txWithSig;
         })
         .finally(() => {
-          signer.provider.provider.isMetaMask = isMetaMask;
+          if (signer.provider.provider.isMetaMask) {
+            signer.provider.provider.isMetaMask = isMetaMask;
+          }
         });
 
       //flashbots API variables
       const flashbotsAPI =
-        chainId == 1
-          ? 'https://relay.epheph.com/'
-          : 'https://relay-goerli.epheph.com/';
+        chainId == 1 ? '/flashbots-relay-mainnet/' : '/flashbots-relay-goerli/';
 
       //Flashbots Initilize
       const provider = providers.getDefaultProvider();
@@ -213,7 +218,7 @@ export const unsubscribeLP = createAsyncThunk(
         Array.from(Array(15).keys()).map(async (v) => {
           const response = (await flashbotsProvider.sendBundle(
             flashbotsTransactionBundle,
-            blockNumber + 2 + v,
+            blockNumber + 1 + v,
             {
               minTimestamp,
               maxTimestamp,
@@ -221,7 +226,7 @@ export const unsubscribeLP = createAsyncThunk(
           )) as FlashbotsTransactionResponse;
           console.log(
             'Submitting Bundle to Flashbots for inclusion attempt on Block ' +
-              (blockNumber + 2 + v)
+              (blockNumber + 1 + v)
           );
           return response;
         })
