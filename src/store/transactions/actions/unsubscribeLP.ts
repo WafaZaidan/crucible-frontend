@@ -1,4 +1,4 @@
-import { ethers, providers, Wallet } from 'ethers';
+import { BigNumberish, ethers, providers, Wallet } from 'ethers';
 import IUniswapV2ERC20 from '@uniswap/v2-core/build/IUniswapV2ERC20.json';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { v4 as uuid } from 'uuid';
@@ -94,7 +94,7 @@ export const unsubscribeLP = createAsyncThunk(
         permission
       );
 
-      let estimateGasPrice;
+      let estimateGasPrice: BigNumberish = 0;
 
       await fetch(
         'https://www.gasnow.org/api/v3/gas/price?utm_source=:crucible'
@@ -122,6 +122,22 @@ export const unsubscribeLP = createAsyncThunk(
         .catch((error) => {
           throw error;
         });
+
+      let gasCalculation =
+        ethers.BigNumber.from(estimateGasPrice).mul(estimatedGas);
+
+      //Console notices for Gas Cost - Please retain for debugging
+      console.log(
+        'Estimated Gas Price: ' +
+          ethers.utils.formatUnits(estimateGasPrice, 'gwei') +
+          ' Gwei'
+      );
+      console.log('Estimated Gas Required: ' + estimatedGas + ' units');
+      console.log(
+        'Estimated Total Cost ' +
+          ethers.utils.formatEther(gasCalculation) +
+          ' ETH'
+      );
 
       let populatedResponse = {};
       let hash: string = '';
